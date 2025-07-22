@@ -2,17 +2,15 @@ package main
 
 import (
 	"log"
-	"net/url"
+	"strings"
 )
 
 func main() {
-	var testUrl0 string = "https://www.example.com:4433/path/to/somewhere?param1=1&param2=2"
-	result, err := url.Parse(testUrl0)
-	if err != nil {
-		log.Panicln(err)
+	test0 := "abc"
+	test1 := "abcd"
+	if strings.Contains(test0, test1) {
+		log.Println("test0 contains test1")
+	} else {
+		log.Println("test0 does not contain test1")
 	}
-	log.Println("Scheme:", result.Scheme)
-	log.Println("Host:", result.Host)
-	log.Println("Path:", result.Path)
-	log.Println("RawQuery:", result.RawQuery)
 }

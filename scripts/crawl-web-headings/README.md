@@ -1,5 +1,12 @@
 # Go 爬虫框架 Colly 入门与实战指南
 
+## To Do
+
+1. [ ] Retry "Error occurred" x10.
+2. [ ] Add parameters for "ignoreTitles".
+3. [ ] Add variate "ignoreLinks" fro "Ignore link".
+4. [ ] Convert "link" into "URL" or "URLs".
+
 ## 安装
 
 确保你的 Go 环境已经安装，然后运行以下命令安装 Colly：

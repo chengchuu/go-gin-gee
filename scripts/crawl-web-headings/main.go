@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"strings"
@@ -8,44 +9,57 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
+// Examples:
+// go run scripts/crawl-web-headings/main.go -allowedDomain="example.com" -firstURL="http://example.com/first-page.html"
 func main() {
-	// 文章导航 相关文章
+	allowedDomain := flag.String("allowedDomain", "", "Allowed Domain")
+	firstURL := flag.String("firstURL", "", "First URL to visit")
+	flag.Parse()
+	log.Printf("Allowed Domain: %s", *allowedDomain)
+	log.Printf("First URL: %s", *firstURL)
+
+	// Article navigation and related articles
 	ignoreTitles := []string{
 		"文章导航",
 		"相关文章",
+		"条评论",
 	}
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
 
-	// colly
-	// 创建一个新的 Colly Collector
+	// Colly
+	// Create a new Colly Collector
 	c := colly.NewCollector(
-		colly.AllowedDomains("blog.mazey.net"), // 限制爬取的域名
+		colly.AllowedDomains(*allowedDomain), // 限制爬取的域名
 	)
 
-	// 找到每个 `<h2>` 标签并打印内容
+	// Find each `<h2>` tag and print its content
 	c.OnHTML("h2", func(e *colly.HTMLElement) {
 		thatTitle := e.Text
-		// 忽略标题
+		// Ignore specific titles
 		for _, title := range ignoreTitles {
-			if thatTitle == title {
+			// if thatTitle == title {
+			// 	return
+			// }
+			if strings.Contains(thatTitle, title) {
+				fmt.Println("Ignore title:", thatTitle)
 				return
 			}
 		}
 		// Ignore the title including "条评论"
-		if len(thatTitle) > 6 && strings.Contains(thatTitle, "条评论") {
-			fmt.Println("Ignore title:", thatTitle)
-			return
-		}
+		// if len(thatTitle) > 6 && strings.Contains(thatTitle, "条评论") {
+		// 	fmt.Println("Ignore title:", thatTitle)
+		// 	return
+		// }
 		fmt.Println("Title found:", thatTitle)
 	})
 
-	// 错误处理
+	// Handle errors during the request
 	c.OnError(func(_ *colly.Response, err error) {
 		log.Println("Error occurred:", err)
 	})
 
-	// 处理分页
+	// Handle links found on the page
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		link := e.Attr("href")
 		// Visit link found on page
@@ -62,8 +76,8 @@ func main() {
 		c.Visit(e.Request.AbsoluteURL(link))
 	})
 
-	// 开始爬取
-	err := c.Visit("https://blog.mazey.net/4899.html") // 替换为目标网站 URL
+	// Visit the first URL
+	err := c.Visit(*firstURL)
 	if err != nil {
 		log.Fatal(err)
 	}

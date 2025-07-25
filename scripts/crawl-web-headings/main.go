@@ -55,25 +55,26 @@ func main() {
 	})
 
 	// Handle errors during the request
-	c.OnError(func(_ *colly.Response, err error) {
-		log.Println("Error occurred:", err)
+	c.OnError(func(r *colly.Response, err error) {
+		errURL := r.Request.URL.String()
+		log.Printf("Error occurred on URL %s: %v", errURL, err)
 	})
 
-	// Handle links found on the page
+	// Handle URLs found on the page
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		link := e.Attr("href")
-		// Visit link found on page
-		if visitedURLs[link] {
+		URL := e.Attr("href")
+		// Visit URL found on page
+		if visitedURLs[URL] {
 			return
 		}
-		// Handle the link end wiht .html
-		if len(link) < 5 || link[len(link)-5:] != ".html" {
-			fmt.Println("Ignore link:", link)
-			return
-		}
-		fmt.Println("Next page found:", link)
-		visitedURLs[link] = true
-		c.Visit(e.Request.AbsoluteURL(link))
+		// Handle the URL end wiht .html
+		// if len(URL) < 5 || URL[len(URL)-5:] != ".html" {
+		// 	fmt.Println("Ignore link:", URL)
+		// 	return
+		// }
+		fmt.Println("Next page found:", URL)
+		visitedURLs[URL] = true
+		c.Visit(e.Request.AbsoluteURL(URL))
 	})
 
 	// Visit the first URL

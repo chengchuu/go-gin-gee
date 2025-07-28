@@ -408,6 +408,18 @@ If `i/o timeout`, run the command to replace the proxy:
 go env -w GOPROXY=https://goproxy.cn
 ```
 
+To disable the proxy completely and download modules directly:
+
+```bash
+go env -w GOPROXY=direct
+```
+
+To reset to Go's default proxy settings:
+
+```bash
+go env -w GOPROXY=https://proxy.golang.org,direct
+```
+
 It's necessary to run the command `go run scripts/init/main.go` when serving the project first.
 
 Serve:

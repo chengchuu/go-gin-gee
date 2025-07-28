@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.19.5-alpine AS build_base
+FROM docker.io/golang:2.13.0-alpine AS build_base
 
 ENV CGO_ENABLED=1
 ENV GO111MODULE=on

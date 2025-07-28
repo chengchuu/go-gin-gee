@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/chengchuu/gurl"
 	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
 	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/mazeyqian/go-gin-gee/pkg/helpers"
-	"github.com/mazeyqian/gurl"
 	"github.com/takuoki/clmconv"
 )
 

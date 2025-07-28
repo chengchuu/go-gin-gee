@@ -4,7 +4,7 @@
 
 1. [ ] Retry "Error occurred" x10.
 2. [ ] Add parameters for "ignoreTitles".
-3. [ ] Add variate "ignoreLinks" fro "Ignore link".
+3. [x] Add variate "ignoreLinks" fro "Ignore link".
 4. [x] Convert "link" into "URL" or "URLs".
 
 ## 安装

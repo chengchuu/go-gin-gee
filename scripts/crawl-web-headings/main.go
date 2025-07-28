@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"strings"
 
+	"github.com/chengchuu/gurl"
 	"github.com/gocolly/colly/v2"
 )
 
@@ -26,11 +26,13 @@ func main() {
 	}
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
+	// Ignored URLs
+	ignoredURLs := make(map[string]bool)
 
 	// Colly
 	// Create a new Colly Collector
 	c := colly.NewCollector(
-		colly.AllowedDomains(*allowedDomain), // 限制爬取的域名
+		colly.AllowedDomains(*allowedDomain), // Limit to the allowed domain
 	)
 
 	// Find each `<h2>` tag and print its content
@@ -42,7 +44,7 @@ func main() {
 			// 	return
 			// }
 			if strings.Contains(thatTitle, title) {
-				fmt.Println("Ignore title:", thatTitle)
+				log.Println("Ignore title:", thatTitle)
 				return
 			}
 		}
@@ -51,7 +53,7 @@ func main() {
 		// 	fmt.Println("Ignore title:", thatTitle)
 		// 	return
 		// }
-		fmt.Println("Title found:", thatTitle)
+		log.Println("Title found:", thatTitle)
 	})
 
 	// Handle errors during the request
@@ -63,8 +65,20 @@ func main() {
 	// Handle URLs found on the page
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		URL := e.Attr("href")
+		absoluteURL := e.Request.AbsoluteURL(URL)
+		baseURL, err := gurl.GetBaseUrl(absoluteURL)
+		if err != nil {
+			log.Println("Error getting base URL:", err)
+			return
+		}
 		// Visit URL found on page
-		if visitedURLs[URL] {
+		if visitedURLs[baseURL] {
+			return
+		}
+		if !strings.Contains(URL, *allowedDomain) {
+			// fmt.Println("Ignore link:", URL)
+			// fmt.Print(">")
+			ignoredURLs[baseURL] = true
 			return
 		}
 		// Handle the URL end wiht .html
@@ -72,9 +86,9 @@ func main() {
 		// 	fmt.Println("Ignore link:", URL)
 		// 	return
 		// }
-		fmt.Println("Next page found:", URL)
-		visitedURLs[URL] = true
-		c.Visit(e.Request.AbsoluteURL(URL))
+		log.Println("Next page found:", baseURL)
+		visitedURLs[baseURL] = true
+		c.Visit(e.Request.AbsoluteURL(baseURL))
 	})
 
 	// Visit the first URL

@@ -66,7 +66,7 @@ func main() {
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
 		URL := e.Attr("href")
 		absoluteURL := e.Request.AbsoluteURL(URL)
-		baseURL, err := gurl.GetBaseUrl(absoluteURL)
+		baseURL, err := gurl.GetBaseURL(absoluteURL)
 		if err != nil {
 			log.Println("Error getting base URL:", err)
 			return

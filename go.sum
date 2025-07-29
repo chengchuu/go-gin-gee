@@ -68,8 +68,8 @@ github.com/antchfx/xpath v1.3.3/go.mod h1:i54GszH55fYfBmoZXapTHN8T8tkcHfRgLyVwwq
 github.com/bitfield/script v0.20.2 h1:4DexsRtBILVMEn3EZwHbtJdDqdk43sXI8gM3F04JXgs=
 github.com/bitfield/script v0.20.2/go.mod h1:l3AZPVAtKQrL03bwh7nlNTUtgrgSWurpJSbtqspYrOA=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
-github.com/chengchuu/gurl v1.1.1 h1:knGG7q1ntpmCMR2TdVicKcO4M3Pp6I25bm07XB7niyI=
-github.com/chengchuu/gurl v1.1.1/go.mod h1:2TLm1hwacxmF2vjnv/fXJfA9TjFY9u/l25mNsX8/lPI=
+github.com/chengchuu/gurl v1.1.2 h1:X3tvLe+XZ+iAmeqfUMP2EXt251YUdQoDzgzQA3TtWOo=
+github.com/chengchuu/gurl v1.1.2/go.mod h1:2TLm1hwacxmF2vjnv/fXJfA9TjFY9u/l25mNsX8/lPI=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=

@@ -6,7 +6,7 @@ toolchain go1.23.5
 
 require (
 	github.com/bitfield/script v0.20.2
-	github.com/chengchuu/gurl v1.1.1
+	github.com/chengchuu/gurl v1.1.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-co-op/gocron v1.17.0

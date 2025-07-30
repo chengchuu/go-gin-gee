@@ -6,13 +6,13 @@ toolchain go1.23.5
 
 require (
 	github.com/bitfield/script v0.20.2
+	github.com/chengchuu/asiatz v1.1.4
 	github.com/chengchuu/gurl v1.1.2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-co-op/gocron v1.17.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/jinzhu/gorm v1.9.16
-	github.com/mazeyqian/asiatz v1.1.3
 	github.com/samber/lo v1.33.0
 	github.com/spf13/viper v1.13.0
 	github.com/swaggo/swag v1.8.1

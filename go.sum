@@ -68,6 +68,8 @@ github.com/antchfx/xpath v1.3.3/go.mod h1:i54GszH55fYfBmoZXapTHN8T8tkcHfRgLyVwwq
 github.com/bitfield/script v0.20.2 h1:4DexsRtBILVMEn3EZwHbtJdDqdk43sXI8gM3F04JXgs=
 github.com/bitfield/script v0.20.2/go.mod h1:l3AZPVAtKQrL03bwh7nlNTUtgrgSWurpJSbtqspYrOA=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
+github.com/chengchuu/asiatz v1.1.4 h1:RYq25Kt5WOPH33jsZq8rAt1BkjKlrAJ9upSZrwSkvgw=
+github.com/chengchuu/asiatz v1.1.4/go.mod h1:JE0TtitJO7Na0kxlSn4aFgmSg45UTfgwfkHmXiiIqdk=
 github.com/chengchuu/gurl v1.1.2 h1:X3tvLe+XZ+iAmeqfUMP2EXt251YUdQoDzgzQA3TtWOo=
 github.com/chengchuu/gurl v1.1.2/go.mod h1:2TLm1hwacxmF2vjnv/fXJfA9TjFY9u/l25mNsX8/lPI=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
@@ -260,8 +262,6 @@ github.com/mattn/go-isatty v0.0.14/go.mod h1:7GGIvUiUoEMVVmxf/4nioHXj79iQHKdU27k
 github.com/mattn/go-runewidth v0.0.9/go.mod h1:H031xJmbD/WCDINGzjvQ9THkh0rPKHF+m2gUSrubnMI=
 github.com/mattn/go-sqlite3 v1.14.0 h1:mLyGNKR8+Vv9CAU7PphKa2hkEqxxhn8i32J6FPj1/QA=
 github.com/mattn/go-sqlite3 v1.14.0/go.mod h1:JIl7NbARA7phWnGvh0LKTyg7S9BA+6gx71ShQilpsus=
-github.com/mazeyqian/asiatz v1.1.3 h1:vMOgRMyrF30JKCpD+x5Q5I6YYPgVwfDGmNd6usUdtJk=
-github.com/mazeyqian/asiatz v1.1.3/go.mod h1:rzOhtefy2zJg4fKL6dn8Q8cezRFSv/qS4AO02D6cBUE=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

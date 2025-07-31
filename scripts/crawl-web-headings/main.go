@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"strings"
 
@@ -26,8 +27,12 @@ func main() {
 	}
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
+	// Failed URLs
+	failedURLs := make(map[string]bool)
 	// Ignored URLs
 	ignoredURLs := make(map[string]bool)
+	crawledCount := 0
+	failedCount := 0
 
 	// Colly
 	// Create a new Colly Collector
@@ -44,7 +49,7 @@ func main() {
 			// 	return
 			// }
 			if strings.Contains(thatTitle, title) {
-				log.Println("Ignore title:", thatTitle)
+				// log.Println("Ignore title:", thatTitle)
 				return
 			}
 		}
@@ -54,12 +59,6 @@ func main() {
 		// 	return
 		// }
 		log.Println("Title found:", thatTitle)
-	})
-
-	// Handle errors during the request
-	c.OnError(func(r *colly.Response, err error) {
-		errURL := r.Request.URL.String()
-		log.Printf("Error occurred on URL %s: %v", errURL, err)
 	})
 
 	// Handle URLs found on the page
@@ -86,9 +85,21 @@ func main() {
 		// 	fmt.Println("Ignore link:", URL)
 		// 	return
 		// }
-		log.Println("Next page found:", baseURL)
+		// log.Println("Next page found:", baseURL)
+		fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
+	})
+
+	// c.OnScraped(func(r *colly.Response) {
+	// 	fmt.Print(".") // Print a dot for progress
+	// })
+
+	// Handle errors during the request
+	c.OnError(func(r *colly.Response, err error) {
+		errURL := r.Request.URL.String()
+		failedURLs[errURL] = true
+		log.Printf("Error occurred on URL %s: %v", errURL, err)
 	})
 
 	// Visit the first URL
@@ -96,4 +107,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Wait for all requests to complete
+	c.Wait()
+	// Count the number of visited URLs
+	crawledCount = len(visitedURLs)
+	failedCount = len(failedURLs)
+	fmt.Printf("\nCrawled %d URLs.\n", crawledCount)
+	if failedCount > 0 {
+		fmt.Printf("Failed to crawl %d URLs.\n", failedCount)
+		for url := range failedURLs {
+			fmt.Printf("Failed URL: %s\n", url)
+		}
+	} else {
+		fmt.Println("No failed URLs.")
+	}
+	log.Println("All URLs have been crawled.")
 }

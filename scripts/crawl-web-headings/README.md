@@ -6,6 +6,7 @@
 2. [ ] Add parameters for "ignoreTitles".
 3. [x] Add variate "ignoreLinks" fro "Ignore link".
 4. [x] Convert "link" into "URL" or "URLs".
+5. [ ] `visitedURLs` should be an array of URLs.
 
 ## 安装
 

@@ -86,7 +86,8 @@ func main() {
 		// 	return
 		// }
 		// log.Println("Next page found:", baseURL)
-		fmt.Print(".")
+		log.Println("Running ...")
+		// fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
 	})

@@ -8,6 +8,7 @@
 4. [x] Convert "link" into "URL" or "URLs".
 5. [ ] `visitedURLs` should be an array of URLs.
 6. [ ] Add parameters for "count" and show process (xx%).
+7. [ ] Check status: 404.
 
 ## 安装
 

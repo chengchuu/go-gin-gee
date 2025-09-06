@@ -45,20 +45,11 @@ func main() {
 		thatTitle := e.Text
 		// Ignore specific titles
 		for _, title := range ignoreTitles {
-			// if thatTitle == title {
-			// 	return
-			// }
 			if strings.Contains(thatTitle, title) {
-				// log.Println("Ignore title:", thatTitle)
 				return
 			}
 		}
-		// Ignore the title including "条评论"
-		// if len(thatTitle) > 6 && strings.Contains(thatTitle, "条评论") {
-		// 	fmt.Println("Ignore title:", thatTitle)
-		// 	return
-		// }
-		log.Println("Title found:", thatTitle)
+		// log.Println("Title found:", thatTitle)
 	})
 
 	// Handle URLs found on the page
@@ -75,26 +66,33 @@ func main() {
 			return
 		}
 		if !strings.Contains(URL, *allowedDomain) {
-			// fmt.Println("Ignore link:", URL)
-			// fmt.Print(">")
 			ignoredURLs[baseURL] = true
 			return
 		}
-		// Handle the URL end wiht .html
-		// if len(URL) < 5 || URL[len(URL)-5:] != ".html" {
-		// 	fmt.Println("Ignore link:", URL)
-		// 	return
-		// }
+		// blog - begin
+		if strings.Contains(baseURL, "https") {
+			baseURL, err = gurl.SetProtocol(baseURL, "http")
+			if err != nil {
+				log.Println("Error setting protocol:", err)
+				return
+			}
+		}
+		fileType, err := gurl.GetURLFileType(baseURL)
+		if err != nil {
+			log.Println("Error getting file type:", err)
+			return
+		}
+		if fileType == "html" {
+			// Remove ".html" suffix
+			baseURL = strings.TrimSuffix(baseURL, ".html")
+		}
+		// blog - end
 		// log.Println("Next page found:", baseURL)
-		log.Println("Running ...")
-		// fmt.Print(".")
+		// log.Println("Running ...")
+		fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
 	})
-
-	// c.OnScraped(func(r *colly.Response) {
-	// 	fmt.Print(".") // Print a dot for progress
-	// })
 
 	// Handle errors during the request
 	c.OnError(func(r *colly.Response, err error) {

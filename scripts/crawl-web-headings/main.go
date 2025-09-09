@@ -28,7 +28,7 @@ func main() {
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
 	// Failed URLs
-	failedURLs := make(map[string]bool)
+	failedURLs := make(map[string]string)
 	// Ignored URLs
 	ignoredURLs := make(map[string]bool)
 	crawledCount := 0
@@ -97,7 +97,7 @@ func main() {
 	// Handle errors during the request
 	c.OnError(func(r *colly.Response, err error) {
 		errURL := r.Request.URL.String()
-		failedURLs[errURL] = true
+		failedURLs[errURL] = err.Error()
 		log.Printf("Error occurred on URL %s: %v", errURL, err)
 	})
 
@@ -117,6 +117,8 @@ func main() {
 		fmt.Printf("Failed to crawl %d URLs.\n", failedCount)
 		for url := range failedURLs {
 			fmt.Printf("Failed URL: %s\n", url)
+			fmt.Printf("Error: %s\n", failedURLs[url])
+			fmt.Print("--------------------------------\n")
 		}
 	} else {
 		fmt.Println("No failed URLs.")

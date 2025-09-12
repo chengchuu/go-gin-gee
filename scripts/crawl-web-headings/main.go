@@ -116,10 +116,10 @@ func main() {
 	if failedCount > 0 {
 		fmt.Printf("Failed to crawl %d URLs.\n", failedCount)
 		for url := range failedURLs {
-			// fmt.Printf("Failed URL: %s\n", url)
-			// fmt.Printf("Error: %s\n", failedURLs[url])
-			// fmt.Print("--------------------------------\n")
-			fmt.Printf("Failed URL: %s.html\n", url)
+			fmt.Printf("Failed URL: %s\n", url)
+			fmt.Printf("Error: %s\n", failedURLs[url])
+			fmt.Print("--------------------------------\n")
+			// fmt.Printf("Failed URL: %s.html\n", url)
 		}
 	} else {
 		fmt.Println("No failed URLs.")

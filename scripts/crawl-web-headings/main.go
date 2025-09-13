@@ -16,10 +16,13 @@ func main() {
 	allowedDomain := flag.String("allowedDomain", "", "Allowed Domain")
 	firstURL := flag.String("firstURL", "", "First URL to visit")
 	extraURLs := flag.String("extraURLs", "", "Extra URLs to visit, separated by commas")
+	isFoundURLs := flag.Bool("isFoundURLs", true, "Whether to find all URLs on the page")
+
 	flag.Parse()
 	log.Printf("Allowed Domain: %s", *allowedDomain)
 	log.Printf("First URL: %s", *firstURL)
 	log.Printf("Extra URLs: %s", *extraURLs)
+	log.Printf("Find All URLs: %v", *isFoundURLs)
 
 	// Article navigation and related articles
 	ignoreTitles := []string{
@@ -56,6 +59,10 @@ func main() {
 
 	// Handle URLs found on the page
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		if !*isFoundURLs {
+			return
+		}
+		// Get the absolute URL
 		URL := e.Attr("href")
 		absoluteURL := e.Request.AbsoluteURL(URL)
 		baseURL, err := gurl.GetBaseURL(absoluteURL)
@@ -85,7 +92,6 @@ func main() {
 			return
 		}
 		if fileType == "html" {
-			// Remove ".html" suffix
 			baseURL = strings.TrimSuffix(baseURL, ".html")
 		}
 		// blog - end
@@ -105,10 +111,12 @@ func main() {
 
 	// Visit the first URL
 	if *firstURL != "" {
-		err := c.Visit(*firstURL)
-		if err != nil {
-			log.Fatal(err)
-		}
+		visitedURLs[*firstURL] = true
+		c.Visit(*firstURL)
+		// err := c.Visit(*firstURL)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 	}
 
 	// Visit extra URLs
@@ -119,10 +127,12 @@ func main() {
 			if url == "" {
 				continue
 			}
-			err := c.Visit(url)
-			if err != nil {
-				log.Printf("Error visiting extra URL %s: %v", url, err)
-			}
+			visitedURLs[url] = true
+			c.Visit(url)
+			// err := c.Visit(url)
+			// if err != nil {
+			// 	log.Printf("Error visiting extra URL %s: %v", url, err)
+			// }
 		}
 	}
 

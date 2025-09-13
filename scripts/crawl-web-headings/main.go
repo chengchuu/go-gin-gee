@@ -15,10 +15,11 @@ import (
 func main() {
 	allowedDomain := flag.String("allowedDomain", "", "Allowed Domain")
 	firstURL := flag.String("firstURL", "", "First URL to visit")
-	// extraURLs := flag.String("extraURLs", "", "Extra URLs to visit, separated by commas")
+	extraURLs := flag.String("extraURLs", "", "Extra URLs to visit, separated by commas")
 	flag.Parse()
 	log.Printf("Allowed Domain: %s", *allowedDomain)
 	log.Printf("First URL: %s", *firstURL)
+	log.Printf("Extra URLs: %s", *extraURLs)
 
 	// Article navigation and related articles
 	ignoreTitles := []string{
@@ -108,6 +109,26 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+
+	// Visit extra URLs
+	if *extraURLs != "" {
+		urls := strings.Split(*extraURLs, ",")
+		for _, url := range urls {
+			url = strings.TrimSpace(url)
+			if url == "" {
+				continue
+			}
+			err := c.Visit(url)
+			if err != nil {
+				log.Printf("Error visiting extra URL %s: %v", url, err)
+			}
+		}
+	}
+
+	if *firstURL == "" && *extraURLs == "" {
+		log.Println("No URLs to visit. Please provide at least one URL using -firstURL or -extraURLs flag.")
+		return
 	}
 
 	// Wait for all requests to complete

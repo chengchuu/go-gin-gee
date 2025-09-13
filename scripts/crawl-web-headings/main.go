@@ -103,9 +103,11 @@ func main() {
 	})
 
 	// Visit the first URL
-	err := c.Visit(*firstURL)
-	if err != nil {
-		log.Fatal(err)
+	if *firstURL != "" {
+		err := c.Visit(*firstURL)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	// Wait for all requests to complete

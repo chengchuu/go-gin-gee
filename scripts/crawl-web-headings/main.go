@@ -17,6 +17,7 @@ func main() {
 	firstURL := flag.String("firstURL", "", "First URL to visit")
 	extraURLs := flag.String("extraURLs", "", "Extra URLs to visit, separated by commas")
 	isFoundURLs := flag.Bool("isFoundURLs", true, "Whether to find all URLs on the page")
+	isBlogDev := flag.Bool("isBlogDev", false, "Whether to develop")
 
 	flag.Parse()
 	log.Printf("Allowed Domain: %s", *allowedDomain)
@@ -79,20 +80,22 @@ func main() {
 			return
 		}
 		// blog - begin
-		if strings.Contains(baseURL, "https") {
-			baseURL, err = gurl.SetProtocol(baseURL, "http")
+		if *isBlogDev {
+			if strings.Contains(baseURL, "https") {
+				baseURL, err = gurl.SetProtocol(baseURL, "http")
+				if err != nil {
+					log.Println("Error setting protocol:", err)
+					return
+				}
+			}
+			fileType, err := gurl.GetURLFileType(baseURL)
 			if err != nil {
-				log.Println("Error setting protocol:", err)
+				log.Println("Error getting file type:", err)
 				return
 			}
-		}
-		fileType, err := gurl.GetURLFileType(baseURL)
-		if err != nil {
-			log.Println("Error getting file type:", err)
-			return
-		}
-		if fileType == "html" {
-			baseURL = strings.TrimSuffix(baseURL, ".html")
+			if fileType == "html" {
+				baseURL = strings.TrimSuffix(baseURL, ".html")
+			}
 		}
 		// blog - end
 		// log.Println("Next page found:", baseURL)
@@ -127,6 +130,7 @@ func main() {
 			if url == "" {
 				continue
 			}
+			fmt.Print(".")
 			visitedURLs[url] = true
 			c.Visit(url)
 			// err := c.Visit(url)

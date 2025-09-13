@@ -15,6 +15,7 @@ import (
 func main() {
 	allowedDomain := flag.String("allowedDomain", "", "Allowed Domain")
 	firstURL := flag.String("firstURL", "", "First URL to visit")
+	// extraURLs := flag.String("extraURLs", "", "Extra URLs to visit, separated by commas")
 	flag.Parse()
 	log.Printf("Allowed Domain: %s", *allowedDomain)
 	log.Printf("First URL: %s", *firstURL)

@@ -38,7 +38,10 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 		linkForEncode = OriLink
 	}
 	OriMd5 := helpers.ConvertStringToMD5Hash(linkForEncode)
-	data, _ := r.QueryOriLinkByOriMd5(OriMd5)
+	data, err := r.QueryOriLinkByOriMd5(OriMd5)
+	if err != nil {
+		return "", err
+	}
 	if data != nil {
 		return data.TinyLink, nil
 	}
@@ -143,6 +146,7 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	where.OriMd5 = OriMd5
 	notFound, err := First(&where, &tiny, []string{})
 	log.Printf("%s Is this link NotFound in DB: %t", cusConPrefix, notFound)
+	// log.Println(err)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 	"runtime"
 
 	"github.com/bitfield/script"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/constants"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
 )
 
 func main() {

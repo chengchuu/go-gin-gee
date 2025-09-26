@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/bitfield/script"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/constants"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
 )
 
 // https://pkg.go.dev/github.com/bitfield/script#Pipe.ReplaceRegexp

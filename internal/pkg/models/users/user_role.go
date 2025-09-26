@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/models"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/models"
 )
 
 type UserRole struct {

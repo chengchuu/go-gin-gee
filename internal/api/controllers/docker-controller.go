@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 func GetTag(c *gin.Context) {

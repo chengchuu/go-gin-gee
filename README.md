@@ -6,7 +6,6 @@ Gee is a project that provides several services for everyday work. The project i
 <!-- omit from toc -->
 ## Table of Contents
 
-- [Download](#download)
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
   - [Generate Short Link](#generate-short-link)
@@ -20,13 +19,9 @@ Gee is a project that provides several services for everyday work. The project i
     - [Run](#run)
 - [Document](#document)
 - [Contributing](#contributing)
+  - [Quick Start](#quick-start)
+  - [Details](#details)
 - [References](#references)
-
-## Download
-
-```bash
-git clone https://github.com/mazeyqian/go-gin-gee.git
-```
 
 ## Script Examples
 
@@ -395,6 +390,20 @@ Make sure your GO Path is on the PATH environment variable `export PATH=$(go env
 Run and visit: <http://localhost:3000/docs/index.html>
 
 ## Contributing
+
+### Quick Start
+
+```bash
+git clone
+```
+
+### Details
+
+Download Project:
+
+```bash
+git clone https://github.com/mazeyqian/go-gin-gee.git
+```
 
 Download modules:
 

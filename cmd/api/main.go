@@ -10,7 +10,7 @@ import (
 // @description API in Golang with Gin Framework
 
 // @contact.name Cheng
-// @contact.url https://github.com/mazeyqian
+// @contact.url https://github.com/chengchuu
 // @contact.email mazeyqian@gmail.com
 
 // @license.name MIT

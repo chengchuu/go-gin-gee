@@ -12,7 +12,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "Cheng",
-            "url": "https://github.com/mazeyqian",
+            "url": "https://github.com/chengchuu",
             "email": "mazeyqian@gmail.com"
         },
         "license": {

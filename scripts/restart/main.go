@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/constants"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
 )
 
 func main() {

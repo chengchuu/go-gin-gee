@@ -1,4 +1,4 @@
-module github.com/mazeyqian/go-gin-gee
+module github.com/chengchuu/go-gin-gee
 
 go 1.23
 

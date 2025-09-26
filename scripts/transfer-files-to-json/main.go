@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/bitfield/script"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/constants"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
 )
 
 type GamecenterH5 struct {

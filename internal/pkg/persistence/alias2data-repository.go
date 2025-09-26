@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/alias2data"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/alias2data"
 )
 
 type Alias2dataRepository struct{}

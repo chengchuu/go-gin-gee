@@ -3,8 +3,8 @@ package middlewares
 import (
 	"net/http"
 
+	"github.com/chengchuu/go-gin-gee/pkg/crypto"
 	"github.com/gin-gonic/gin"
-	"github.com/mazeyqian/go-gin-gee/pkg/crypto"
 )
 
 func AuthRequired() gin.HandlerFunc {

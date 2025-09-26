@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	"github.com/chengchuu/go-gin-gee/pkg/crypto"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	"github.com/mazeyqian/go-gin-gee/pkg/crypto"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 type LoginInput struct {

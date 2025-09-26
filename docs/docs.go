@@ -17,7 +17,7 @@ const docTemplate = `{
         },
         "license": {
             "name": "MIT",
-            "url": "https://github.com/mazeyqian/go-gin-gee/blob/master/LICENSE"
+            "url": "https://github.com/chengchuu/go-gin-gee/blob/master/LICENSE"
         },
         "version": "{{.Version}}"
     },

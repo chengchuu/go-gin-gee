@@ -3,9 +3,9 @@ package persistence
 import (
 	"errors"
 
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 	"github.com/jinzhu/gorm"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/db"
 )
 
 // Check

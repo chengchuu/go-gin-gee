@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/mazeyqian/go-gin-gee/docs"
-	"github.com/mazeyqian/go-gin-gee/internal/api"
+	_ "github.com/chengchuu/go-gin-gee/docs"
+	"github.com/chengchuu/go-gin-gee/internal/api"
 )
 
 // @Golang API
@@ -14,7 +14,7 @@ import (
 // @contact.email mazeyqian@gmail.com
 
 // @license.name MIT
-// @license.url https://github.com/mazeyqian/go-gin-gee/blob/main/LICENSE
+// @license.url https://github.com/chengchuu/go-gin-gee/blob/main/LICENSE
 
 // @BasePath /api
 

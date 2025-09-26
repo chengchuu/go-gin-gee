@@ -31,7 +31,7 @@ Gee is a project that provides several services for everyday work. The project i
 go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="Your Name" -useremail="your@email.com"
 ```
 
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](https://blog.mazey.net/2956.html)
+Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)
 
 2\. `git pull` all projects in a folder.
 
@@ -39,7 +39,7 @@ Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | 
 go run scripts/batch-git-pull/main.go -path="/Users/X/Web"
 ```
 
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.1.0) | [简体中文](https://blog.mazey.net/3035.html)
+Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.1.0) | [简体中文](http://blog.mazey.net/3035.html)
 
 3\. Consolidate designated files/folders and execute customized ESLint commands.
 
@@ -47,7 +47,7 @@ Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.1.0) | 
 go run scripts/eslint-files/main.go -files="file1.js,file2.js" -esConf="custom.eslintrc.js" -esCom="--fix"
 ```
 
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0) | [简体中文](https://blog.mazey.net/4207.html)
+Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0) | [简体中文](http://blog.mazey.net/4207.html)
 
 4\. Convert TypeDoc comments to Markdown.
 
@@ -55,7 +55,7 @@ Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0) | 
 go run scripts/convert-typedoc-to-markdown/main.go
 ```
 
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.2.0) | [简体中文](https://blog.mazey.net/3494.html#%E6%B3%A8%E9%87%8A%E8%BD%AC_Markdown)
+Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.2.0) | [简体中文](http://blog.mazey.net/3494.html#%E6%B3%A8%E9%87%8A%E8%BD%AC_Markdown)
 
 5\. Convert Markdown to TypeDoc comments.
 
@@ -63,7 +63,7 @@ Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.2.0) | 
 go run scripts/convert-markdown-to-typedoc/main.go
 ```
 
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.3.0) | [简体中文](https://blog.mazey.net/3494.html#Markdown_%E8%BD%AC%E6%B3%A8%E9%87%8A)
+Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.3.0) | [简体中文](http://blog.mazey.net/3494.html#Markdown_%E8%BD%AC%E6%B3%A8%E9%87%8A)
 
 6\. Transfer Apple note table to Markdown table.
 
@@ -99,7 +99,7 @@ Example:
 curl --location --request POST '${BASE_URL}/api/gee/generate-short-link' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-  "ori_link": "https://blog.mazey.net/tiny?ts=654321-221467-f22c24-493220-228e97-d90c73"
+  "ori_link": "http://blog.mazey.net/tiny?ts=654321-221467-f22c24-493220-228e97-d90c73"
 }'
 ```
 

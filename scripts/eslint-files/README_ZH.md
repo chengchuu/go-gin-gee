@@ -8,7 +8,7 @@
 
 <https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0>
 
-![Assets](https://blog.mazey.net/wp-content/uploads/2023/10/assets-Releasev1.4.0-mazeyqian_go-gin-gee.png)
+![Assets](http://blog.mazey.net/wp-content/uploads/2023/10/assets-Releasev1.4.0-mazeyqian_go-gin-gee.png)
 
 ### 基础使用
 
@@ -84,7 +84,7 @@
 
 ### 演示效果
 
-![ESLint Files](https://blog.mazey.net/wp-content/uploads/2023/10/eslint-Screen-Shot-w601.png)
+![ESLint Files](http://blog.mazey.net/wp-content/uploads/2023/10/eslint-Screen-Shot-w601.png)
 
 ## 项目地址
 

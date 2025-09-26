@@ -12,7 +12,7 @@ import (
 func checkDBDriver() (err error) {
 	driver := config.GetConfig().Database.Driver
 	if driver == "" {
-		err = errors.New("database driver is not configured")
+		err = errors.New("unable to connect to the database")
 		return
 	}
 	return

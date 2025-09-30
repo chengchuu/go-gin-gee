@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/chengchuu/asiatz"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
-	"github.com/mazeyqian/asiatz"
 	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
 	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/sites"
 	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"

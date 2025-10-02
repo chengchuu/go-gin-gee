@@ -4,10 +4,10 @@ import (
 	"errors"
 	"net/http"
 
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/tiny"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 func RedirectTiny(c *gin.Context) {

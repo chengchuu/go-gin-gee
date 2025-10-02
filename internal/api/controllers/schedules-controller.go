@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/chengchuu/asiatz"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/sites"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 func CheckSitesHealth(c *gin.Context) {

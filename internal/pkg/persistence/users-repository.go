@@ -3,8 +3,8 @@ package persistence
 import (
 	"strconv"
 
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/db"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/users"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/users"
 )
 
 type UserRepository struct{}

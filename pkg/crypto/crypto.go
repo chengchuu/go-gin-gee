@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
+	config2 "github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/dgrijalva/jwt-go"
-	config2 "github.com/mazeyqian/go-gin-gee/internal/pkg/config"
 	"golang.org/x/crypto/bcrypt"
 )
 

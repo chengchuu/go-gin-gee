@@ -6,9 +6,9 @@ import (
 	"log"
 	"sort"
 
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
 	"github.com/go-resty/resty/v2"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/sites"
 	"github.com/samber/lo"
 	wxworkbot "github.com/vimsucks/wxwork-bot-go"
 )

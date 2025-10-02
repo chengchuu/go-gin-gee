@@ -3,10 +3,10 @@ package controllers
 import (
 	"net/http"
 
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/agent"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/agent"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 func AgentMock(c *gin.Context) {

@@ -12,12 +12,12 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "contact": {
             "name": "Cheng",
-            "url": "https://github.com/mazeyqian",
+            "url": "https://github.com/chengchuu",
             "email": "mazeyqian@gmail.com"
         },
         "license": {
             "name": "MIT",
-            "url": "https://github.com/mazeyqian/go-gin-gee/blob/master/LICENSE"
+            "url": "https://github.com/chengchuu/go-gin-gee/blob/main/LICENSE"
         },
         "version": "{{.Version}}"
     },

@@ -1,4 +1,4 @@
-module github.com/mazeyqian/go-gin-gee
+module github.com/chengchuu/go-gin-gee
 
 go 1.23
 
@@ -49,7 +49,7 @@ require (
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/mattn/go-sqlite3 v1.14.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect

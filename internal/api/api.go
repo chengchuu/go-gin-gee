@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/chengchuu/go-gin-gee/internal/api/router"
 	"github.com/gin-gonic/gin"
-	"github.com/mazeyqian/go-gin-gee/internal/api/controllers"
-	"github.com/mazeyqian/go-gin-gee/internal/api/router"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/db"
+	"github.com/chengchuu/go-gin-gee/internal/api/controllers"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 )
 
 func setConfiguration() {

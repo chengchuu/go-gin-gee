@@ -3,11 +3,11 @@ info:
   contact:
     email: mazeyqian@gmail.com
     name: Cheng
-    url: https://github.com/mazeyqian
+    url: https://github.com/chengchuu
   description: API in Golang with Gin Framework
   license:
     name: MIT
-    url: https://github.com/mazeyqian/go-gin-gee/blob/master/LICENSE
+    url: https://github.com/chengchuu/go-gin-gee/blob/main/LICENSE
   version: "1.0"
 paths: {}
 securityDefinitions:

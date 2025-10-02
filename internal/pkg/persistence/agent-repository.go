@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/agent"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/agent"
 )
 
 type AgentRepository struct{}

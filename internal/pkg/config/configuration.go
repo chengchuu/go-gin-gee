@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
-	modelsS "github.com/mazeyqian/go-gin-gee/internal/pkg/models/sites"
-	modelsT "github.com/mazeyqian/go-gin-gee/internal/pkg/models/tiny"
+	modelsS "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
+	modelsT "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )

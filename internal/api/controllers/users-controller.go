@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/users"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
+	"github.com/chengchuu/go-gin-gee/pkg/crypto"
+	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
-	models "github.com/mazeyqian/go-gin-gee/internal/pkg/models/users"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/persistence"
-	"github.com/mazeyqian/go-gin-gee/pkg/crypto"
-	http_err "github.com/mazeyqian/go-gin-gee/pkg/http-err"
 )
 
 type UserInput struct {

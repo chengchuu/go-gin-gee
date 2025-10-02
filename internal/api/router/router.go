@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
+	"github.com/chengchuu/go-gin-gee/internal/api/controllers"
+	"github.com/chengchuu/go-gin-gee/internal/api/middlewares"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/gin-gonic/gin"
-	"github.com/mazeyqian/go-gin-gee/internal/api/controllers"
-	"github.com/mazeyqian/go-gin-gee/internal/api/middlewares"
-	"github.com/mazeyqian/go-gin-gee/internal/pkg/config"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

@@ -6,9 +6,9 @@
 
 定制化一键 ESLint，执行文件下载地址：
 
-<https://github.com/mazeyqian/go-gin-gee/releases/tag/v1.4.0>
+<https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0>
 
-![Assets](https://blog.mazey.net/wp-content/uploads/2023/10/assets-Releasev1.4.0-mazeyqian_go-gin-gee.png)
+![Assets](http://blog.mazey.net/wp-content/uploads/2023/10/assets-Releasev1.4.0-mazeyqian_go-gin-gee.png)
 
 ### 基础使用
 
@@ -84,16 +84,16 @@
 
 ### 演示效果
 
-![ESLint Files](https://blog.mazey.net/wp-content/uploads/2023/10/eslint-Screen-Shot-w601.png)
+![ESLint Files](http://blog.mazey.net/wp-content/uploads/2023/10/eslint-Screen-Shot-w601.png)
 
 ## 项目地址
 
 该脚本使用 Go 语言开发，访问地址：
 
-<https://github.com/mazeyqian/go-gin-gee/tree/main/scripts/eslint-files>
+<https://github.com/chengchuu/go-gin-gee/tree/main/scripts/eslint-files>
 
 **版权声明**
 
-本博客所有的原创文章，作者皆保留版权。转载必须包含本声明，保持本文完整，并以超链接形式注明作者[后除](https://github.com/mazeyqian)和本文原始地址：<https://blog.mazey.net/4207.html>
+本博客所有的原创文章，作者皆保留版权。转载必须包含本声明，保持本文完整，并以超链接形式注明作者[除除](https://github.com/chengchuu)和本文原始地址：<http://blog.mazey.net/4207.html>
 
 （完）

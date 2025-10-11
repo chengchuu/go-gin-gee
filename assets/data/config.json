@@ -1,6 +1,7 @@
 {
   "Database": {
-    "Driver": "sqlite",
+    "_Driver": "sqlite | mysql | postgres",
+    "Driver": "",
     "Dbname": "data/database",
     "Username": "user",
     "Password": "password",
@@ -13,7 +14,7 @@
   "Server": {
     "Port": "3000",
     "Secret": "wednov23rd2022",
-    "_Mode": "#release | debug",
+    "_Mode": "release | debug",
     "Mode": "release"
   },
   "Data": {

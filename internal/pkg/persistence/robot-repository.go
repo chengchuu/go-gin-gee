@@ -4,7 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
+	"text/template"
+	"time"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
@@ -20,6 +24,15 @@ type Sites struct {
 type SiteStatus struct {
 	Name string
 	Code int
+}
+
+type ReportData struct {
+	Timestamp    string
+	HealthyCount int
+	FailedCount  int
+	TotalCount   int
+	HealthySites []SiteStatus
+	FailedSites  []SiteStatus
 }
 
 // Return value.
@@ -57,6 +70,16 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 }
 
 func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdown, error) {
+	sucessNames := []string{}
+	reportData := ReportData{
+		Timestamp:    "",
+		HealthyCount: 0,
+		FailedCount:  0,
+		TotalCount:   0,
+		HealthySites: []SiteStatus{},
+		FailedSites:  []SiteStatus{},
+	}
+	logDir := "log"
 	ss := r
 	ss.List = map[string]SiteStatus{}
 	if len(*WebSites) > 0 {
@@ -70,7 +93,29 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	if err != nil {
 		log.Println("error:", err)
 	}
-	sucessNames := []string{}
+	// Prepare Report Data
+	reportData.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+	reportData.HealthySites = *healthySites
+	reportData.HealthyCount = len(*healthySites)
+	reportData.FailedSites = *failSites
+	reportData.FailedCount = len(*failSites)
+	reportData.TotalCount = len(*healthySites) + len(*failSites)
+	// Parse template
+	tmpl, err := template.New("report").Parse(HTMLTemplate)
+	if err != nil {
+		return nil, err
+	}
+	filePath := filepath.Join(logDir, "robot.html")
+	file, err := os.Create(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	// Execute template
+	if err := tmpl.Execute(file, reportData); err != nil {
+		return nil, err
+	}
+
 	lo.ForEach(*healthySites, func(site SiteStatus, _ int) {
 		sucessNames = append(sucessNames, site.Name)
 	})

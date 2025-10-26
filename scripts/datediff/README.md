@@ -37,8 +37,8 @@ Examples:
 
 ## Examples (copy/paste)
 
-- `go run scripts/datediff/main.go` 2022-04-01 2025-10-01
-- `go run scripts/datediff/main.go` -start 2022-04-01 -end 2025-10-01
+- `go run scripts/datediff/main.go 2022-04-01 2025-10-01`
+- `go run scripts/datediff/main.go -start 2022-04-01 -end 2025-10-01`
 
 ## Contributing
 

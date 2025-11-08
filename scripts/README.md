@@ -60,18 +60,18 @@ go run scripts/transfer-notes-to-md-table/main.go
 A small helper to calculate the number of days between two calendar dates. The script expects dates in `YYYY-MM-DD` format and returns the exclusive number of full 24‑hour days between the two midnights (i.e., it does not count both endpoints).
 
 Script location:
-- `scripts/datediff.go/main.go`
+- `scripts/datediff/main.go`
 
 Usage examples:
 
 - Using flags:
 ```bash
-go run scripts/datediff.go/main.go -start 2025-10-01 -end 2025-10-31
+go run scripts/datediff/main.go -start 2025-10-01 -end 2025-10-31
 ```
 
 - Using positional arguments:
 ```bash
-go run scripts/datediff.go/main.go 2025-10-01 2025-10-31
+go run scripts/datediff/main.go 2025-10-01 2025-10-31
 ```
 
 Example output:

@@ -71,7 +71,7 @@ Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.3.0) | 
 go run scripts/transfer-notes-to-md-table/main.go
 ```
 
-More in folder `scripts`.
+More in folder [`scripts`](./scripts/README.md).
 
 ## API Examples
 

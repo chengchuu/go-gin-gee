@@ -1,0 +1,1943 @@
+[
+  {
+      "canFollow": true,
+      "displayName": "andy",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1624532411/SSR-24XgjaBCSM",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 388664,
+      "userId": 1624532411,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 82
+      },
+      "username": "infoandy"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Mme lee",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1027595361/SSR-9jSdw0Lwbe",
+      "subscriptionItemType": null,
+      "totalXp": 340792,
+      "userId": 1027595361,
+      "userScore": {
+          "courseId": "DUOLINGO_ZH-HK_ZH-CN",
+          "score": null
+      },
+      "username": "wx.85f9f00791627"
+  },
+  {
+      "canFollow": true,
+      "displayName": "老兵回归",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1727402457/SSR-nmptj1ZoRd",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 259687,
+      "userId": 1727402457,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 130
+      },
+      "username": "ph.jUeNck"
+  },
+  {
+      "canFollow": true,
+      "displayName": "老根",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1353071569/SSR-9y8vlMByiQ",
+      "subscriptionItemType": null,
+      "totalXp": 243733,
+      "userId": 1353071569,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 130
+      },
+      "username": "duo_3a035532"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Sinnaney",
+      "hasSubscription": true,
+      "isCurrentlyActive": true,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1306497406/SSR-cqEHb46zvL",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 232219,
+      "userId": 1306497406,
+      "userScore": {
+          "courseId": "DUOLINGO_ES_EN",
+          "score": 43
+      },
+      "username": "wx.9212975074fc7"
+  },
+  {
+      "canFollow": true,
+      "displayName": "摆烂者+1",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1179303483/SSR-YJ1iYEq4Xr",
+      "subscriptionItemType": null,
+      "totalXp": 229697,
+      "userId": 1179303483,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "Mary-2012.00"
+  },
+  {
+      "canFollow": true,
+      "displayName": "marteleset",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 193607,
+      "userId": 947066829,
+      "userScore": {
+          "courseId": "DUOLINGO_FR_EN",
+          "score": 75
+      },
+      "username": "ph.5etALT"
+  },
+  {
+      "canFollow": true,
+      "displayName": "良好市民家明（自10）",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1672133424/SSR-6cdvEyEZm6",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 191156,
+      "userId": 1672133424,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": null
+      },
+      "username": "ph.weca7e"
+  },
+  {
+      "canFollow": true,
+      "displayName": "人生之旅",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1593090776/SSR-ucvUMjTUJL",
+      "subscriptionItemType": "immersive_subscription",
+      "totalXp": 188519,
+      "userId": 1593090776,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 93
+      },
+      "username": "ph.j1cbp4"
+  },
+  {
+      "canFollow": true,
+      "displayName": "紫藤萝",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 165377,
+      "userId": 1034771384,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 93
+      },
+      "username": "wx.215aab5cb7ada"
+  },
+  {
+      "canFollow": true,
+      "displayName": "ph.btclZK",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 122628,
+      "userId": 1156665168,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 51
+      },
+      "username": "ph.btclZK"
+  },
+  {
+      "canFollow": true,
+      "displayName": "菠萝披萨芝士泡面",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1114795098/SSR-I9PI4DErcR",
+      "subscriptionItemType": null,
+      "totalXp": 122001,
+      "userId": 1114795098,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 26
+      },
+      "username": "ph.BYXnc3"
+  },
+  {
+      "canFollow": true,
+      "displayName": "夏兰",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/951607858/SSR-uPTgHzGWaj",
+      "subscriptionItemType": null,
+      "totalXp": 109284,
+      "userId": 951607858,
+      "userScore": null,
+      "username": "wx.2b0571470f2bc"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Mortis",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1226974404/SSR-CdoOJny0s8",
+      "subscriptionItemType": null,
+      "totalXp": 101448,
+      "userId": 1226974404,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 51
+      },
+      "username": "Hakurime"
+  },
+  {
+      "canFollow": true,
+      "displayName": "多乐肥（Dorothy）",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/738592891/SSR-QQi5LRJPOP",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 98545,
+      "userId": 738592891,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.bbd877b5ca293"
+  },
+  {
+      "canFollow": true,
+      "displayName": "尊嘟假嘟",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1220921290/SSR-BpKPz2C3fs",
+      "subscriptionItemType": null,
+      "totalXp": 77697,
+      "userId": 1220921290,
+      "userScore": {
+          "courseId": "DUOLINGO_ZH-HK_ZH-CN",
+          "score": 7
+      },
+      "username": "panda-z12"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Icarus",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1286171143/SSR-WvZmAPSJkf",
+      "subscriptionItemType": null,
+      "totalXp": 66957,
+      "userId": 1286171143,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 96
+      },
+      "username": "ph.ETNcsL"
+  },
+  {
+      "canFollow": true,
+      "displayName": "苏婷",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 65445,
+      "userId": 1334182592,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.6fe96a79cf602"
+  },
+  {
+      "canFollow": true,
+      "displayName": "John (明伟)",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 63382,
+      "userId": 1199222964,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 15
+      },
+      "username": "wx.2666457369fcc"
+  },
+  {
+      "canFollow": true,
+      "displayName": "ph.TboVsL",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1062224953/SSR-thO3Vzeghx",
+      "subscriptionItemType": null,
+      "totalXp": 62904,
+      "userId": 1062224953,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 129
+      },
+      "username": "ph.TboVsL"
+  },
+  {
+      "canFollow": true,
+      "displayName": "AZhang",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1276342641/SSR-mKPSCOLHDk",
+      "subscriptionItemType": null,
+      "totalXp": 62402,
+      "userId": 1276342641,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 27
+      },
+      "username": "ph.m9B9Ri"
+  },
+  {
+      "canFollow": true,
+      "displayName": "鸭涵",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1649542867/SSR-1kR2qin1CW",
+      "subscriptionItemType": null,
+      "totalXp": 60752,
+      "userId": 1649542867,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "whalezhang1"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Liam",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1549856549/SSR-C6tVAuh1c4",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 57321,
+      "userId": 1549856549,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 25
+      },
+      "username": "ph.OeqLbd"
+  },
+  {
+      "canFollow": true,
+      "displayName": "幻梦",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1597906504/SSR-oUzTNRYYGo",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 57050,
+      "userId": 1597906504,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.Df70w"
+  },
+  {
+      "canFollow": true,
+      "displayName": "jean yang",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1340230961/SSR-X0B50euUbl",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 54359,
+      "userId": 1340230961,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 21
+      },
+      "username": "ph.OGJTpU"
+  },
+  {
+      "canFollow": true,
+      "displayName": "自若妞",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/968843530/SSR-cnDNBpFTl8",
+      "subscriptionItemType": null,
+      "totalXp": 53354,
+      "userId": 968843530,
+      "userScore": {
+          "courseId": "MATH_BT",
+          "score": null
+      },
+      "username": "ph.pkrNMu"
+  },
+  {
+      "canFollow": true,
+      "displayName": "夹心",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1503188118/SSR-__tRkF6-_t",
+      "subscriptionItemType": null,
+      "totalXp": 53200,
+      "userId": 1503188118,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 128
+      },
+      "username": "ph.PHeNcT"
+  },
+  {
+      "canFollow": true,
+      "displayName": "冲鸭冲鸭往前冲，必须排前三",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1765379900/SSR-c6qW50GpUq",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 52259,
+      "userId": 1765379900,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 17
+      },
+      "username": "ph.gB8WDU"
+  },
+  {
+      "canFollow": true,
+      "displayName": "AF缺少淡水",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1540528278/SSR-mZwH4JjTZp",
+      "subscriptionItemType": null,
+      "totalXp": 50278,
+      "userId": 1540528278,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_EN",
+          "score": 17
+      },
+      "username": "ph.FS7LHe"
+  },
+  {
+      "canFollow": true,
+      "displayName": "。",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1309326645/SSR-beX7lGahoW",
+      "subscriptionItemType": null,
+      "totalXp": 48318,
+      "userId": 1309326645,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 116
+      },
+      "username": "wx.dac07ccfcfd4e"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Nicole",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1385534770/SSR-BSDVjUYLwL",
+      "subscriptionItemType": null,
+      "totalXp": 47883,
+      "userId": 1385534770,
+      "userScore": null,
+      "username": "ph.lx3pIR"
+  },
+  {
+      "canFollow": true,
+      "displayName": "我不要再卷辣",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1535546086/SSR-2YIJj105Jw",
+      "subscriptionItemType": null,
+      "totalXp": 45871,
+      "userId": 1535546086,
+      "userScore": {
+          "courseId": "DUOLINGO_ZH-HK_ZH-CN",
+          "score": null
+      },
+      "username": "ph.rNl"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Chiko♔ ™",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/484461639/SSR-vDfGl9bgox",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 45590,
+      "userId": 484461639,
+      "userScore": {
+          "courseId": "DUOLINGO_ES_EN",
+          "score": 24
+      },
+      "username": "wx.f35e795eb2c67"
+  },
+  {
+      "canFollow": true,
+      "displayName": "提莫西西",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1360189889/SSR-9ztzaNYn5e",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 44692,
+      "userId": 1360189889,
+      "userScore": {
+          "courseId": "DUOLINGO_ES_EN",
+          "score": 12
+      },
+      "username": "Mmmmsj"
+  },
+  {
+      "canFollow": true,
+      "displayName": "乐园",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1309754685/SSR-NxVLLPC-YT",
+      "subscriptionItemType": null,
+      "totalXp": 42836,
+      "userId": 1309754685,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 46
+      },
+      "username": "wx.325cc8893664f"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Ида",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/854306434/SSR-kjk7WOQ8Kl",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 41190,
+      "userId": 854306434,
+      "userScore": {
+          "courseId": "DUOLINGO_DE_EN",
+          "score": 9
+      },
+      "username": "RM9PeOtL"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Gina",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/437825543428309/SSR-xJsryxNhJC",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 40158,
+      "userId": 437825543428309,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 20
+      },
+      "username": "wx.ee4d1fe7a608c"
+  },
+  {
+      "canFollow": true,
+      "displayName": "别学了哥们，我害怕。",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1551035268/SSR-Q2n68F3TAt",
+      "subscriptionItemType": null,
+      "totalXp": 39043,
+      "userId": 1551035268,
+      "userScore": null,
+      "username": "ph.9lXbxA"
+  },
+  {
+      "canFollow": true,
+      "displayName": "柴肉肉",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1563363993/SSR-zLgVDcyyUw",
+      "subscriptionItemType": null,
+      "totalXp": 38612,
+      "userId": 1563363993,
+      "userScore": {
+          "courseId": "DUOLINGO_ZH-HK_ZH-CN",
+          "score": null
+      },
+      "username": "ph.WqdwIs"
+  },
+  {
+      "canFollow": true,
+      "displayName": "柒夏",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1450833199/SSR-f-H7KNWD2Z",
+      "subscriptionItemType": null,
+      "totalXp": 38274,
+      "userId": 1450833199,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": null
+      },
+      "username": "ph.quLGyv"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Yian Wu",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 37116,
+      "userId": 1421685546,
+      "userScore": null,
+      "username": "YianWu2"
+  },
+  {
+      "canFollow": true,
+      "displayName": "养乐摩多摩多",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1508358736/SSR-9ZLlLUCmwD",
+      "subscriptionItemType": "immersive_subscription",
+      "totalXp": 36832,
+      "userId": 1508358736,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 21
+      },
+      "username": "Yangleleleduo"
+  },
+  {
+      "canFollow": true,
+      "displayName": "斯巴达只教了咿呀",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1553585238/SSR-B8_8I7UptZ",
+      "subscriptionItemType": null,
+      "totalXp": 36677,
+      "userId": 1553585238,
+      "userScore": {
+          "courseId": "DUOLINGO_DE_EN",
+          "score": 17
+      },
+      "username": "sbdzjl"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Brianna",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/889146448/SSR-lPJoOHVN9q",
+      "subscriptionItemType": null,
+      "totalXp": 35943,
+      "userId": 889146448,
+      "userScore": {
+          "courseId": "DUOLINGO_ES_EN",
+          "score": 24
+      },
+      "username": "ph.B7hPz8"
+  },
+  {
+      "canFollow": true,
+      "displayName": "犹昫",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1318774112/SSR-EodC9YI2U_",
+      "subscriptionItemType": null,
+      "totalXp": 34338,
+      "userId": 1318774112,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 16
+      },
+      "username": "iewiynam11"
+  },
+  {
+      "canFollow": true,
+      "displayName": "长凤",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1273643331/SSR-mfDfvpNy-f",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 32359,
+      "userId": 1273643331,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 15
+      },
+      "username": "wx.667fcee66f631"
+  },
+  {
+      "canFollow": true,
+      "displayName": "芝士鸡蛋仔",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1390410053/SSR-TXpTbYJB0n",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 32157,
+      "userId": 1390410053,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 18
+      },
+      "username": "ph.l4bC7W"
+  },
+  {
+      "canFollow": true,
+      "displayName": "(互关）不想学英语^_^",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1714722489/SSR-d9E5lloc-G",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 32070,
+      "userId": 1714722489,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "001853.b60gogWq"
+  },
+  {
+      "canFollow": true,
+      "displayName": "D H Ming",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1549725030/SSR-mCSAMfl_V3",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 30262,
+      "userId": 1549725030,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.47UYhJ"
+  },
+  {
+      "canFollow": true,
+      "displayName": "马善被人骑",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1514824556/SSR-cLz-d_AoP0",
+      "subscriptionItemType": null,
+      "totalXp": 29826,
+      "userId": 1514824556,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 19
+      },
+      "username": "ph.LBAX3s"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Yym",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1584768331/SSR-eff9eRPvR4",
+      "subscriptionItemType": null,
+      "totalXp": 29793,
+      "userId": 1584768331,
+      "userScore": null,
+      "username": "Leyendecker"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_607bab80",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1565395665/SSR-qzsv1bqVQo",
+      "subscriptionItemType": null,
+      "totalXp": 29565,
+      "userId": 1565395665,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 27
+      },
+      "username": "ph.N1HsVZ"
+  },
+  {
+      "canFollow": true,
+      "displayName": "绿色小呆毛",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1460169072/SSR-eIxGsxhSLA",
+      "subscriptionItemType": null,
+      "totalXp": 29077,
+      "userId": 1460169072,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.qUVcUE"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Denise",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1543060751/SSR-z89w9VP7Uh",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 28552,
+      "userId": 1543060751,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 36
+      },
+      "username": "ph.MfZp7T"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_a612128c",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1304984016/SSR-TSG-0oXOUm",
+      "subscriptionItemType": null,
+      "totalXp": 28255,
+      "userId": 1304984016,
+      "userScore": {
+          "courseId": "MATH_BT",
+          "score": null
+      },
+      "username": "ph.1iORlo"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Marina",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 27337,
+      "userId": 1532789057,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 44
+      },
+      "username": "ph.LcEtYr"
+  },
+  {
+      "canFollow": true,
+      "displayName": "椰果",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 26745,
+      "userId": 949302886,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 31
+      },
+      "username": "xiwangzaiyuni"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Momomo",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 25988,
+      "userId": 1260129940,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": 15
+      },
+      "username": "ph.QAqDyW"
+  },
+  {
+      "canFollow": true,
+      "displayName": "影（王者里的英雄）",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1484512490/SSR-iTLB5W4Aj6",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 25808,
+      "userId": 1484512490,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 59
+      },
+      "username": "george.you"
+  },
+  {
+      "canFollow": true,
+      "displayName": "小鑫鑫",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1487056055/SSR-3YpaXxqu7E",
+      "subscriptionItemType": null,
+      "totalXp": 24950,
+      "userId": 1487056055,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.ex2u9M"
+  },
+  {
+      "canFollow": true,
+      "displayName": "kyrie Irving",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1548802769/SSR-u3fvSl4JsE",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 23163,
+      "userId": 1548802769,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 31
+      },
+      "username": "ph.DZamOy"
+  },
+  {
+      "canFollow": true,
+      "displayName": "已读乱回",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1498669258/SSR-u0r9bkiNGq",
+      "subscriptionItemType": null,
+      "totalXp": 22595,
+      "userId": 1498669258,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "12hcy"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Grace",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1621935218/SSR-RdB7mU31Pg",
+      "subscriptionItemType": null,
+      "totalXp": 22250,
+      "userId": 1621935218,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 19
+      },
+      "username": "ph.ykTZks"
+  },
+  {
+      "canFollow": true,
+      "displayName": "chaejh_",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1546605587/SSR-1zitajh25w",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 21955,
+      "userId": 1546605587,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 20
+      },
+      "username": "wx.7b3811b157db8"
+  },
+  {
+      "canFollow": true,
+      "displayName": "哈可可✨",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 21233,
+      "userId": 1426619092,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": null
+      },
+      "username": "wx.aa8987266f62f"
+  },
+  {
+      "canFollow": true,
+      "displayName": "小石头",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1684128377/SSR-rSBXXcK3yL",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 19649,
+      "userId": 1684128377,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": null
+      },
+      "username": "ph.jQp0Ug"
+  },
+  {
+      "canFollow": true,
+      "displayName": "冷静一下",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1349382953/SSR-iv-b0w16Fv",
+      "subscriptionItemType": "immersive_subscription",
+      "totalXp": 19521,
+      "userId": 1349382953,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 14
+      },
+      "username": "ph.cebfLo"
+  },
+  {
+      "canFollow": true,
+      "displayName": "tinger",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1632585339/SSR-_Y5rZ8Jhc6",
+      "subscriptionItemType": null,
+      "totalXp": 17764,
+      "userId": 1632585339,
+      "userScore": null,
+      "username": "wx.fd2559012b5c6"
+  },
+  {
+      "canFollow": true,
+      "displayName": "中华霸龙",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1590949201/SSR-UtoBRKMn54",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 16886,
+      "userId": 1590949201,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.263f3824625e9"
+  },
+  {
+      "canFollow": true,
+      "displayName": "每天考100分",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1717446678/SSR-Syv8QeXKlq",
+      "subscriptionItemType": null,
+      "totalXp": 15212,
+      "userId": 1717446678,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 12
+      },
+      "username": "ttdfyyffrijczsi"
+  },
+  {
+      "canFollow": true,
+      "displayName": "qwertyuiop",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1294670732/SSR-MLbRqxG9hv",
+      "subscriptionItemType": null,
+      "totalXp": 14959,
+      "userId": 1294670732,
+      "userScore": null,
+      "username": "idownknow"
+  },
+  {
+      "canFollow": true,
+      "displayName": "tm D",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1594847296/SSR-hr6IxKLZzY",
+      "subscriptionItemType": null,
+      "totalXp": 14619,
+      "userId": 1594847296,
+      "userScore": null,
+      "username": "tmD548415"
+  },
+  {
+      "canFollow": true,
+      "displayName": "佳佳",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1383685860/SSR-JlWFCzt1jx",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 13850,
+      "userId": 1383685860,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 14
+      },
+      "username": "ph.ZpP7yL"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Skayo",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/331926236176761/SSR-aI42bqjvO0",
+      "subscriptionItemType": "immersive_subscription",
+      "totalXp": 13558,
+      "userId": 331926236176761,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.RI7VwE1"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Vante-ricko1114",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1475883475/SSR-xopw2FPObw",
+      "subscriptionItemType": null,
+      "totalXp": 13497,
+      "userId": 1475883475,
+      "userScore": {
+          "courseId": "DUOLINGO_KO_ZH-CN",
+          "score": 13
+      },
+      "username": "Vante-ricko"
+  },
+  {
+      "canFollow": true,
+      "displayName": "卷姐",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1478929917/SSR-XZvUGwLuRC",
+      "subscriptionItemType": null,
+      "totalXp": 13364,
+      "userId": 1478929917,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.Y45"
+  },
+  {
+      "canFollow": true,
+      "displayName": "西瓜",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1648001845/SSR-lz0lB10oTo",
+      "subscriptionItemType": null,
+      "totalXp": 13096,
+      "userId": 1648001845,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "qw.zjx.duolingo"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Enoch Lois",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 12744,
+      "userId": 1618615332,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 12
+      },
+      "username": "wx.2fada61718f85"
+  },
+  {
+      "canFollow": true,
+      "displayName": "瓜跑",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1529643586/SSR-QLJZRD5x4r",
+      "subscriptionItemType": null,
+      "totalXp": 11407,
+      "userId": 1529643586,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.3loqFx"
+  },
+  {
+      "canFollow": true,
+      "displayName": "阳阳",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1596406648/SSR-RaBebV92vj",
+      "subscriptionItemType": null,
+      "totalXp": 11337,
+      "userId": 1596406648,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 12
+      },
+      "username": "wx.21e54774ea269"
+  },
+  {
+      "canFollow": true,
+      "displayName": "yay",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1584387350/SSR-AV9LAnLEXs",
+      "subscriptionItemType": null,
+      "totalXp": 11158,
+      "userId": 1584387350,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 13
+      },
+      "username": "ph.tVU149"
+  },
+  {
+      "canFollow": true,
+      "displayName": "7x25",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1556636847/SSR-VE5y1Xkgm5",
+      "subscriptionItemType": null,
+      "totalXp": 10901,
+      "userId": 1556636847,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": null
+      },
+      "username": "ph.hHrWuQ"
+  },
+  {
+      "canFollow": true,
+      "displayName": "JJ",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1758511911/SSR-8j9IpiUY64",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 10561,
+      "userId": 1758511911,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 20
+      },
+      "username": "wx.15f35e0f5bb69"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Dave",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 10413,
+      "userId": 1216092804,
+      "userScore": {
+          "courseId": "DUOLINGO_ZH-CN_EN",
+          "score": 15
+      },
+      "username": "Dave477122"
+  },
+  {
+      "canFollow": true,
+      "displayName": "琼",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1559223193/SSR-QL2JfkbKnm",
+      "subscriptionItemType": null,
+      "totalXp": 10400,
+      "userId": 1559223193,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.bc5213b057caa"
+  },
+  {
+      "canFollow": true,
+      "displayName": "酉禾米米",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/806682436/SSR-FjMdJAlQ36",
+      "subscriptionItemType": "immersive_subscription",
+      "totalXp": 9698,
+      "userId": 806682436,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 5
+      },
+      "username": "wx.f0864c36ebf78"
+  },
+  {
+      "canFollow": true,
+      "displayName": "wtt",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/565794394/SSR-P-XcXSYi1k",
+      "subscriptionItemType": null,
+      "totalXp": 9301,
+      "userId": 565794394,
+      "userScore": null,
+      "username": "wx.58386e1baffc4"
+  },
+  {
+      "canFollow": true,
+      "displayName": "画本子的大叔",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1593174696/SSR-GMQGoAF7qG",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 8780,
+      "userId": 1593174696,
+      "userScore": {
+          "courseId": "DUOLINGO_JA_ZH-CN",
+          "score": null
+      },
+      "username": "ph.E2SwjH"
+  },
+  {
+      "canFollow": true,
+      "displayName": "李小姐",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1671453201/SSR-quXIPm79ll",
+      "subscriptionItemType": null,
+      "totalXp": 8573,
+      "userId": 1671453201,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.qdpSy7"
+  },
+  {
+      "canFollow": true,
+      "displayName": "赵沫",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1033625054/SSR-FTgXns1Try",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 8515,
+      "userId": 1033625054,
+      "userScore": {
+          "courseId": "MATH_BT",
+          "score": null
+      },
+      "username": "AO2F10"
+  },
+  {
+      "canFollow": true,
+      "displayName": "阔阔",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1533290151/SSR-h-jjHn9KoN",
+      "subscriptionItemType": null,
+      "totalXp": 8103,
+      "userId": 1533290151,
+      "userScore": {
+          "courseId": "MATH_BT",
+          "score": null
+      },
+      "username": "kuokuolhhn25"
+  },
+  {
+      "canFollow": true,
+      "displayName": "mn",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1551205464/SSR-bEBkL6YP1r",
+      "subscriptionItemType": null,
+      "totalXp": 7650,
+      "userId": 1551205464,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 23
+      },
+      "username": "wx.424e2f58717d4"
+  },
+  {
+      "canFollow": true,
+      "displayName": "锟锟",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1481975206/SSR-x1CWmLwcxc",
+      "subscriptionItemType": null,
+      "totalXp": 6774,
+      "userId": 1481975206,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 12
+      },
+      "username": "ph.iya581"
+  },
+  {
+      "canFollow": true,
+      "displayName": "？",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1583357693/SSR-z4tI-GZko1",
+      "subscriptionItemType": null,
+      "totalXp": 6727,
+      "userId": 1583357693,
+      "userScore": null,
+      "username": "ph.hgp8ft"
+  },
+  {
+      "canFollow": true,
+      "displayName": "苒熙",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 5515,
+      "userId": 1501767584,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.JcGv8l"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Chloe 夏",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1529468653/SSR-YyrjwWfMEh",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 4353,
+      "userId": 1529468653,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.fa82ca166acb5"
+  },
+  {
+      "canFollow": true,
+      "displayName": "qaz",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1481433516/SSR-ggg1i-fCQF",
+      "subscriptionItemType": null,
+      "totalXp": 4189,
+      "userId": 1481433516,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "wx.b46c2a19c206a"
+  },
+  {
+      "canFollow": true,
+      "displayName": "诸葛亮",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1511236390/SSR--N_Z9SRHmu",
+      "subscriptionItemType": null,
+      "totalXp": 3785,
+      "userId": 1511236390,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 9
+      },
+      "username": "ph.dn5pZO"
+  },
+  {
+      "canFollow": true,
+      "displayName": "新手",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1551217143/SSR-u1wpOO8VJE",
+      "subscriptionItemType": null,
+      "totalXp": 2817,
+      "userId": 1551217143,
+      "userScore": null,
+      "username": "ph.GzxKnt"
+  },
+  {
+      "canFollow": true,
+      "displayName": "永远是第一",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/920005573825102/SSR-LvENWfUMLx",
+      "subscriptionItemType": null,
+      "totalXp": 2344,
+      "userId": 920005573825102,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.pKp7cn"
+  },
+  {
+      "canFollow": true,
+      "displayName": "铅笔",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1656843450/SSR-pXKdygG3LW",
+      "subscriptionItemType": null,
+      "totalXp": 2143,
+      "userId": 1656843450,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.1hIy4y"
+  },
+  {
+      "canFollow": true,
+      "displayName": "欧俊和",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 2000,
+      "userId": 1554733028,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.4zQbUr"
+  },
+  {
+      "canFollow": true,
+      "displayName": "李昊泽李昊泽李昊泽李昊泽李旲泽李旲泽",
+      "hasSubscription": true,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1625308250/SSR-zu6EAeUn7O",
+      "subscriptionItemType": "premium_subscription",
+      "totalXp": 1958,
+      "userId": 1625308250,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 92
+      },
+      "username": "ph.mueT1T"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_3b582d03",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/27136993451547/SSR-WJ898jpUgu",
+      "subscriptionItemType": null,
+      "totalXp": 1955,
+      "userId": 27136993451547,
+      "userScore": {
+          "courseId": "DUOLINGO_EN_ZH-CN",
+          "score": 8
+      },
+      "username": "ph.OB4O9Q"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_e5439de5",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/avatar/default_2",
+      "subscriptionItemType": null,
+      "totalXp": 1921,
+      "userId": 1312135959,
+      "userScore": null,
+      "username": "ph.sPa3I9"
+  },
+  {
+      "canFollow": true,
+      "displayName": "超级无敌大板砖连续拍爆了一堆车。 !!!",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1616026362/SSR-9FlWS-rENe",
+      "subscriptionItemType": null,
+      "totalXp": 1766,
+      "userId": 1616026362,
+      "userScore": null,
+      "username": "ph.IdqDga"
+  },
+  {
+      "canFollow": true,
+      "displayName": "宓睿涵",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1567135637/SSR-JsDA1T4M9u",
+      "subscriptionItemType": null,
+      "totalXp": 1489,
+      "userId": 1567135637,
+      "userScore": {
+          "courseId": "MUSIC_MT",
+          "score": null
+      },
+      "username": "ph.0bWS6a"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_bc3c2bb4",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/431636870231343/SSR-1QnLKlI2kI",
+      "subscriptionItemType": null,
+      "totalXp": 1307,
+      "userId": 431636870231343,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.F6b9Co"
+  },
+  {
+      "canFollow": true,
+      "displayName": "享受寂寞",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1620094916/SSR-wAXx7xMy8K",
+      "subscriptionItemType": null,
+      "totalXp": 1207,
+      "userId": 1620094916,
+      "userScore": {
+          "courseId": "DUOLINGO_IT_ZH-CN",
+          "score": 5
+      },
+      "username": "wx.357cf33b5a4c3"
+  },
+  {
+      "canFollow": true,
+      "displayName": "Duo_4089c4ba正珣",
+      "hasSubscription": false,
+      "isCurrentlyActive": false,
+      "isFollowedBy": false,
+      "isFollowing": true,
+      "isVerified": false,
+      "picture": "https://simg-ssl.duolingo.com/ssr-avatars/1547189154/SSR-KzgeY_4qG8",
+      "subscriptionItemType": null,
+      "totalXp": 227,
+      "userId": 1547189154,
+      "userScore": {
+          "courseId": "CHESS_CH",
+          "score": null
+      },
+      "username": "ph.BLR0RW"
+  }
+]

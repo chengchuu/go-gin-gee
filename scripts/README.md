@@ -12,7 +12,7 @@
 ## Change Git Name and Email for Different Projects
 
 ```bash
-go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="Your Name" -useremail="your@email.com"
+go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="YOUR_NAME" -useremail="YOUR_NAME@email.com"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)

@@ -28,7 +28,7 @@ Gee is a project that provides several services for everyday work. The project i
 1\. Change Git name and email for different projects.
 
 ```bash
-go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="Your Name" -useremail="your@email.com"
+go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="YOUR_NAME" -useremail="YOUR_NAME@email.com"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)
@@ -89,9 +89,9 @@ Method: POST
 
 Params:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| ori_link | string | Original Link | Yes |
+| Params    | Type     | Description   | Required |
+| :-------- | :------- | :------------ | :------- |
+| ori_link  | string   | Original Link | Yes      |
 
 Example:
 
@@ -105,9 +105,9 @@ curl --location --request POST '${BASE_URL}/api/gee/generate-short-link' \
 
 Returns:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| tiny_link | string | Short Link | Yes |
+| Params    | Type     | Description | Required |
+| :-------- | :--------| :---------- | :------- |
+| tiny_link | string   | Short Link  | Yes      |
 
 Example:
 
@@ -139,11 +139,11 @@ Method: POST
 
 Params:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| alias | string | Alias | Yes |
-| data | string | Data | Yes |
-| public | bool | Public | Yes |
+| Params    | Type     | Description | Required |
+| :-------- | :------- | :---------- | :------- |
+| alias     | string   | Alias       | Yes      |
+| data      | string   | Data        | Yes      |
+| public    | bool     | Public      | Yes      |
 
 Example:
 
@@ -159,11 +159,11 @@ curl --location --request POST '${BASE_URL}/api/gee/create-alias2data' \
 
 Returns:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| id | int | ID | Yes |
-| alias | string | Alias | Yes |
-| data | string | Data | Yes |
+| Params    | Type      | Description | Required |
+| :-------- | :-------- | :---------- | :------- |
+| id        | int       | ID          | Yes      |
+| alias     | string    | Alias       | Yes      |
+| data      | string    | Data        | Yes      |
 
 Example:
 
@@ -200,9 +200,9 @@ Method: GET
 
 Params:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| alias | string | Alias | Yes |
+| Params    | Type     | Description | Required |
+| :-------- | :------- | :---------- | :------- |
+| alias     | string   | Alias       | Yes      |
 
 Example:
 
@@ -212,11 +212,11 @@ curl --location '${BASE_URL}/api/gee/get-data-by-alias?alias=alias%20example'
 
 Returns:
 
-| Params | Type | Description | Required |
-| :-------- | :--------| :------ | :------ |
-| id | int | ID | Yes |
-| alias | string | Alias | Yes |
-| data | string | Data | Yes |
+| Params    | Type     | Description | Required |
+| :-------- | :------- | :---------- | :------- |
+| id        | int      | ID          | Yes      |
+| alias     | string   | Alias       | Yes      |
+| data      | string   | Data        | Yes      |
 
 Example:
 

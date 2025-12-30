@@ -53,29 +53,18 @@ docker container ls --filter "name=go-gin-gee" | awk '{if (NR!=1) print $1}' | x
 echo "Remove Docker Containers"
 docker container ls -a --filter "name=go-gin-gee" | awk '{if (NR!=1) print $1}' | xargs docker container rm
 
-# Remove all images
-# echo "Remove Docker Images"
-# docker image ls --filter "reference=go-gin-gee" | awk '{if (NR!=1) print $3}' | xargs docker image rm
-
 # Pull the specified image
 echo "Pull Docker Image: ${combinedVersion}"
 docker image pull ${combinedVersion}
 
 # Build the docker run command
-# dockerRunCommand="docker run --name go-gin-gee"
 ENV_VARS=""
 for envVar in "${envVars[@]}"; do
   ENV_VARS+=" -e ${envVar}"
 done
 
-# dockerRunCommand+=" -d -p ${visitPort}:${innerPort} ${combinedVersion}"
-
-# Print the docker run command
-# echo "Docker Run Command: ${dockerRunCommand}"
-
 # Run the container
 echo "Run Docker Container"
-# eval "${dockerRunCommand}"
 echo "Environment variables: $ENV_VARS"
 docker run --name go-gin-gee ${ENV_VARS} -d -p ${visitPort}:${innerPort} ${combinedVersion}
 

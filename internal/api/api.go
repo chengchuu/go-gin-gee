@@ -30,7 +30,7 @@ func Run() {
 	if len(conf.Data.Sites) > 0 {
 		controllers.RunCheck()
 	} else {
-		logger.Println("No sites found, unnecessary to run check")
+		fmt.Println("No sites found, unnecessary to run check")
 	}
 	web := router.Setup()
 	fmt.Println("API Running on port " + conf.Server.Port)

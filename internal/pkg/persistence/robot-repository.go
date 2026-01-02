@@ -3,7 +3,6 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/go-resty/resty/v2"
 	"github.com/samber/lo"
 	wxworkbot "github.com/vimsucks/wxwork-bot-go"
@@ -35,7 +35,7 @@ type ReportData struct {
 	FailedSites  []SiteStatus
 }
 
-// Return value.
+// Return value
 var robotRepository *Sites
 
 func GetRobotRepository() *Sites {
@@ -56,7 +56,7 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 		resp, err := client.R().
 			Get(url)
 		if err != nil {
-			log.Println("error:", err)
+			logger.Error("error: %v", err)
 		} else {
 			resCode = resp.StatusCode()
 		}
@@ -91,7 +91,7 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	}
 	healthySites, failSites, err := ss.getWebSiteStatus()
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 	}
 	// Prepare Report Data
 	reportData.Timestamp = time.Now().Format("2006-01-02 15:04:05")
@@ -121,7 +121,6 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	})
 	// Sort Success Names
 	sort.Strings(sucessNames)
-	// log.Println("sucessNames:", sucessNames)
 	mdStr := "Health Check Result:\n"
 	lo.ForEach(sucessNames, func(name string, _ int) {
 		mdStr += fmt.Sprintf("<font color=\"info\">%s OK</font>\n", name)
@@ -145,13 +144,13 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	data, err := sA.Get("WECOM_ROBOT_CHECK")
 	wxworkRobotKey := ""
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 		conf := config.GetConfig()
 		wxworkRobotKey = conf.Data.WeComRobotCheck
 	} else {
 		wxworkRobotKey = data.Data
 	}
-	log.Println("Robot wxworkRobotKey:", wxworkRobotKey)
+	logger.Println("Robot wxworkRobotKey:", wxworkRobotKey)
 	if wxworkRobotKey == "" {
 		return nil, errors.New("WECOM ROBOT KEY is empty")
 	}
@@ -162,7 +161,7 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	}
 	err = bot.Send(markdown)
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 	}
 	return &markdown, nil
 }

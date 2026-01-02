@@ -27,7 +27,7 @@ func main() {
     logger.Debug("Debug message:  %v", someData)
     logger.Info("Server started on port %d", 3000)
     logger.Warn("High memory usage:  %d%%", 85)
-    logger.Error("Database connection failed:  %v", err)
+    logger.Error("database connection failed:  %v", err)
     
     // 致命错误（会退出程序）
     if criticalError != nil {

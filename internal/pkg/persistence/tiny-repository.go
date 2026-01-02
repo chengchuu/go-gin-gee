@@ -3,11 +3,11 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/helpers"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/chengchuu/gurl"
 	"github.com/takuoki/clmconv"
 )
@@ -68,7 +68,7 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 	if len(specialLinks) > 0 {
 		for _, v := range specialLinks {
 			if v.Key == TinyKey {
-				log.Printf("%s Key(%s) is already in use", cusConPrefix, TinyKey)
+				logger.Printf("%s Key(%s) is already in use", cusConPrefix, TinyKey)
 				tiny.OriLink = v.Link
 				tiny.OriMd5 = helpers.ConvertStringToMD5Hash(v.Link)
 				tiny.TinyKey = TinyKey
@@ -97,7 +97,7 @@ func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
 	if len(specialLinks) > 0 {
 		for _, v := range specialLinks {
 			if v.Key == TinyKey {
-				log.Printf("%s Key(%s) is found in special links(%s)", cusConPrefix, TinyKey, v.Link)
+				logger.Printf("%s Key(%s) is found in special links(%s)", cusConPrefix, TinyKey, v.Link)
 				return v.Link, err
 			}
 		}
@@ -105,7 +105,7 @@ func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
 	where := models.Tiny{}
 	where.TinyKey = TinyKey
 	notFound, err := First(&where, &tiny, []string{})
-	log.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
+	logger.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
 	if err != nil {
 		return "", errors.New("404 Link Not Found")
 	}
@@ -133,7 +133,7 @@ func (r *TinyRepository) RecordVisitCountByTinyKey(TinyKey string) (bool, error)
 	if err != nil {
 		return false, err
 	}
-	log.Printf("%s Current Count: %d", cusConPrefix, tiny.VisitCount)
+	logger.Printf("%s Current Count: %d", cusConPrefix, tiny.VisitCount)
 	return true, err
 }
 
@@ -145,8 +145,7 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	where := models.Tiny{}
 	where.OriMd5 = OriMd5
 	notFound, err := First(&where, &tiny, []string{})
-	log.Printf("%s Is this link NotFound in DB: %t", cusConPrefix, notFound)
-	// log.Println(err)
+	logger.Printf("%s Is this link NotFound in DB: %t", cusConPrefix, notFound)
 	if err != nil {
 		return nil, err
 	}

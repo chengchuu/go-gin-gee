@@ -24,6 +24,7 @@ type Sites struct {
 type SiteStatus struct {
 	Name string
 	Code int
+	Link string
 }
 
 type ReportData struct {
@@ -49,21 +50,27 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	// http://c.biancheng.net/view/32.html
 	healthySites := []SiteStatus{}
 	failSites := []SiteStatus{}
-	client := resty.New()
+	client := resty.New().
+		SetTimeout(5 * time.Second).
+		SetRetryCount(2).
+		SetRetryWaitTime(1 * time.Second).
+		SetRedirectPolicy(resty.FlexibleRedirectPolicy(10))
 	// https://github.com/go-resty/resty/blob/master/redirect.go
 	for url, status := range r.List {
 		resCode := 0
 		resp, err := client.R().
+			SetDoNotParseResponse(true).
 			Get(url)
 		if err != nil {
 			logger.Error("error: %v", err)
+			resCode = 0
 		} else {
 			resCode = resp.StatusCode()
 		}
 		if status.Code == resCode {
 			healthySites = append(healthySites, status)
 		} else {
-			failSites = append(failSites, SiteStatus{status.Name, resCode})
+			failSites = append(failSites, SiteStatus{status.Name, resCode, url})
 		}
 	}
 	return &healthySites, &failSites, nil
@@ -84,7 +91,7 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	ss.List = map[string]SiteStatus{}
 	if len(*WebSites) > 0 {
 		for _, site := range *WebSites {
-			ss.List[site.Link] = SiteStatus{site.Name, site.Code}
+			ss.List[site.Link] = SiteStatus{site.Name, site.Code, site.Link}
 		}
 	} else {
 		return nil, errors.New("WebSites is empty")

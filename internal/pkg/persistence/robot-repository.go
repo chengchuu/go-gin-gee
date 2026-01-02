@@ -159,7 +159,7 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	}
 	logger.Println("Robot wxworkRobotKey:", wxworkRobotKey)
 	if wxworkRobotKey == "" {
-		return nil, errors.New("WECOM ROBOT KEY is empty")
+		return nil, errors.New("wecom robot key is empty")
 	}
 	// https://github.com/vimsucks/wxwork-bot-go
 	bot := wxworkbot.New(wxworkRobotKey)

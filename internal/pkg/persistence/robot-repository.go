@@ -52,8 +52,6 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	failSites := []SiteStatus{}
 	client := resty.New().
 		SetTimeout(5 * time.Second).
-		SetRetryCount(2).
-		SetRetryWaitTime(1 * time.Second).
 		SetRedirectPolicy(resty.FlexibleRedirectPolicy(10))
 	// https://github.com/go-resty/resty/blob/master/redirect.go
 	for url, status := range r.List {

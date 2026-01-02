@@ -106,8 +106,13 @@ func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
 	where.TinyKey = TinyKey
 	notFound, err := First(&where, &tiny, []string{})
 	logger.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
-	if err != nil {
+	if notFound {
+		err = nil
 		return "", errors.New("404 Link Not Found")
+	}
+	if err != nil {
+		logger.Error("error: %v", err)
+		return "", errors.New("404 Link Not Available")
 	}
 	if tiny.OneTime && tiny.VisitCount > 0 {
 		return "", errors.New("404 Link Expired")
@@ -122,11 +127,12 @@ func (r *TinyRepository) RecordVisitCountByTinyKey(TinyKey string) (bool, error)
 	where := models.Tiny{}
 	where.TinyKey = TinyKey
 	notFound, err := First(&where, &tiny, []string{})
+	if notFound {
+		err = nil
+		return false, errors.New("link not found")
+	}
 	if err != nil {
 		return false, err
-	}
-	if notFound {
-		return false, errors.New("link not found")
 	}
 	tiny.VisitCount = tiny.VisitCount + 1
 	err = Updates(&where, &tiny)
@@ -145,7 +151,12 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	where := models.Tiny{}
 	where.OriMd5 = OriMd5
 	notFound, err := First(&where, &tiny, []string{})
-	logger.Printf("%s Is this link NotFound in DB: %t", cusConPrefix, notFound)
+	logger.Printf("Is this link NotFound in DB: %t", notFound)
+	logger.Error("error: %v", err)
+	if notFound {
+		err = nil
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}

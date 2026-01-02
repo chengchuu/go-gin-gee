@@ -24,10 +24,10 @@ func main() {
     logger.Init()
     
     // 使用不同级别的日志
-    logger.Debug("Debug message:  %v", someData)
+    logger.Debug("Debug message: %v", someData)
     logger.Info("Server started on port %d", 3000)
-    logger.Warn("High memory usage:  %d%%", 85)
-    logger.Error("database connection failed:  %v", err)
+    logger.Warn("High memory usage: %d%%", 85)
+    logger.Error("database connection failed: %v", err)
     
     // 致命错误（会退出程序）
     if criticalError != nil {
@@ -51,7 +51,7 @@ log.Println("Error:", err)
 import "github.com/chengchuu/go-gin-gee/pkg/logger"
 
 logger.Info("Server starting...")
-logger.Error("Error:  %v", err)
+logger.Error("Error: %v", err)
 ```
 
 ## 日志级别
@@ -60,7 +60,7 @@ logger.Error("Error:  %v", err)
 |------|------|--------|------|
 | DEBUG | 调试信息 | stdout | `logger.Debug("Variable x = %d", x)` |
 | INFO | 一般信息 | stdout | `logger.Info("Server started")` |
-| WARN | 警告信息 | stderr | `logger.Warn("High memory:  %d%%", 85)` |
+| WARN | 警告信息 | stderr | `logger.Warn("High memory: %d%%", 85)` |
 | ERROR | 错误信息 | stderr | `logger.Error("DB failed: %v", err)` |
 | FATAL | 致命错误 | stderr + exit | `logger.Fatal("Cannot start")` |
 
@@ -107,7 +107,7 @@ environment=ENV="development",DEBUG="true"
 [DEBUG] 2025/12/30 15:30:01 main.go:15: Loading configuration from data/config.json
 [INFO]  2025/12/30 15:30:01 main.go:20: Server starting on port 3000
 [INFO]  2025/12/30 15:30:02 api.go:45: Database connected
-[WARN]  2025/12/30 15:30:10 handler.go:78:  Slow query detected:  500ms
+[WARN]  2025/12/30 15:30:10 handler.go:78: Slow query detected: 500ms
 [ERROR] 2025/12/30 15:30:15 service.go:32: Redis connection timeout
 ```
 
@@ -173,7 +173,7 @@ grep -r "log\." --include="*.go" .
 ```go
 // ❌ 替换前（全部用 log）
 log.Println("Server starting")
-log.Println("Warning:  high memory")
+log.Println("Warning: high memory")
 log.Println("Error:", err)
 
 // ✅ 替换后（按级别分类）

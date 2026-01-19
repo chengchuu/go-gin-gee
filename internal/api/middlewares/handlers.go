@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,9 +19,9 @@ func NoMethodHandler() gin.HandlerFunc {
 func NoRouteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
-		// log.Println("path", path)
+		logger.Error("path not found: %s", path)
 		if len(path) > 5 && path[:5] == "/api/" {
-			c.JSON(http.StatusNotFound, gin.H{"message": "not found"})
+			c.JSON(http.StatusNotFound, gin.H{"message": "api not found"})
 		} else {
 			c.HTML(http.StatusNotFound, "index.tmpl", gin.H{
 				"title": "404 Page Not Found",
@@ -30,17 +30,17 @@ func NoRouteHandler() gin.HandlerFunc {
 	}
 }
 
-func Logger() gin.HandlerFunc {
+func LoggerHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		log.Println("Request URL:", c.Request.URL)
+		logger.Println("Request URL:", c.Request.URL)
 		t := time.Now()
 		// before request
 		c.Next()
 		// after request
 		latency := time.Since(t)
-		log.Println("Consume Time:", latency)
+		logger.Println("Consume Time:", latency)
 		// access the status we are sending
 		status := c.Writer.Status()
-		log.Println("StatusCode:", status)
+		logger.Println("StatusCode:", status)
 	}
 }

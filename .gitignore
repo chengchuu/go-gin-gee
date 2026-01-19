@@ -13,7 +13,6 @@ temp/
 
 # Editor directories and files
 .idea
-# .vscode
 *.suo
 *.ntvs*
 *.njsproj
@@ -25,6 +24,7 @@ temp/
 # Local env files
 .env.local
 .env.*.local
+*.prd.json
 
 # Log files
 npm-debug.log*

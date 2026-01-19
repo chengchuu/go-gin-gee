@@ -17,6 +17,7 @@
     "Mode": "debug"
   },
   "Data": {
-    "Sites": []
+    "Sites": [],
+    "SpecialLinks": []
   }
 }

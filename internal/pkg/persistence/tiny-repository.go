@@ -3,11 +3,11 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/helpers"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/chengchuu/gurl"
 	"github.com/takuoki/clmconv"
 )
@@ -68,7 +68,7 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 	if len(specialLinks) > 0 {
 		for _, v := range specialLinks {
 			if v.Key == TinyKey {
-				log.Printf("%s Key(%s) is already in use", cusConPrefix, TinyKey)
+				logger.Printf("%s Key(%s) is already in use", cusConPrefix, TinyKey)
 				tiny.OriLink = v.Link
 				tiny.OriMd5 = helpers.ConvertStringToMD5Hash(v.Link)
 				tiny.TinyKey = TinyKey
@@ -97,7 +97,7 @@ func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
 	if len(specialLinks) > 0 {
 		for _, v := range specialLinks {
 			if v.Key == TinyKey {
-				log.Printf("%s Key(%s) is found in special links(%s)", cusConPrefix, TinyKey, v.Link)
+				logger.Printf("%s Key(%s) is found in special links(%s)", cusConPrefix, TinyKey, v.Link)
 				return v.Link, err
 			}
 		}
@@ -105,9 +105,14 @@ func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
 	where := models.Tiny{}
 	where.TinyKey = TinyKey
 	notFound, err := First(&where, &tiny, []string{})
-	log.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
-	if err != nil {
+	logger.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
+	if notFound {
+		err = nil
 		return "", errors.New("404 Link Not Found")
+	}
+	if err != nil {
+		logger.Error("error: %v", err)
+		return "", errors.New("404 Link Not Available")
 	}
 	if tiny.OneTime && tiny.VisitCount > 0 {
 		return "", errors.New("404 Link Expired")
@@ -122,18 +127,19 @@ func (r *TinyRepository) RecordVisitCountByTinyKey(TinyKey string) (bool, error)
 	where := models.Tiny{}
 	where.TinyKey = TinyKey
 	notFound, err := First(&where, &tiny, []string{})
+	if notFound {
+		err = nil
+		return false, errors.New("link not found")
+	}
 	if err != nil {
 		return false, err
-	}
-	if notFound {
-		return false, errors.New("link not found")
 	}
 	tiny.VisitCount = tiny.VisitCount + 1
 	err = Updates(&where, &tiny)
 	if err != nil {
 		return false, err
 	}
-	log.Printf("%s Current Count: %d", cusConPrefix, tiny.VisitCount)
+	logger.Printf("%s Current Count: %d", cusConPrefix, tiny.VisitCount)
 	return true, err
 }
 
@@ -145,8 +151,12 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	where := models.Tiny{}
 	where.OriMd5 = OriMd5
 	notFound, err := First(&where, &tiny, []string{})
-	log.Printf("%s Is this link NotFound in DB: %t", cusConPrefix, notFound)
-	// log.Println(err)
+	logger.Printf("Is this link NotFound in DB: %t", notFound)
+	logger.Error("error: %v", err)
+	if notFound {
+		err = nil
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}

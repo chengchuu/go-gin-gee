@@ -151,12 +151,15 @@ func main() {
 	crawledCount = len(visitedURLs)
 	failedCount = len(failedURLs)
 	fmt.Printf("\nCrawled %d URLs.\n", crawledCount)
+	fmt.Print("--------------------------------\n")
 	if failedCount > 0 {
 		fmt.Printf("Failed to crawl %d URLs.\n", failedCount)
+		fmt.Print("--------------------------------\n")
 		for url := range failedURLs {
 			fmt.Printf("Failed URL: %s\n", url)
 			fmt.Printf("Error: %s\n", failedURLs[url])
 			fmt.Print("--------------------------------\n")
+			// Keep It
 			// fmt.Printf("Failed URL: %s.html\n", url)
 		}
 	} else {

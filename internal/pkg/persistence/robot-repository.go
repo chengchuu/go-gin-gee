@@ -3,7 +3,6 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/go-resty/resty/v2"
 	"github.com/samber/lo"
 	wxworkbot "github.com/vimsucks/wxwork-bot-go"
@@ -24,6 +24,7 @@ type Sites struct {
 type SiteStatus struct {
 	Name string
 	Code int
+	Link string
 }
 
 type ReportData struct {
@@ -35,7 +36,7 @@ type ReportData struct {
 	FailedSites  []SiteStatus
 }
 
-// Return value.
+// Return value
 var robotRepository *Sites
 
 func GetRobotRepository() *Sites {
@@ -49,21 +50,25 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	// http://c.biancheng.net/view/32.html
 	healthySites := []SiteStatus{}
 	failSites := []SiteStatus{}
-	client := resty.New()
+	client := resty.New().
+		SetTimeout(5 * time.Second).
+		SetRedirectPolicy(resty.FlexibleRedirectPolicy(10))
 	// https://github.com/go-resty/resty/blob/master/redirect.go
 	for url, status := range r.List {
 		resCode := 0
 		resp, err := client.R().
+			SetDoNotParseResponse(true).
 			Get(url)
 		if err != nil {
-			log.Println("error:", err)
+			logger.Error("error: %v", err)
+			resCode = 0
 		} else {
 			resCode = resp.StatusCode()
 		}
 		if status.Code == resCode {
 			healthySites = append(healthySites, status)
 		} else {
-			failSites = append(failSites, SiteStatus{status.Name, resCode})
+			failSites = append(failSites, SiteStatus{status.Name, resCode, url})
 		}
 	}
 	return &healthySites, &failSites, nil
@@ -84,14 +89,14 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	ss.List = map[string]SiteStatus{}
 	if len(*WebSites) > 0 {
 		for _, site := range *WebSites {
-			ss.List[site.Link] = SiteStatus{site.Name, site.Code}
+			ss.List[site.Link] = SiteStatus{site.Name, site.Code, site.Link}
 		}
 	} else {
 		return nil, errors.New("WebSites is empty")
 	}
 	healthySites, failSites, err := ss.getWebSiteStatus()
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 	}
 	// Prepare Report Data
 	reportData.Timestamp = time.Now().Format("2006-01-02 15:04:05")
@@ -121,7 +126,6 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	})
 	// Sort Success Names
 	sort.Strings(sucessNames)
-	// log.Println("sucessNames:", sucessNames)
 	mdStr := "Health Check Result:\n"
 	lo.ForEach(sucessNames, func(name string, _ int) {
 		mdStr += fmt.Sprintf("<font color=\"info\">%s OK</font>\n", name)
@@ -145,15 +149,15 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	data, err := sA.Get("WECOM_ROBOT_CHECK")
 	wxworkRobotKey := ""
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 		conf := config.GetConfig()
 		wxworkRobotKey = conf.Data.WeComRobotCheck
 	} else {
 		wxworkRobotKey = data.Data
 	}
-	log.Println("Robot wxworkRobotKey:", wxworkRobotKey)
+	logger.Println("Robot wxworkRobotKey:", wxworkRobotKey)
 	if wxworkRobotKey == "" {
-		return nil, errors.New("WECOM ROBOT KEY is empty")
+		return nil, errors.New("wecom robot key is empty")
 	}
 	// https://github.com/vimsucks/wxwork-bot-go
 	bot := wxworkbot.New(wxworkRobotKey)
@@ -162,7 +166,7 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 	}
 	err = bot.Send(markdown)
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("error: %v", err)
 	}
 	return &markdown, nil
 }

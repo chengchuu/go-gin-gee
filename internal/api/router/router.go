@@ -52,7 +52,7 @@ func Setup() *gin.Engine {
 	}))
 	app.Use(gin.Recovery())
 	app.Use(middlewares.CORS())
-	app.Use(middlewares.Logger())
+	app.Use(middlewares.LoggerHandler())
 	app.NoRoute(middlewares.NoRouteHandler())
 
 	// Routes
@@ -74,11 +74,6 @@ func Setup() *gin.Engine {
 	app.PUT("/api/tasks/:id", controllers.UpdateTask)
 	app.DELETE("/api/tasks/:id", controllers.DeleteTask)
 
-	// Basic - begin
-	app.GET("/api/ping", controllers.Ping)
-	app.GET("/api/index", controllers.Index0920)
-	// Basic - end
-
 	// Static - begin
 	templatePath := "data/index.tmpl"
 	if _, err := os.Stat(templatePath); err != nil {
@@ -91,6 +86,11 @@ func Setup() *gin.Engine {
 		app.LoadHTMLFiles("data/index.tmpl")
 	}
 	// Static - end
+
+	// Basic - begin
+	app.GET("/api/ping", controllers.Ping)
+	app.GET("/api/index", controllers.Index0920)
+	// Basic - end
 
 	// Gee - begin
 	gee := app.Group("/api/gee")

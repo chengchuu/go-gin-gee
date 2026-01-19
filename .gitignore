@@ -24,7 +24,6 @@ temp/
 # Local env files
 .env.local
 .env.*.local
-*.prd.json
 
 # Log files
 npm-debug.log*

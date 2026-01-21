@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"strings"
 
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/chengchuu/gurl"
 	"github.com/gocolly/colly/v2"
 )
@@ -20,10 +20,10 @@ func main() {
 	isBlogDev := flag.Bool("isBlogDev", false, "Whether to develop")
 
 	flag.Parse()
-	log.Printf("Allowed Domain: %s", *allowedDomain)
-	log.Printf("First URL: %s", *firstURL)
-	log.Printf("Extra URLs: %s", *extraURLs)
-	log.Printf("Find All URLs: %v", *isFoundURLs)
+	logger.Printf("Allowed Domain: %s", *allowedDomain)
+	logger.Printf("First URL: %s", *firstURL)
+	logger.Printf("Extra URLs: %s", *extraURLs)
+	logger.Printf("Find All URLs: %v", *isFoundURLs)
 
 	// Article navigation and related articles
 	ignoreTitles := []string{
@@ -55,14 +55,14 @@ func main() {
 				return
 			}
 		}
-		// log.Println("Title found:", thatTitle)
+		// logger.Println("Title found:", thatTitle)
 	})
 
 	// Find <b>Warning</b> and Panic
 	c.OnHTML("b", func(e *colly.HTMLElement) {
 		thatText := e.Text
 		if strings.Contains(strings.ToLower(thatText), "warning") {
-			log.Panicf("Warning found on page %s: %s", e.Request.URL.String(), thatText)
+			logger.Fatal("Warning found on page %s: %s", e.Request.URL.String(), thatText)
 		}
 	})
 
@@ -76,7 +76,7 @@ func main() {
 		absoluteURL := e.Request.AbsoluteURL(URL)
 		baseURL, err := gurl.GetBaseURL(absoluteURL)
 		if err != nil {
-			log.Println("Error getting base URL:", err)
+			logger.Println("Error getting base URL:", err)
 			return
 		}
 		// Visit URL found on page
@@ -92,13 +92,13 @@ func main() {
 			if strings.Contains(baseURL, "https") {
 				baseURL, err = gurl.SetProtocol(baseURL, "http")
 				if err != nil {
-					log.Println("Error setting protocol:", err)
+					logger.Println("Error setting protocol:", err)
 					return
 				}
 			}
 			fileType, err := gurl.GetURLFileType(baseURL)
 			if err != nil {
-				log.Println("Error getting file type:", err)
+				logger.Println("Error getting file type:", err)
 				return
 			}
 			if fileType == "html" {
@@ -106,8 +106,8 @@ func main() {
 			}
 		}
 		// blog - end
-		// log.Println("Next page found:", baseURL)
-		// log.Println("Running ...")
+		// logger.Println("Next page found:", baseURL)
+		// logger.Println("Running ...")
 		fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
@@ -117,7 +117,7 @@ func main() {
 	c.OnError(func(r *colly.Response, err error) {
 		errURL := r.Request.URL.String()
 		failedURLs[errURL] = err.Error()
-		log.Printf("Error occurred on URL %s: %v", errURL, err)
+		logger.Printf("Error occurred on URL %s: %v", errURL, err)
 	})
 
 	// Visit the first URL
@@ -143,13 +143,13 @@ func main() {
 			c.Visit(url)
 			// err := c.Visit(url)
 			// if err != nil {
-			// 	log.Printf("Error visiting extra URL %s: %v", url, err)
+			// 	logger.Printf("Error visiting extra URL %s: %v", url, err)
 			// }
 		}
 	}
 
 	if *firstURL == "" && *extraURLs == "" {
-		log.Println("No URLs to visit. Please provide at least one URL using -firstURL or -extraURLs flag.")
+		logger.Println("No URLs to visit. Please provide at least one URL using -firstURL or -extraURLs flag.")
 		return
 	}
 
@@ -173,5 +173,5 @@ func main() {
 	} else {
 		fmt.Println("No failed URLs.")
 	}
-	log.Println("All URLs have been crawled.")
+	logger.Println("All URLs have been crawled.")
 }

@@ -11,7 +11,7 @@ import (
 )
 
 // Examples:
-// go run scripts/crawl-web-headings/main.go -allowedDomain="example.com" -firstURL="http://example.com/first-page.html"
+// go run scripts/crawl-web-naruto/main.go -allowedDomain="example.com" -firstURL="http://example.com/first-page.html"
 func main() {
 	allowedDomain := flag.String("allowedDomain", "", "Allowed Domain")
 	firstURL := flag.String("firstURL", "", "First URL to visit")
@@ -56,6 +56,14 @@ func main() {
 			}
 		}
 		// log.Println("Title found:", thatTitle)
+	})
+
+	// Find <b>Warning</b> and Panic
+	c.OnHTML("b", func(e *colly.HTMLElement) {
+		thatText := e.Text
+		if strings.Contains(strings.ToLower(thatText), "warning") {
+			log.Panicf("Warning found on page %s: %s", e.Request.URL.String(), thatText)
+		}
 	})
 
 	// Handle URLs found on the page

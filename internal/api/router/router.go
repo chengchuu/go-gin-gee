@@ -3,12 +3,12 @@ package router
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/chengchuu/go-gin-gee/internal/api/controllers"
 	"github.com/chengchuu/go-gin-gee/internal/api/middlewares"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,19 +19,19 @@ func Setup() *gin.Engine {
 
 	// Logging to a file.
 	if err := os.MkdirAll("./log", 0755); err != nil {
-		log.Println("mkdir err:", err)
+		logger.Println("mkdir err:", err)
 	}
 	// log/records
 	agentRecordsPath := config.GetConfig().Data.AgentRecordsPath
 	if agentRecordsPath != "" {
 		if err := os.MkdirAll(agentRecordsPath, 0755); err != nil {
-			log.Println("mkdir err:", err)
+			logger.Println("mkdir err:", err)
 		}
 	}
 	// log/api.log
 	f, err := os.Create("./log/api.log")
 	if err != nil {
-		log.Println("create err:", err)
+		logger.Println("create err:", err)
 	}
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = io.MultiWriter(f)
@@ -79,9 +79,9 @@ func Setup() *gin.Engine {
 	templatePath := "data/index.tmpl"
 	if _, err := os.Stat(templatePath); err != nil {
 		if os.IsNotExist(err) {
-			log.Println("No template file found")
+			logger.Println("No template file found")
 		} else {
-			log.Println("Error checking template file:", err)
+			logger.Println("Error checking template file:", err)
 		}
 	} else {
 		app.LoadHTMLFiles("data/index.tmpl")

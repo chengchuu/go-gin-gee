@@ -122,7 +122,7 @@ func Setup() {
 // GetConfig helps you to get configuration data
 func GetConfig() *Configuration {
 	if gin.IsDebugging() {
-		logger.Info("Config: %v", Config)
+		logger.Info("Config: %+v", Config)
 	}
 	return Config
 }

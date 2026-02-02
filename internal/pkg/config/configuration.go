@@ -38,11 +38,12 @@ type DatabaseConfiguration struct {
 }
 
 type DataConfiguration struct {
-	Sites            []modelsS.WebSite
+	EnableCORS       string
 	WeComRobotCheck  string
 	BaseURL          string
-	SpecialLinks     []modelsT.SpecialLink
 	AgentRecordsPath string
+	Sites            []modelsS.WebSite
+	SpecialLinks     []modelsT.SpecialLink
 }
 
 // SetupDB initialize configuration
@@ -60,9 +61,10 @@ func Setup() {
 	// Development: macOS, export WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe"
 	viper.AutomaticEnv()
 	// Default value
+	viper.SetDefault("EnableCORS", "on")
 	viper.SetDefault("WECOM_ROBOT_CHECK", "")
-	viper.SetDefault("CONFIG_DATA_SITES", "")
 	viper.SetDefault("BASE_URL", "")
+	viper.SetDefault("CONFIG_DATA_SITES", "")
 	viper.SetDefault("CONFIG_TYPE", "json")
 
 	// Configuration File

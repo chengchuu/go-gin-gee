@@ -17,12 +17,14 @@ import (
 func Setup() *gin.Engine {
 	app := gin.New()
 
+	// Get Config
+	conf := config.GetConfig()
 	// Logging to a file.
 	if err := os.MkdirAll("./log", 0755); err != nil {
 		logger.Println("mkdir err:", err)
 	}
 	// log/records
-	agentRecordsPath := config.GetConfig().Data.AgentRecordsPath
+	agentRecordsPath := conf.Data.AgentRecordsPath
 	if agentRecordsPath != "" {
 		if err := os.MkdirAll(agentRecordsPath, 0755); err != nil {
 			logger.Println("mkdir err:", err)
@@ -51,8 +53,12 @@ func Setup() *gin.Engine {
 		)
 	}))
 	app.Use(gin.Recovery())
-	// TODO: Use Config to contral CROS
-	app.Use(middlewares.CORS())
+	if conf.Data.EnableCORS == "on" {
+		logger.Info("CORS enabled")
+		app.Use(middlewares.CORS())
+	} else {
+		logger.Info("CORS disabled")
+	}
 	app.Use(middlewares.LoggerHandler())
 	app.NoRoute(middlewares.NoRouteHandler())
 

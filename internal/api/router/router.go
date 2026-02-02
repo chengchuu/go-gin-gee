@@ -56,8 +56,9 @@ func Setup() *gin.Engine {
 	if conf.Data.EnableCORS == "on" {
 		logger.Info("CORS enabled")
 		app.Use(middlewares.CORS())
-	} else {
+	} else if conf.Data.EnableCORS == "off" {
 		logger.Info("CORS disabled")
+		app.Use(middlewares.PreflightHandler())
 	}
 	app.Use(middlewares.LoggerHandler())
 	app.NoRoute(middlewares.NoRouteHandler())

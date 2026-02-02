@@ -62,7 +62,7 @@ func Setup() {
 	// Development: macOS, export WECOM_ROBOT_CHECK="x-x-x"
 	viper.AutomaticEnv()
 	// Default value
-	viper.SetDefault("EnableCORS", "on")
+	viper.SetDefault("EnableCORS", "")
 	viper.SetDefault("WECOM_ROBOT_CHECK", "")
 	viper.SetDefault("BASE_URL", "")
 	viper.SetDefault("CONFIG_DATA_SITES", "")

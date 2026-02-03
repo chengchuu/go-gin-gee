@@ -1,7 +1,7 @@
 <!-- omit from toc -->
 # go-gin-gee
 
-Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts` depend on Script [4], which can be used by the command `run` directly.
+Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts`, which can be used by the command `run` directly.
 
 <!-- omit from toc -->
 ## Table of Contents
@@ -316,7 +316,7 @@ To disable the proxy completely and download modules directly:
 go env -w GOPROXY=direct
 ```
 
-To reset to Go's default proxy settings:
+To reset to Go default proxy settings:
 
 ```bash
 go env -w GOPROXY=https://proxy.golang.org,direct

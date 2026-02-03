@@ -11,9 +11,9 @@ Gee is a project that provides several services for everyday work. The project i
 - [Build](#build)
 - [Deploy](#deploy)
   - [Supervisor](#supervisor)
-  - [Docker](#docker)
-    - [Build Image](#build-image)
-    - [Run](#run)
+- [Docker](#docker)
+  - [Build Image](#build-image)
+  - [Run](#run)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
   - [Quick Start](#quick-start)
@@ -171,9 +171,9 @@ autorestart=true
 environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="https://example.com/path"
 ```
 
-### Docker
+## Docker
 
-#### Build Image
+### Build Image
 
 Run `bash ./scripts/docker-build.sh -h` to see the help message.
 
@@ -216,7 +216,7 @@ bash ./scripts/docker-build.sh -r \
   "BASE_URL=https://example.com/path"
 ```
 
-#### Run
+### Run
 
 Run `bash ./scripts/docker-run.sh -h` to see the help message.
 

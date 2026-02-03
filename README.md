@@ -17,7 +17,7 @@ Gee is a project that provides several services for everyday work. The project i
   - [Run](#run)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
-  - [Quick Start](#quick-start-1)
+  - [Local Development Setup](#local-development-setup)
   - [Details](#details)
 - [References](#references)
 
@@ -281,7 +281,7 @@ Run and visit: <http://localhost:3000/docs/index.html>
 
 ## Contributing
 
-### Quick Start
+### Local Development Setup
 
 ```bash
 git clone https://github.com/chengchuu/go-gin-gee.git

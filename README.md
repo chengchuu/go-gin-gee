@@ -179,7 +179,7 @@ environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="h
 ```bash
 GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
 docker build -t "${GEE_TAG}" . && \
-docker --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+docker run --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
 ```
 
 ### Build Image

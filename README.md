@@ -12,11 +12,12 @@ Gee is a project that provides several services for everyday work. The project i
 - [Deploy](#deploy)
   - [Supervisor](#supervisor)
 - [Docker](#docker)
+  - [Quick Start](#quick-start)
   - [Build Image](#build-image)
   - [Run](#run)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
-  - [Quick Start](#quick-start)
+  - [Quick Start](#quick-start-1)
   - [Details](#details)
 - [References](#references)
 
@@ -172,6 +173,14 @@ environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="h
 ```
 
 ## Docker
+
+### Quick Start
+
+```bash
+GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
+docker build -t "${GEE_TAG}" . && \
+docker --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+```
 
 ### Build Image
 

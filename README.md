@@ -14,7 +14,7 @@ Gee is a project that provides several services for everyday work. The project i
   - [Docker](#docker)
     - [Build Image](#build-image)
     - [Run](#run)
-- [Document](#document)
+- [Documentation](#documentation)
 - [Contributing](#contributing)
   - [Quick Start](#quick-start)
   - [Details](#details)
@@ -252,7 +252,7 @@ bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api
   "BASE_URL=https://example.com/path"
 ```
 
-## Document
+## Documentation
 
 Download [swag](https://github.com/swaggo/swag):
 

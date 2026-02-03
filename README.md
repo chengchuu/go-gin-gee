@@ -14,7 +14,7 @@ Gee is a project that provides several services for everyday work. The project i
 - [Docker](#docker)
   - [Quick Start](#quick-start)
   - [Build Image](#build-image)
-  - [Run](#run)
+  - [Run Container](#run-container)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
   - [Local Development Setup](#local-development-setup)
@@ -225,7 +225,7 @@ bash ./scripts/docker-build.sh -r \
   "BASE_URL=https://example.com/path"
 ```
 
-### Run
+### Run Container
 
 Run `bash ./scripts/docker-run.sh -h` to see the help message.
 

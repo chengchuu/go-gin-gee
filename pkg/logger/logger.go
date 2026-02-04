@@ -50,7 +50,6 @@ func Init() {
 // stderr:  WARN, ERROR, FATAL 日志输出
 func New(stdout, stderr io.Writer, level Level) *Logger {
 	flags := log.Ldate | log.Ltime
-	// | log.Lshortfile
 
 	return &Logger{
 		debug: log.New(stdout, "[DEBUG] ", flags),

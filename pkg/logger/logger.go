@@ -33,12 +33,12 @@ func Init() {
 	env := strings.ToLower(os.Getenv("ENV"))
 	logLevel := INFO
 
-	// set log level based on environment
+	// Set log level based on environment
 	if env == "development" || env == "dev" {
 		logLevel = DEBUG
 	}
 
-	// enable debug level if DEBUG env var is true
+	// Enable debug level if DEBUG env var is true
 	if os.Getenv("DEBUG") == "true" {
 		logLevel = DEBUG
 	}
@@ -46,9 +46,9 @@ func Init() {
 	std = New(os.Stdout, os.Stderr, logLevel)
 }
 
-// New creates a new logger
-// stdout: INFO and DEBUG logs are written to this writer
-// stderr: WARN, ERROR, FATAL logs are written to this writer
+// New creates a new logger instance
+// stdout: output for INFO and DEBUG logs
+// stderr: output for WARN, ERROR, and FATAL logs
 func New(stdout, stderr io.Writer, level Level) *Logger {
 	flags := log.Ldate | log.Ltime
 
@@ -111,7 +111,7 @@ func Fatal(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
-// Println is compatible with the standard log.Println (writes to INFO)
+// Println is compatible with the standard log.Println (outputs to INFO)
 func Println(v ...interface{}) {
 	if std == nil {
 		Init()
@@ -121,7 +121,7 @@ func Println(v ...interface{}) {
 	}
 }
 
-// Printf is compatible with the standard log.Printf (writes to INFO)
+// Printf is compatible with the standard log.Printf (outputs to INFO)
 func Printf(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -131,7 +131,7 @@ func Printf(format string, v ...interface{}) {
 	}
 }
 
-// SetLevel sets the logging level
+// SetLevel sets the log level
 func SetLevel(level Level) {
 	if std == nil {
 		Init()
@@ -139,7 +139,7 @@ func SetLevel(level Level) {
 	std.level = level
 }
 
-// GetLevel returns the current logging level
+// GetLevel returns the current log level
 func GetLevel() Level {
 	if std == nil {
 		Init()

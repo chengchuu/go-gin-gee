@@ -13,9 +13,9 @@ import (
 )
 
 // Examples:
-// go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Mazey"
+// go run scripts/batch-git-pull/main.go -path="/Users/Web/web"
 // go run scripts/batch-git-pull/main.go -path="C:\Web\web"
-// go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Rabbit" -projects="placeholder"
+// go run scripts/batch-git-pull/main.go -path="C:\Web\web" -projects="placeholder1|placeholder2"
 // path required
 // projects optional
 func main() {
@@ -41,19 +41,17 @@ func main() {
 	}
 	// Example: ^.+(placeholder|.)$
 	regexStr += fmt.Sprintf("%s)\\/\\.git$", *assignedProjects)
+	logger.Info("regexStr: %s", regexStr)
 	regex := regexp.MustCompile(regexStr)
 	if runtime.GOOS == "windows" {
-		// Use PowerShell on Windows instead of cmd
 		script.ListFiles(fmt.Sprintf("%s\\*\\.git", *projectPath)).FilterLine(func(s string) string {
 			// Build PowerShell command lines; use semicolons and quote paths to handle spaces
-			// cmdLines := constants.ScriptStartMsgInWin + "; "
 			cmdLines := fmt.Sprintf("Write-Output 'Path: %s'; ", s)
 			// change directory into the .git folder then go up one level to the repo root
 			cmdLines += fmt.Sprintf("cd '%s'; ", s)
 			cmdLines += "cd ..; "
-			cmdLines += "git pull; "
+			cmdLines += fmt.Sprintf("%s ", *runCommands)
 			cmdLines += "Write-Output '-- All Done in PowerShell --'; "
-			// cmdLines += constants.ScriptEndMsgInWin
 			cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", cmdLines)
 			result, err := cmd.CombinedOutput()
 			if err != nil {
@@ -67,7 +65,6 @@ func main() {
 			cmdLines := constants.ScriptStartMsg
 			cmdLines += fmt.Sprintf("echo Path: %s;", s)
 			cmdLines += fmt.Sprintf("cd %s;", s)
-			// Control the branch: cmdLines += `git checkout master;`
 			cmdLines += `cd ../;`
 			cmdLines += *runCommands
 			cmdLines += constants.ScriptEndMsg

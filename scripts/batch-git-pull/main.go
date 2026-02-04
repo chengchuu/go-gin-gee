@@ -14,6 +14,7 @@ import (
 
 // Examples:
 // go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Mazey"
+// go run scripts/batch-git-pull/main.go -path="C:\Web\web"
 // go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Rabbit" -projects="placeholder"
 // path required
 // projects optional
@@ -42,21 +43,23 @@ func main() {
 	regexStr += fmt.Sprintf("%s)\\/\\.git$", *assignedProjects)
 	regex := regexp.MustCompile(regexStr)
 	if runtime.GOOS == "windows" {
+		// Use PowerShell on Windows instead of cmd
 		script.ListFiles(fmt.Sprintf("%s\\*\\.git", *projectPath)).FilterLine(func(s string) string {
-			cmdLines := constants.ScriptStartMsgInWin + " && "
-			cmdLines += fmt.Sprintf("echo Path: %s && ", s)
-			// https://stackoverflow.com/questions/607670/windows-shell-command-to-get-the-full-path-to-the-current-directory
-			cmdLines += fmt.Sprintf("cd %s && ", s)
-			cmdLines += `cd ../ && `
-			cmdLines += `git pull && `
-			cmdLines += "echo All done in Windows CMD. && "
-			cmdLines += constants.ScriptEndMsgInWin
-			cmd := exec.Command("cmd", "/C", cmdLines)
+			// Build PowerShell command lines; use semicolons and quote paths to handle spaces
+			// cmdLines := constants.ScriptStartMsgInWin + "; "
+			cmdLines := fmt.Sprintf("Write-Output 'Path: %s'; ", s)
+			// change directory into the .git folder then go up one level to the repo root
+			cmdLines += fmt.Sprintf("cd '%s'; ", s)
+			cmdLines += "cd ..; "
+			cmdLines += "git pull; "
+			cmdLines += "Write-Output '-- All Done in PowerShell --'; "
+			// cmdLines += constants.ScriptEndMsgInWin
+			cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", cmdLines)
 			result, err := cmd.CombinedOutput()
 			if err != nil {
 				logger.Println("error:", err)
 			}
-			logger.Printf("result: %s", result)
+			logger.Printf("result:\n%s", result)
 			return ""
 		}).Stdout()
 	} else {

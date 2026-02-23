@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/alias2data"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 )
 
 type Alias2dataRepository struct{}
@@ -26,10 +27,10 @@ func (r *Alias2dataRepository) Get(alias string) (*models.Alias2data, error) {
 	var alias2data models.Alias2data
 	where := models.Alias2data{}
 	where.Alias = alias
-	notFound, err := First(&where, &alias2data, []string{})
-	log.Println("Get notFound", notFound)
+	_, err := First(&where, &alias2data, []string{})
+	// log.Println("Get notFound", notFound)
 	if err != nil {
-		log.Println("Get err", err)
+		logger.Error("get err: %v", err)
 		return nil, err
 	}
 	return &alias2data, err
@@ -55,13 +56,17 @@ func (r *Alias2dataRepository) CountByAlias(alias string) (int, error) {
 		return 0, errors.New("alias is required")
 	}
 	alias2data := models.Alias2data{Alias: alias}
-	notFound, _ := First(&alias2data, &alias2data, []string{})
+	notFound, err := First(&alias2data, &alias2data, []string{})
 	if notFound {
+		err = nil
 		alias2data.Data = "0"
 		err = Create(&alias2data)
 		if err != nil {
 			return 0, err
 		}
+	}
+	if err != nil {
+		return 0, err
 	}
 	count, err := strconv.Atoi(alias2data.Data)
 	if err != nil {

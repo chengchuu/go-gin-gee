@@ -8,13 +8,14 @@ import (
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/alias2data"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/gin-gonic/gin"
 )
 
 func GetDataByAlias(c *gin.Context) {
 	rep := persistence.GetAlias2dataRepository()
 	alias := c.Query("alias")
-	log.Println("GetDataByAlias alias", alias)
+	logger.Println("GetDataByAlias alias", alias)
 	if data, err := rep.Get(alias); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("data not found"))
 		log.Println(err)
@@ -43,12 +44,16 @@ func CreateAlias2data(c *gin.Context) {
 func CountAlias2data(c *gin.Context) {
 	rep := persistence.GetAlias2dataRepository()
 	alias := c.Query("alias")
-	// log.Println("CountAlias2data alias", alias)
 	count, err := rep.CountByAlias(alias)
 	if err != nil {
-		log.Println(err)
+		logger.Error("error: %v", err)
 		http_err.NewError(c, http.StatusNotFound, errors.New("unable to retrieve count"))
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"count": count})
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data":    count,
+		"count":   count, // Deprecated
+	})
 }

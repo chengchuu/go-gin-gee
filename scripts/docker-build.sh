@@ -46,16 +46,13 @@ preVersion="go-gin-gee/api"
 visitPort="3000"
 innerPort="3000"
 
-# Build
-# GOOS=linux GOARCH=amd64 go build -o dist/api-linux-amd64 cmd/api/main.go
-
 # Stop
 echo "Stop Docker Containers"
 docker ps
 docker ps|awk '{if (NR!=1) print $1}'| xargs docker stop
 
 # Remove
-echo "Remove Docker Image"
+echo "Remove Docker Containers"
 docker ps -a -q
 docker rm $(docker ps -a -q)
 

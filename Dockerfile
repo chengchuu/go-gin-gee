@@ -1,47 +1,34 @@
-FROM docker.io/golang:2.13.0-alpine AS build_base
-
-ENV CGO_ENABLED=1
-ENV GO111MODULE=on
-RUN apk add --no-cache git gcc g++
-
-# Set the Current Working Directory inside the container
-WORKDIR /src
-
-# We want to populate the module cache based on the go.{mod,sum} files.
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
-
+# STAGE: Go
+FROM golang:1.23-bookworm AS go-builder
+ENV CGO_ENABLED=1 \
+    GO111MODULE=on
+WORKDIR /gee
+# Dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc libc6-dev libsqlite3-dev
 COPY . .
+RUN go mod download && \
+    go run scripts/init/main.go -copyData="config.json,database.db,index.tmpl" && \
+    go build -o ./dist/api ./cmd/api/main.go
 
-# Init
-RUN go run scripts/init/main.go -copyData="config.json,database.db,index.tmpl"
-
-# Build the Go app
-RUN go build -o ./out/app ./cmd/api/main.go
-
-# Start fresh from a smaller image
-# https://github.com/docker-library/golang/blob/8e04c39d2ce4466162418245c8b1178951021321/1.19/alpine3.17/Dockerfile
-FROM docker.io/alpine:3.17
-# https://mozillazg.com/2020/03/use-alpine-image-common-issues.rst.html
-RUN apk --no-cache add ca-certificates && \
-    update-ca-certificates
-# time: missing Location in call to Time.In
-# https://medium.com/freethreads/panic-time-missing-location-in-call-to-date-89d171811d3
-RUN apk --no-cache add tzdata
-RUN apk --no-cache add curl
-
-WORKDIR /app
-
-COPY --from=build_base /src/out/app /app/api
-COPY --from=build_base /src/data /app/data
-
-RUN chmod +x api
-
-# This container exposes port 3000 to the outside world
+# STAGE: Base
+FROM debian:bookworm-slim as base-builder
+ENV TZ=Asia/Shanghai
+WORKDIR /web
+# Dependencies
+RUN apt-get update && \
+    apt-get install -y curl vim tzdata gnupg ca-certificates dos2unix && \
+    update-ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+# Go Service
+COPY --from=go-builder /gee/dist/api /web/api
+COPY --from=go-builder /gee/data /web/data
+# Entrypoint Script
+COPY ./scripts/docker-entrypoint.sh /web/docker-entrypoint.sh
+RUN chmod +x /web/api && \
+    dos2unix /web/docker-entrypoint.sh && \
+    chmod +x /web/docker-entrypoint.sh
 EXPOSE 3000
-
-# Run the binary program produced by `go install`
-# Or, "data/config.secret.json"
-ENTRYPOINT ./api --config-path="data/config.json"
+ENTRYPOINT ["/web/docker-entrypoint.sh"]
+CMD ["/web/api", "--config-path=/web/data/config.json"]

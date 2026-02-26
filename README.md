@@ -8,9 +8,6 @@ Gee is a project that provides several services for everyday work. The project i
 
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
-  - [Generate Short Link](#generate-short-link)
-  - [Save Data](#save-data)
-  - [Get Data](#get-data)
 - [Build](#build)
 - [Deploy](#deploy)
   - [Supervisor](#supervisor)
@@ -77,6 +74,7 @@ More in folder [`scripts`](./scripts/README.md).
 
 The base URL for this API is an environment variate `${BASE_URL}`, such as `https://example.com/path`.
 
+<!-- omit from toc -->
 ### Generate Short Link
 
 Description:
@@ -124,123 +122,6 @@ Failure: Status Code 400
 ```json
 {
   "code": 400
-}
-```
-
-### Save Data
-
-Description:
-
-Save the data for searching.
-
-Path: `/api/gee/create-alias2data`
-
-Method: POST
-
-Params:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| alias     | string   | Alias       | Yes      |
-| data      | string   | Data        | Yes      |
-| public    | bool     | Public      | Yes      |
-
-Example:
-
-```bash
-curl --location --request POST '${BASE_URL}/api/gee/create-alias2data' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "alias": "alias example",
-  "data": "data example",
-  "public": true
-}'
-```
-
-Returns:
-
-| Params    | Type      | Description | Required |
-| :-------- | :-------- | :---------- | :------- |
-| id        | int       | ID          | Yes      |
-| alias     | string    | Alias       | Yes      |
-| data      | string    | Data        | Yes      |
-
-Example:
-
-Success: Status Code 201
-
-```json
-{
-  "id": 2,
-  "created_at": "2023-01-07T11:14:24.572495702+08:00",
-  "updated_at": "2023-01-07T11:14:24.57882362+08:00",
-  "alias": "alias example",
-  "data": "data example"
-}
-```
-
-Failure: Status Code 400
-
-```json
-{
-  "code": 400,
-  "message": "data exist"
-}
-```
-
-### Get Data
-
-Description:
-
-Get the data.
-
-Path: `/api/gee/get-data-by-alias`
-
-Method: GET
-
-Params:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| alias     | string   | Alias       | Yes      |
-
-Example:
-
-```bash
-curl --location '${BASE_URL}/api/gee/get-data-by-alias?alias=alias%20example'
-```
-
-Returns:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| id        | int      | ID          | Yes      |
-| alias     | string   | Alias       | Yes      |
-| data      | string   | Data        | Yes      |
-
-Example:
-
-Success: Status Code 200
-
-```json
-{
-  "data": {
-    "id": 5,
-    "created_at": "2023-05-16T13:46:10.518769+08:00",
-    "updated_at": "2023-05-16T13:46:10.520977+08:00",
-    "alias": "alias example",
-    "data": "data example",
-    "public": true
-  }
-}
-```
-
-Failure: Status Code 404
-
-```json
-{
-  "code": 404,
-  "message": "data not found"
 }
 ```
 

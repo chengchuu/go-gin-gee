@@ -1,25 +1,23 @@
 <!-- omit from toc -->
 # go-gin-gee
 
-Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts` depend on Script [4], which can be used by the command `run` directly.
+Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts`, which can be used by the command `run` directly.
 
 <!-- omit from toc -->
 ## Table of Contents
 
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
-  - [Generate Short Link](#generate-short-link)
-  - [Save Data](#save-data)
-  - [Get Data](#get-data)
 - [Build](#build)
 - [Deploy](#deploy)
   - [Supervisor](#supervisor)
-  - [Docker](#docker)
-    - [Build Image](#build-image)
-    - [Run](#run)
-- [Document](#document)
-- [Contributing](#contributing)
+- [Docker](#docker)
   - [Quick Start](#quick-start)
+  - [Build Image](#build-image)
+  - [Run Container](#run-container)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+  - [Local Development Setup](#local-development-setup)
   - [Details](#details)
 - [References](#references)
 
@@ -77,6 +75,7 @@ More in folder [`scripts`](./scripts/README.md).
 
 The base URL for this API is an environment variate `${BASE_URL}`, such as `https://example.com/path`.
 
+<!-- omit from toc -->
 ### Generate Short Link
 
 Description:
@@ -127,123 +126,6 @@ Failure: Status Code 400
 }
 ```
 
-### Save Data
-
-Description:
-
-Save the data for searching.
-
-Path: `/api/gee/create-alias2data`
-
-Method: POST
-
-Params:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| alias     | string   | Alias       | Yes      |
-| data      | string   | Data        | Yes      |
-| public    | bool     | Public      | Yes      |
-
-Example:
-
-```bash
-curl --location --request POST '${BASE_URL}/api/gee/create-alias2data' \
---header 'Content-Type: application/json' \
---data-raw '{
-  "alias": "alias example",
-  "data": "data example",
-  "public": true
-}'
-```
-
-Returns:
-
-| Params    | Type      | Description | Required |
-| :-------- | :-------- | :---------- | :------- |
-| id        | int       | ID          | Yes      |
-| alias     | string    | Alias       | Yes      |
-| data      | string    | Data        | Yes      |
-
-Example:
-
-Success: Status Code 201
-
-```json
-{
-  "id": 2,
-  "created_at": "2023-01-07T11:14:24.572495702+08:00",
-  "updated_at": "2023-01-07T11:14:24.57882362+08:00",
-  "alias": "alias example",
-  "data": "data example"
-}
-```
-
-Failure: Status Code 400
-
-```json
-{
-  "code": 400,
-  "message": "data exist"
-}
-```
-
-### Get Data
-
-Description:
-
-Get the data.
-
-Path: `/api/gee/get-data-by-alias`
-
-Method: GET
-
-Params:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| alias     | string   | Alias       | Yes      |
-
-Example:
-
-```bash
-curl --location '${BASE_URL}/api/gee/get-data-by-alias?alias=alias%20example'
-```
-
-Returns:
-
-| Params    | Type     | Description | Required |
-| :-------- | :------- | :---------- | :------- |
-| id        | int      | ID          | Yes      |
-| alias     | string   | Alias       | Yes      |
-| data      | string   | Data        | Yes      |
-
-Example:
-
-Success: Status Code 200
-
-```json
-{
-  "data": {
-    "id": 5,
-    "created_at": "2023-05-16T13:46:10.518769+08:00",
-    "updated_at": "2023-05-16T13:46:10.520977+08:00",
-    "alias": "alias example",
-    "data": "data example",
-    "public": true
-  }
-}
-```
-
-Failure: Status Code 404
-
-```json
-{
-  "code": 404,
-  "message": "data not found"
-}
-```
-
 ## Build
 
 Default:
@@ -290,9 +172,17 @@ autorestart=true
 environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="https://example.com/path"
 ```
 
-### Docker
+## Docker
 
-#### Build Image
+### Quick Start
+
+```bash
+GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
+docker build -t "${GEE_TAG}" . && \
+docker run --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+```
+
+### Build Image
 
 Run `bash ./scripts/docker-build.sh -h` to see the help message.
 
@@ -335,7 +225,7 @@ bash ./scripts/docker-build.sh -r \
   "BASE_URL=https://example.com/path"
 ```
 
-#### Run
+### Run Container
 
 Run `bash ./scripts/docker-run.sh -h` to see the help message.
 
@@ -371,7 +261,7 @@ bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api
   "BASE_URL=https://example.com/path"
 ```
 
-## Document
+## Documentation
 
 Download [swag](https://github.com/swaggo/swag):
 
@@ -391,7 +281,7 @@ Run and visit: <http://localhost:3000/docs/index.html>
 
 ## Contributing
 
-### Quick Start
+### Local Development Setup
 
 ```bash
 git clone https://github.com/chengchuu/go-gin-gee.git
@@ -426,7 +316,7 @@ To disable the proxy completely and download modules directly:
 go env -w GOPROXY=direct
 ```
 
-To reset to Go's default proxy settings:
+To reset to Go default proxy settings:
 
 ```bash
 go env -w GOPROXY=https://proxy.golang.org,direct

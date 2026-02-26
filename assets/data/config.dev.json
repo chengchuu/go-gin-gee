@@ -1,5 +1,6 @@
 {
   "Database": {
+    "_Driver": "sqlite | mysql | postgres",
     "Driver": "sqlite",
     "Dbname": "data/database",
     "Username": "user",
@@ -17,6 +18,7 @@
     "Mode": "debug"
   },
   "Data": {
+    "EnableCORS": "on",
     "Sites": [],
     "SpecialLinks": []
   }

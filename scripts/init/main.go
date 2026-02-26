@@ -3,19 +3,18 @@ package main
 import (
 	"flag"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/bitfield/script"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 )
 
 // Example: go run scripts/init/main.go -copyData="config.json,database.db"
 func main() {
-	log.Println("Init...")
+	logger.Println("Init ...")
 	// Define command-line flags
-	copyData := flag.String("copyData", "", "Comma-separated list of files to copy from the assets/data directory")
+	copyData := flag.String("copyData", "config.dev.json,database.db,index.tmpl", "Comma-separated list of files to copy from the assets/data directory")
 	flag.Parse()
 	targetDir := "data"
 
@@ -24,7 +23,7 @@ func main() {
 		// Create the target directory if it doesn't exist
 		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
 			if err := os.Mkdir(targetDir, 0755); err != nil {
-				log.Fatalf("Error creating directory %s: %v\n", targetDir, err)
+				logger.Fatal("Error creating directory %s: %v\n", targetDir, err)
 			}
 		}
 
@@ -33,16 +32,17 @@ func main() {
 			src := filepath.Join("assets", targetDir, file)
 			dst := filepath.Join(targetDir, file)
 			if err := copyFile(src, dst); err != nil {
-				log.Printf("Error copying file %s: %v\n", file, err)
+				logger.Printf("Error copying file %s: %v\n", file, err)
 			} else {
-				log.Printf("Copied file %s\n", file)
+				logger.Printf("Copied file: %s/%s\n", targetDir, file)
 			}
 		}
 	} else {
-		script.ListFiles("./assets").ExecForEach("cp -R {{.}} .").Stdout()
+		// script.ListFiles("./assets").ExecForEach("cp -R {{.}} .").Stdout()
+		logger.Fatal("No files specified to copy. Use -copyData flag.")
 	}
 
-	log.Println("All done.")
+	logger.Println("All done.")
 }
 
 // copyFile copies a file from src to dst.

@@ -3,33 +3,34 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os/exec"
 	"regexp"
 	"runtime"
 
 	"github.com/bitfield/script"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 )
 
 // Examples:
 // go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Mazey"
+// go run scripts/batch-git-pull/main.go -path="C:\Web\web"
 // go run scripts/batch-git-pull/main.go -path="/Users/mazey/Web/Rabbit" -projects="placeholder"
 // path required
 // projects optional
 func main() {
-	log.Println("Git pull...")
+	logger.Println("Git Pull ...")
 	placeholder := "unknown"
 	// https://gobyexample.com/command-line-flags
 	projectPath := flag.String("path", placeholder, "folder of projects")
 	assignedProjects := flag.String("projects", ".", "assigned projects")
 	runCommands := flag.String("commands", "git pull;", "commands")
 	flag.Parse()
-	log.Println("projectPath:", *projectPath)
-	log.Println("assignedProjects:", *assignedProjects)
-	log.Println("runCommands:", *runCommands)
+	logger.Println("projectPath:", *projectPath)
+	logger.Println("assignedProjects:", *assignedProjects)
+	logger.Println("runCommands:", *runCommands)
 	if *projectPath == placeholder {
-		log.Panicln("path is required")
+		logger.Fatal("path is required")
 	}
 	projects := []string{
 		"placeholder",
@@ -42,21 +43,23 @@ func main() {
 	regexStr += fmt.Sprintf("%s)\\/\\.git$", *assignedProjects)
 	regex := regexp.MustCompile(regexStr)
 	if runtime.GOOS == "windows" {
+		// Use PowerShell on Windows instead of cmd
 		script.ListFiles(fmt.Sprintf("%s\\*\\.git", *projectPath)).FilterLine(func(s string) string {
-			cmdLines := constants.ScriptStartMsgInWin + " && "
-			cmdLines += fmt.Sprintf("echo Path: %s && ", s)
-			// https://stackoverflow.com/questions/607670/windows-shell-command-to-get-the-full-path-to-the-current-directory
-			cmdLines += fmt.Sprintf("cd %s && ", s)
-			cmdLines += `cd ../ && `
-			cmdLines += `git pull && `
-			cmdLines += "echo All done in Windows CMD. && "
-			cmdLines += constants.ScriptEndMsgInWin
-			cmd := exec.Command("cmd", "/C", cmdLines)
+			// Build PowerShell command lines; use semicolons and quote paths to handle spaces
+			// cmdLines := constants.ScriptStartMsgInWin + "; "
+			cmdLines := fmt.Sprintf("Write-Output 'Path: %s'; ", s)
+			// change directory into the .git folder then go up one level to the repo root
+			cmdLines += fmt.Sprintf("cd '%s'; ", s)
+			cmdLines += "cd ..; "
+			cmdLines += "git pull; "
+			cmdLines += "Write-Output '-- All Done in PowerShell --'; "
+			// cmdLines += constants.ScriptEndMsgInWin
+			cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", cmdLines)
 			result, err := cmd.CombinedOutput()
 			if err != nil {
-				log.Println("error:", err)
+				logger.Println("error:", err)
 			}
-			log.Printf("result: %s", result)
+			logger.Printf("result:\n%s", result)
 			return ""
 		}).Stdout()
 	} else {
@@ -71,11 +74,11 @@ func main() {
 			cmd := exec.Command("/bin/sh", "-c", cmdLines)
 			result, err := cmd.CombinedOutput()
 			if err != nil {
-				log.Println("error:", err)
+				logger.Println("error:", err)
 			}
-			log.Printf("result: %s", result)
+			logger.Printf("result: %s", result)
 			return ""
 		}).Stdout()
 	}
-
+	logger.Println("Git Pull Done.")
 }

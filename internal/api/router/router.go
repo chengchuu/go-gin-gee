@@ -51,6 +51,7 @@ func Setup() *gin.Engine {
 		)
 	}))
 	app.Use(gin.Recovery())
+	// TODO: Use Config to contral CROS
 	app.Use(middlewares.CORS())
 	app.Use(middlewares.LoggerHandler())
 	app.NoRoute(middlewares.NoRouteHandler())

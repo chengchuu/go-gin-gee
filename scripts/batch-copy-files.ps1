@@ -1,3 +1,7 @@
+# PowerShell file.ps1
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; powershell -NoProfile -ExecutionPolicy Bypass -File "C:\path\to\go-gin-gee\scripts\batch-copy-files.ps1"
+# Windows Git Bash
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
 $sourceRoot = "C:\SourceParentFolder"  # The common root folder of your files
 $destination = "D:\TargetFolder"       # Where you want them to go
 $fileList = Get-Content "C:\path\to\files_to_copy.txt"

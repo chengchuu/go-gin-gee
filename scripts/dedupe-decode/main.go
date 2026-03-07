@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -59,6 +60,13 @@ func main() {
 
 		decoded := decodePathSegments(line)
 
+		// Filter out specific URL patterns:
+		// 1) Protocol-relative URLs: "//example.com/..."
+		// 2) Dynamic pages: ends with .php or .jsp (case-insensitive)
+		if shouldSkip(decoded) {
+			continue
+		}
+
 		if _, exists := seen[decoded]; exists {
 			continue
 		}
@@ -86,4 +94,29 @@ func decodePathSegments(p string) string {
 		}
 	}
 	return strings.Join(parts, "/")
+}
+
+func shouldSkip(s string) bool {
+	// Skip protocol-relative URLs
+	if strings.HasPrefix(s, "//") {
+		return true
+	}
+
+	// Skip dynamic page endings (.php, .jsp), even if query/fragment exists
+	// Examples:
+	//   /a/b/index.php
+	//   /a/b/index.php?x=1
+	//   /a/b/index.JSP#hash
+	rest := s
+	if i := strings.IndexAny(rest, "?#"); i >= 0 {
+		rest = rest[:i]
+	}
+
+	ext := strings.ToLower(path.Ext(rest))
+	switch ext {
+	case ".php", ".jsp":
+		return true
+	default:
+		return false
+	}
 }

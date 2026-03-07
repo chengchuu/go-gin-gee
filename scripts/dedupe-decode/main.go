@@ -11,8 +11,8 @@ import (
 
 func main() {
 	// Usage:
-	//   go run scripts/dedupe-decode/main.go -in input.txt -out output.txt
-	//   cat input.txt | go run scripts/dedupe-decode/main.go
+	//   go run scripts/dedupe-decode/main.go -in scripts/dedupe-decode/in.secret.txt -out scripts/dedupe-decode/out1.secret.txt
+	//   cat scripts/dedupe-decode/in.secret.txt | go run scripts/dedupe-decode/main.go > scripts/dedupe-decode/out2.secret.txt
 	//
 	// If -in is not provided, read from stdin.
 	// If -out is not provided, write to stdout.

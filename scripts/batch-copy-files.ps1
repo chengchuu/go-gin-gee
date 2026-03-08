@@ -2,9 +2,16 @@
 # Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Web\web\go-gin-gee\scripts\batch-copy-files.ps1"
 # Windows Git Bash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
-$sourceRoot = "C:\Web\web\archives\asset_frozen"  # Source root
-$destination = "C:\Web\web\archives\asset"         # Target root
-$fileList = Get-Content "C:\Web\web\go-gin-gee\scripts\dedupe-decode\out1.secret.txt"
+# VSCode REGEXP: ^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
+# Force UTF-8 console encoding
+[Console]::InputEncoding  = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$sourceRoot = "C:\Web\web\archives\asset_frozen"
+$destination = "C:\Web\web\archives\asset"
+
+# IMPORTANT: read file list with UTF-8
+$fileList = Get-Content "C:\Web\web\go-gin-gee\scripts\dedupe-decode\out1.secret.txt" -Encoding UTF8
 
 foreach ($filePath in $fileList) {
     $filePath = $filePath.Trim()
@@ -18,9 +25,9 @@ foreach ($filePath in $fileList) {
     $targetPath = Join-Path $destination $relativePath
     $targetDir  = Split-Path -Parent $targetPath
 
-    Write-Output "sourceFile: $sourceFile"
-    Write-Output "targetPath: $targetPath"
-    Write-Output "targetDir : $targetDir"
+    # Write-Output "sourceFile: $sourceFile"
+    # Write-Output "targetPath: $targetPath"
+    # Write-Output "targetDir : $targetDir"
 
     # Check source file exists (use full source path)
     if (!(Test-Path -LiteralPath $sourceFile -PathType Leaf)) {

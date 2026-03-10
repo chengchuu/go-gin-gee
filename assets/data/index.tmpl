@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
   <title>{{ .title }}</title>
-  <link rel="shortcut icon" type="image/png" href="//i.mazey.net/icon/fav/logo-dark-circle-transparent-144x144.png">
-  <style>html{font-size:16px;height:100%}body{font-family:"PingFang SC","Microsoft YaHei","Droid Sans Fallback",SimHei,Arial,Helvetica,tahoma,sans-serif;color:#333;margin:0}#main{display:table;width:100%;height:100vh;text-align:center}.title{display:table-cell;vertical-align:middle}.title h1{font-size:50px;display:inline-block;padding-right:12px}@media screen and (max-width: 767px){.title h1{font-size:5rem}}</style>
+  <link rel="shortcut icon" type="image/png" href="//i.mazey.net/icon/fav/cat-144x144.png">
+  <style>html,body{margin:0;padding:0;width:100%;min-height:100%}body{font-family:"PingFang SC","Microsoft YaHei","Droid Sans Fallback",SimHei,Arial,Helvetica,tahoma,sans-serif;line-height:1.5;color:#111;background:#f6f8fb;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}.base{width:92%;max-width:100%;margin:3rem auto;padding:1.5rem 1.25rem;box-sizing:border-box;background:#fff;border:2px solid rgba(17,17,17,.12);border-radius:12px;box-shadow:0 4px 20px rgba(17,17,17,.06);min-height:calc(100vh - 6rem);display:block}@supports(display: flex){.base{display:flex;flex-direction:column;justify-content:center}}@media(min-width: 768px){.base{width:86%;padding:2rem}}@media(min-width: 992px){.base{width:760px;min-height:calc(100vh - 8rem);margin:4rem auto;padding:2.5rem}}@media(min-width: 1200px){.base{width:840px}}@media(min-width: 1400px){.base{width:920px}}.base h1,.base p{margin:0}.base h1{font-size:clamp(1.75rem,4vw,3rem);line-height:1.2;letter-spacing:.01em;color:inherit;word-break:break-word}.base p{margin-top:.75rem;font-size:clamp(1rem,1.8vw,1.125rem);color:#4b5563;max-width:60ch;overflow-wrap:anywhere}.base-success{border-color:#2ecc40}.base-warn{border-color:#ff851b}.base-error{border-color:#ff4136}.base-info{border-color:#0074d9}.base-purple{border-color:#b10dc9}.base-accent h1{color:#0074d9}@media(prefers-color-scheme: dark){body{color:hsl(0,0%,93.8666666667%);background:hsl(216,7.6923076923%,12.2941176471%)}.base{background:hsl(0,0%,8%);border-color:hsla(0,0%,100%,.12);box-shadow:none}.base p{color:rgb(73.53,81.13,91.77)}.base-success{border-color:rgb(58.71,178.79,72.39)}.base-warn{border-color:rgb(230.79,127.1542105263,37.11)}.base-error{border-color:rgb(233.355,69.6714179104,60.195)}.base-info{border-color:rgb(20.615,108.775,185.535)}.base-purple{border-color:rgb(154.85,30.21,173.09)}}</style>
 </head>
 <body>
-  <div id="main">
-    <div class="title">
-      <h1>{{ .title }}</h1>
-    </div>
-  </div>
+  <main class="base base-info" role="main" aria-labelledby="title" aria-describedby="desc">
+    <h1 id="title">{{ .title }}</h1>
+    <p id="desc" style="display:none;"></p>
+  </main>
 </body>
 </html>

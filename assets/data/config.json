@@ -1,7 +1,6 @@
 {
   "Database": {
-    "_Driver": "sqlite | mysql | postgres",
-    "Driver": "",
+    "Driver": "sqlite",
     "Dbname": "data/database",
     "Username": "user",
     "Password": "password",
@@ -14,10 +13,10 @@
   "Server": {
     "Port": "3000",
     "Secret": "wednov23rd2022",
-    "_Mode": "release | debug",
     "Mode": "release"
   },
   "Data": {
+    "EnableCORS": "on",
     "Sites": [],
     "SpecialLinks": []
   }

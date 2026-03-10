@@ -1,0 +1,45 @@
+# Version control
+.git
+.gitignore
+
+# Local environment / secrets
+.env
+.env.* 
+*.local
+
+# Docker / build files
+Dockerfile
+Dockerfile.*
+.dockerignore
+
+# Editor / OS files
+.idea
+.vscode
+.vagrant
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs / temp
+*.log
+tmp/
+temp/
+*.tmp
+*.err
+
+# Test / coverage artifacts
+*.test
+*.out
+coverage.out
+test-*.out
+
+# Go build artifacts and binaries
+bin/
+build/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+*.o

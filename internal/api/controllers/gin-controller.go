@@ -16,6 +16,12 @@ func Ping(c *gin.Context) {
 	})
 }
 
+func Index0310(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.tmpl", gin.H{
+		"title": "Welcome",
+	})
+}
+
 func Index0920(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"title": "Main Website",

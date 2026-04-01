@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Test and Publish Docker Image
 
 on:
   push:
@@ -6,11 +6,27 @@ on:
       - main
 
 jobs:
-  docker:
+  test:
+    name: Run Go tests
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Run tests
+        run: go test ./pkg/logger/
+
+  docker:
+    name: Build and Push Docker image
+    runs-on: ubuntu-latest
+    needs: test
     permissions:
       contents: read
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4

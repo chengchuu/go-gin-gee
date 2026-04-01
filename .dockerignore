@@ -4,7 +4,7 @@
 
 # Local environment / secrets
 .env
-.env.* 
+.env.*
 *.local
 
 # Docker / build files

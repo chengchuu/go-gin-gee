@@ -28,16 +28,17 @@ type Logger struct {
 
 var std *Logger
 
-// Init 初始化全局 logger
+// Init initializes the global logger
 func Init() {
 	env := strings.ToLower(os.Getenv("ENV"))
 	logLevel := INFO
 
-	// 根据环境设置日志级别
+	// Set log level based on environment
 	if env == "development" || env == "dev" {
 		logLevel = DEBUG
 	}
 
+	// Enable debug level if DEBUG env var is true
 	if os.Getenv("DEBUG") == "true" {
 		logLevel = DEBUG
 	}
@@ -45,12 +46,11 @@ func Init() {
 	std = New(os.Stdout, os.Stderr, logLevel)
 }
 
-// New 创建新的 logger
-// stdout: INFO 和 DEBUG 日志输出
-// stderr:  WARN, ERROR, FATAL 日志输出
+// New creates a new logger instance
+// stdout: output for INFO and DEBUG logs
+// stderr: output for WARN, ERROR, and FATAL logs
 func New(stdout, stderr io.Writer, level Level) *Logger {
 	flags := log.Ldate | log.Ltime
-	// | log.Lshortfile
 
 	return &Logger{
 		debug: log.New(stdout, "[DEBUG] ", flags),
@@ -62,7 +62,7 @@ func New(stdout, stderr io.Writer, level Level) *Logger {
 	}
 }
 
-// Debug 输出调试日志
+// Debug outputs a debug log
 func Debug(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -72,7 +72,7 @@ func Debug(format string, v ...interface{}) {
 	}
 }
 
-// Info 输出信息日志
+// Info outputs an info log
 func Info(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -82,7 +82,7 @@ func Info(format string, v ...interface{}) {
 	}
 }
 
-// Warn 输出警告日志
+// Warn outputs a warning log
 func Warn(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -92,7 +92,7 @@ func Warn(format string, v ...interface{}) {
 	}
 }
 
-// Error 输出错误日志
+// Error outputs an error log
 func Error(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -102,7 +102,7 @@ func Error(format string, v ...interface{}) {
 	}
 }
 
-// Fatal 输出致命错误并退出程序
+// Fatal outputs a fatal error and exits the program
 func Fatal(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -111,7 +111,7 @@ func Fatal(format string, v ...interface{}) {
 	os.Exit(1)
 }
 
-// Println 兼容标准 log.Println（输出到 INFO）
+// Println is compatible with the standard log.Println (outputs to INFO)
 func Println(v ...interface{}) {
 	if std == nil {
 		Init()
@@ -121,7 +121,7 @@ func Println(v ...interface{}) {
 	}
 }
 
-// Printf 兼容标准 log.Printf（输出到 INFO）
+// Printf is compatible with the standard log.Printf (outputs to INFO)
 func Printf(format string, v ...interface{}) {
 	if std == nil {
 		Init()
@@ -131,7 +131,7 @@ func Printf(format string, v ...interface{}) {
 	}
 }
 
-// SetLevel 设置日志级别
+// SetLevel sets the log level
 func SetLevel(level Level) {
 	if std == nil {
 		Init()
@@ -139,7 +139,7 @@ func SetLevel(level Level) {
 	std.level = level
 }
 
-// GetLevel 获取当前日志级别
+// GetLevel returns the current log level
 func GetLevel() Level {
 	if std == nil {
 		Init()

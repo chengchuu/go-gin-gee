@@ -59,6 +59,9 @@ func main() {
 		}
 
 		decoded := decodePathSegments(line)
+		if strings.Contains(decoded, "?") {
+			decoded = decoded[:strings.Index(decoded, "?")]
+		}
 
 		// Filter out specific URL patterns:
 		// 1) Protocol-relative URLs: "//example.com/..."

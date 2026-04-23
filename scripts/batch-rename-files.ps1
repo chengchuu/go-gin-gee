@@ -19,10 +19,10 @@ foreach ($f in $files) {
   $n++
 }
 
-# Pass 2: final names VID0001...
+# Pass 2: final names VID0001... (preserve original extension casing)
 $i = $start
 foreach ($m in $map) {
-  $new = "{0}{1:D4}{2}" -f $prefix, $i, $m.Ext.ToLower()
+  $new = "{0}{1:D4}{2}" -f $prefix, $i, $m.Ext
   Rename-Item -LiteralPath (Join-Path $path $m.TempName) -NewName $new
   $i++
 }

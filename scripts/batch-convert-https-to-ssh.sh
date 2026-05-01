@@ -1,7 +1,8 @@
 #!/bin/bash
 # batch-convert-https-to-ssh.sh
 
-ROOT="$HOME/dev"   # change this
+PROJECT_PATH="web"  # change this
+ROOT="$HOME/$PROJECT_PATH"
 find "$ROOT" -type d -name .git -prune | while read -r gitdir; do
   repo="${gitdir%/.git}"
   echo "==> $repo"

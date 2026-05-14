@@ -24,7 +24,6 @@ temp/
 # Local env files
 .env.local
 .env.*.local
-*.prd.json
 
 # Log files
 npm-debug.log*
@@ -34,6 +33,7 @@ selenium-debug.log*
 
 # Unique
 /main
+*.prd.json
 *.secret/
 *.secret.conf
 *.secret.ini

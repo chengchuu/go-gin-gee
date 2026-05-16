@@ -16,3 +16,14 @@ func CORS() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// OPTIONS handler for Browser Preflight Requests instead of returning 404
+func PreflightHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
+}

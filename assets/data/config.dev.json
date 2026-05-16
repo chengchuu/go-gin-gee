@@ -17,6 +17,7 @@
     "Mode": "debug"
   },
   "Data": {
+    "EnableCORS": "on",
     "Sites": [],
     "SpecialLinks": []
   }

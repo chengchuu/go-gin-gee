@@ -41,3 +41,4 @@ selenium-debug.log*
 *.secret.json
 *.secret.go
 *.secret.sh
+*.secret.txt

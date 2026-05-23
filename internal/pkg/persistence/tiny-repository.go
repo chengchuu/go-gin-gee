@@ -151,8 +151,7 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	where := models.Tiny{}
 	where.OriMd5 = OriMd5
 	notFound, err := First(&where, &tiny, []string{})
-	logger.Printf("Is this link NotFound in DB: %t", notFound)
-	logger.Error("error: %v", err)
+	logger.Printf("Check if the link is NotFound in DB: %t", notFound)
 	if notFound {
 		err = nil
 		return nil, nil

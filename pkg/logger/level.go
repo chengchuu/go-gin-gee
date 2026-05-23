@@ -2,7 +2,7 @@ package logger
 
 import "strings"
 
-// LevelFromString 从字符串解析日志级别
+// LevelFromString parses a log level from a string
 func LevelFromString(level string) Level {
 	switch strings.ToUpper(level) {
 	case "DEBUG":
@@ -20,7 +20,7 @@ func LevelFromString(level string) Level {
 	}
 }
 
-// String 返回日志级别的字符串表示
+// String returns the string representation of the log level
 func (l Level) String() string {
 	switch l {
 	case DEBUG:

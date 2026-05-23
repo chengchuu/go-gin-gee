@@ -10,7 +10,7 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/constants"
 )
 
-// Example: go run scripts/convert-markdown-to-comments/main.go
+// Example: go run scripts/convert-markdown-to-typedoc/main.go
 func main() {
 	log.Println(constants.StartMsgStr)
 	alias := "md2td"

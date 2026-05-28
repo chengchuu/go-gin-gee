@@ -8,45 +8,45 @@ import (
 )
 
 func TestLogger(t *testing.T) {
-	// 创建缓冲区
+	// Create buffers
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	// 创建测试 logger
+	// Create a test logger
 	testLogger := New(&stdout, &stderr, DEBUG)
 	std = testLogger
 
-	// 测试 DEBUG
+	// Test DEBUG
 	Debug("debug message: %s", "test")
 	if !strings.Contains(stdout.String(), "[DEBUG]") || !strings.Contains(stdout.String(), "debug message: test") {
 		t.Errorf("Debug log failed")
 	}
 
-	// 清空缓冲区
+	// Clear buffers
 	stdout.Reset()
 	stderr.Reset()
 
-	// 测试 INFO
+	// Test INFO
 	Info("info message: %d", 123)
 	if !strings.Contains(stdout.String(), "[INFO]") || !strings.Contains(stdout.String(), "info message: 123") {
 		t.Errorf("Info log failed")
 	}
 
-	// 清空缓冲区
+	// Clear buffers
 	stdout.Reset()
 	stderr.Reset()
 
-	// 测试 WARN
+	// Test WARN
 	Warn("warn message")
 	if !strings.Contains(stderr.String(), "[WARN]") || !strings.Contains(stderr.String(), "warn message") {
 		t.Errorf("Warn log failed")
 	}
 
-	// 清空缓冲区
+	// Clear buffers
 	stdout.Reset()
 	stderr.Reset()
 
-	// 测试 ERROR
+	// Test ERROR
 	Error("error message")
 	if !strings.Contains(stderr.String(), "[ERROR]") || !strings.Contains(stderr.String(), "error message") {
 		t.Errorf("Error log failed")
@@ -57,18 +57,18 @@ func TestLogLevel(t *testing.T) {
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	// 设置 WARN 级别
+	// Set log level to WARN
 	testLogger := New(&stdout, &stderr, WARN)
 	std = testLogger
 
-	// DEBUG 和 INFO 不应该输出
+	// DEBUG and INFO should not output
 	Debug("debug message")
 	Info("info message")
 	if stdout.Len() > 0 {
 		t.Errorf("DEBUG/INFO should not output when level is WARN")
 	}
 
-	// WARN 应该输出
+	// WARN should output
 	Warn("warn message")
 	if !strings.Contains(stderr.String(), "[WARN]") {
 		t.Errorf("WARN should output when level is WARN")
@@ -88,7 +88,7 @@ func TestLevelFromString(t *testing.T) {
 		{"WARNING", WARN},
 		{"ERROR", ERROR},
 		{"FATAL", FATAL},
-		{"unknown", INFO}, // 默认值
+		{"unknown", INFO}, // Default value
 	}
 
 	for _, tt := range tests {
@@ -120,7 +120,7 @@ func TestLevelString(t *testing.T) {
 }
 
 func TestInit(t *testing.T) {
-	// 保存原始环境变量
+	// Save original environment variables
 	origEnv := os.Getenv("ENV")
 	origDebug := os.Getenv("DEBUG")
 	defer func() {
@@ -128,26 +128,26 @@ func TestInit(t *testing.T) {
 		os.Setenv("DEBUG", origDebug)
 	}()
 
-	// 测试开发环境
+	// Test development environment
 	os.Setenv("ENV", "development")
-	std = nil // 重置
+	std = nil // Reset
 	Init()
 	if GetLevel() != DEBUG {
 		t.Errorf("Expected DEBUG level in development environment")
 	}
 
-	// 测试生产环境
+	// Test production environment
 	os.Setenv("ENV", "production")
-	std = nil // 重置
+	std = nil // Reset
 	Init()
 	if GetLevel() != INFO {
 		t.Errorf("Expected INFO level in production environment")
 	}
 
-	// 测试 DEBUG 环境变量
+	// Test DEBUG environment variable
 	os.Setenv("ENV", "production")
 	os.Setenv("DEBUG", "true")
-	std = nil // 重置
+	std = nil // Reset
 	Init()
 	if GetLevel() != DEBUG {
 		t.Errorf("Expected DEBUG level when DEBUG=true")

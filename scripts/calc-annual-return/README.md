@@ -36,7 +36,6 @@ Ensure your project directory structure matches the following layout:
 └── scripts/
     └── calc-annual-return/
         └── main.go
-
 ```
 
 ---
@@ -47,7 +46,6 @@ You can run the script directly using `go run`:
 
 ```bash
 go run scripts/calc-annual-return/main.go -start <YYYY-MM-DD> -end <YYYY-MM-DD> -return <value>
-
 ```
 
 ### CLI Arguments
@@ -66,7 +64,6 @@ go run scripts/calc-annual-return/main.go -start <YYYY-MM-DD> -end <YYYY-MM-DD> 
 
 ```bash
 go run scripts/calc-annual-return/main.go -start 2022-04-01 -end 2025-10-01 -return 20.20%
-
 ```
 
 **Output:**
@@ -75,14 +72,12 @@ go run scripts/calc-annual-return/main.go -start 2022-04-01 -end 2025-10-01 -ret
 Investment Period: 1279 days
 Total Return:      20.20%
 Annualized Return: 5.41%
-
 ```
 
 ### Negative Return
 
 ```bash
 go run scripts/calc-annual-return/main.go -start 2022-04-01 -end 2025-10-01 -return -15.5%
-
 ```
 
 **Output:**
@@ -91,7 +86,6 @@ go run scripts/calc-annual-return/main.go -start 2022-04-01 -end 2025-10-01 -ret
 Investment Period: 1279 days
 Total Return:      -15.50%
 Annualized Return: -4.73%
-
 ```
 
 ---

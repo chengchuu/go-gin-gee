@@ -2,6 +2,18 @@
 
 A lightweight, production-ready Go command-line tool designed to calculate the compound annual growth rate (CAGR) for financial investments. Given a start date, end date, and total return rate, the tool computes the precise investment duration in days and outputs the annualized return.
 
+- [Formula](#formula)
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Project Structure](#project-structure)
+- [Usage](#usage)
+  - [CLI Arguments](#cli-arguments)
+- [Examples](#examples)
+  - [Positive Return](#positive-return)
+  - [Negative Return](#negative-return)
+- [Error Handling](#error-handling)
+
 ## Formula
 
 The tool uses the standard Compound Annual Growth Rate (CAGR) formula:

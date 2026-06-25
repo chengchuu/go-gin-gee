@@ -13,12 +13,12 @@ Dates must be in ISO format: `YYYY-MM-DD`.
 
 Examples:
 
-- Positional:
-  - `go run scripts/calc-datediff/main.go 2022-04-01 2025-10-01`
-  - Output: `Days between 2022-04-01 and 2025-10-01: 1264`
-
 - Flags:
   - `go run scripts/calc-datediff/main.go -start 2022-04-01 -end 2025-10-01`
+  - Output: `Days between 2022-04-01 and 2025-10-01: 1264`
+
+- Positional:
+  - `go run scripts/calc-datediff/main.go 2022-04-01 2025-10-01`
   - Output: `Days between 2022-04-01 and 2025-10-01: 1264`
 
 - Reverse order (the tool will swap and notify):
@@ -36,8 +36,8 @@ Examples:
 
 ## Examples (copy/paste)
 
-- `go run scripts/calc-datediff/main.go 2022-04-01 2025-10-01`
 - `go run scripts/calc-datediff/main.go -start 2022-04-01 -end 2025-10-01`
+- `go run scripts/calc-datediff/main.go 2022-04-01 2025-10-01`
 
 ## Contributing
 

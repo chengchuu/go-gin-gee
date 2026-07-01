@@ -11,7 +11,7 @@ type Alias2data struct {
 	Alias  string `gorm:"column:alias;type:varchar(100);not null;unique_index:uk_alias2data_alias" json:"alias" form:"alias"`
 	Data   string `gorm:"column:data;type:text;not null" json:"data" form:"data"`
 	Type   string `gorm:"column:type;type:varchar(30);not null;default:''" json:"type" form:"type"`
-	Public bool   `gorm:"column:public;type:tinyint(1);not null;default:1" json:"public" form:"public"`
+	Public bool   `gorm:"column:public;not null;default:true" json:"public" form:"public"`
 }
 
 func (m *Alias2data) BeforeCreate() error {

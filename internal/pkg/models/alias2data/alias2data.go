@@ -8,9 +8,9 @@ import (
 
 type Alias2data struct {
 	models.Model
-	Alias  string `gorm:"column:alias;size:100;not null;unique_index:uk_alias2data_alias" json:"alias" form:"alias"`
+	Alias  string `gorm:"column:alias;size:50;not null;unique_index:uk_alias2data_alias" json:"alias" form:"alias"`
 	Data   string `gorm:"column:data;type:text;not null" json:"data" form:"data"`
-	Type   string `gorm:"column:type;size:30;not null;default:''" json:"type" form:"type"`
+	Type   string `gorm:"column:type;size:20;not null;default:''" json:"type" form:"type"`
 	Public bool   `gorm:"column:public;not null;default:true" json:"public" form:"public"`
 }
 

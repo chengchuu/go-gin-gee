@@ -8,11 +8,11 @@ import (
 
 type User struct {
 	models.Model
-	Username  string   `gorm:"column:username;not null;unique_index:username" json:"username" form:"username"`
-	Firstname string   `gorm:"column:firstname;not null;" json:"firstname" form:"firstname"`
-	Lastname  string   `gorm:"column:lastname;not null;" json:"lastname" form:"lastname"`
-	Hash      string   `gorm:"column:hash;not null;" json:"hash"`
-	Role      UserRole `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Username  string   `gorm:"column:username;type:varchar(80);not null;unique_index:uk_users_username" json:"username" form:"username"`
+	Firstname string   `gorm:"column:firstname;type:varchar(80);not null;default:''" json:"firstname" form:"firstname"`
+	Lastname  string   `gorm:"column:lastname;type:varchar(80);not null;default:''" json:"lastname" form:"lastname"`
+	Hash      string   `gorm:"column:hash;type:varchar(100);not null" json:"hash"`
+	Role      UserRole `gorm:"foreignkey:UserID;association_foreignkey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"role"`
 }
 
 func (m *User) BeforeCreate() error {

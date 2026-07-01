@@ -15,6 +15,10 @@ type User struct {
 	Role      UserRole `gorm:"foreignkey:UserID;association_foreignkey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"role"`
 }
 
+func (User) TableName() string {
+	return "gee_user"
+}
+
 func (m *User) BeforeCreate() error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()

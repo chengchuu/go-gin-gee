@@ -12,6 +12,10 @@ type UserRole struct {
 	RoleName string `gorm:"column:role_name;type:varchar(50);not null;default:''" json:"role_name"`
 }
 
+func (UserRole) TableName() string {
+	return "gee_user_role"
+}
+
 func (m *UserRole) BeforeCreate() error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()

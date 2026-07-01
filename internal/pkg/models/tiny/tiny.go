@@ -22,7 +22,7 @@ type SpecialLink struct {
 }
 
 func (Tiny) TableName() string {
-	return "tiny"
+	return "gee_tiny"
 }
 
 func (m *Tiny) BeforeCreate() error {

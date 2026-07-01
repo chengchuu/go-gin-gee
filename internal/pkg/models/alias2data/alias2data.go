@@ -14,6 +14,10 @@ type Alias2data struct {
 	Public bool   `gorm:"column:public;not null;default:true" json:"public" form:"public"`
 }
 
+func (Alias2data) TableName() string {
+	return "gee_alias2data"
+}
+
 func (m *Alias2data) BeforeCreate() error {
 	m.CreatedAt = time.Now()
 	m.UpdatedAt = time.Now()

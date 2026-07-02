@@ -38,16 +38,16 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 		linkForEncode = OriLink
 	}
 	OriMd5 := helpers.ConvertStringToMD5Hash(linkForEncode)
-	data, err := r.QueryOriLinkByOriMd5(OriMd5)
-	if err != nil {
-		return "", err
-	}
 	baseUrl := config.GetConfig().Data.BaseURL
 	if addBaseUrl != "" {
 		baseUrl = addBaseUrl
 	}
 	if baseUrl == "" {
 		return "", errors.New("BASE_URL is required")
+	}
+	data, err := r.QueryOriLinkByOriMd5(OriMd5)
+	if err != nil {
+		return "", err
 	}
 	if data != nil {
 		return r.BuildTinyLink(baseUrl, data.TinyKey), nil

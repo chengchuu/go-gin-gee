@@ -139,13 +139,15 @@ Flow:
 3. MD5 is used to deduplicate existing links.
 4. A DB row is created to obtain an auto-increment ID.
 5. The numeric ID is converted into a short key.
-6. Final tiny link is persisted and returned.
-7. `/t/:key` resolves the key and redirects to the original URL.
+6. The short key is persisted.
+7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
+8. `/t/:key` resolves the key and redirects to the original URL.
 
 Special behavior:
 
 - Supports configured `SpecialLinks` from config.
 - Supports one-time links by checking and incrementing `VisitCount`.
+- `tiny_link` is an API response value, not persisted model state.
 
 ### Site health checks
 

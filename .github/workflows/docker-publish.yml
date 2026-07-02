@@ -27,7 +27,7 @@ jobs:
         run: go test ./pkg/logger/
 
   docker:
-    name: Build and Publish Docker image
+    name: Build Docker image (publish on push)
     runs-on: ubuntu-latest
     needs: test
     permissions:

@@ -108,8 +108,9 @@ func FirstByID(out interface{}, id string) (notFound bool, err error) {
 		return
 	}
 
-	parsedID, err := strconv.ParseUint(id, 10, 64)
-	if err != nil {
+	parsedID, parseErr := strconv.ParseUint(id, 10, 64)
+	if parseErr != nil {
+		err = errors.New("invalid id: " + parseErr.Error())
 		return
 	}
 

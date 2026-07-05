@@ -19,8 +19,6 @@ import (
 )
 
 const (
-	discordWebhookIDAlias     = "WEBHOOK_ID"
-	discordWebhookTokenAlias  = "WEBHOOK_TOKEN"
 	displayedPassedSitesLimit = 3
 )
 
@@ -210,26 +208,6 @@ func getDiscordWebhookConfig() (string, string, error) {
 	if conf != nil {
 		webhookID = conf.Data.WebhookID
 		webhookToken = conf.Data.WebhookToken
-	}
-
-	if conf != nil {
-		sA := GetAlias2dataRepository()
-		if webhookID == "" {
-			data, err := sA.Get(discordWebhookIDAlias)
-			if err != nil {
-				logger.Error("error: %v", err)
-			} else {
-				webhookID = data.Data
-			}
-		}
-		if webhookToken == "" {
-			data, err := sA.Get(discordWebhookTokenAlias)
-			if err != nil {
-				logger.Error("error: %v", err)
-			} else {
-				webhookToken = data.Data
-			}
-		}
 	}
 
 	if webhookID == "" || webhookToken == "" {

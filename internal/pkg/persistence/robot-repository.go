@@ -19,8 +19,9 @@ import (
 )
 
 const (
-	discordWebhookIDAlias    = "WEBHOOK_ID"
-	discordWebhookTokenAlias = "WEBHOOK_TOKEN"
+	discordWebhookIDAlias     = "WEBHOOK_ID"
+	discordWebhookTokenAlias  = "WEBHOOK_TOKEN"
+	displayedPassedSitesLimit = 3
 )
 
 var discordWebhookBaseURL = "https://discord.com/api/webhooks"
@@ -159,8 +160,12 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 	})
 	// Sort Success Names
 	sort.Strings(sucessNames)
+	displayedSuccessNames := sucessNames
+	if len(displayedSuccessNames) > displayedPassedSitesLimit {
+		displayedSuccessNames = displayedSuccessNames[:displayedPassedSitesLimit]
+	}
 	mdStr := "Health Check Result:\n"
-	lo.ForEach(sucessNames, func(name string, _ int) {
+	lo.ForEach(displayedSuccessNames, func(name string, _ int) {
 		mdStr += fmt.Sprintf("**%s OK**\n", name)
 	})
 	lo.ForEach(*failSites, func(site SiteStatus, _ int) {

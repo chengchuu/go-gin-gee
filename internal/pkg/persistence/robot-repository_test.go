@@ -37,8 +37,33 @@ func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
 	}
 }
 
+func TestBuildHealthCheckMarkdownLimitsPassedSites(t *testing.T) {
+	sites := &Sites{List: map[string]SiteStatus{}}
+	healthySites := []SiteStatus{
+		{Name: "Delta", Code: 200, Link: "https://delta.example"},
+		{Name: "Alpha", Code: 200, Link: "https://alpha.example"},
+		{Name: "Charlie", Code: 200, Link: "https://charlie.example"},
+		{Name: "Bravo", Code: 200, Link: "https://bravo.example"},
+	}
+	failedSites := []SiteStatus{}
+
+	got := buildHealthCheckMarkdown(sites, &healthySites, &failedSites)
+	want := "Health Check Result:\n" +
+		"**Alpha OK**\n" +
+		"**Bravo OK**\n" +
+		"**Charlie OK**\n" +
+		"*All: 4 | Passed: 4 | Failed: 0*"
+
+	if got != want {
+		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)
+	}
+	if strings.Contains(got, "Delta OK") {
+		t.Fatalf("buildHealthCheckMarkdown() included more than %d passed sites: %q", displayedPassedSitesLimit, got)
+	}
+}
+
 func TestSendDiscordWebhookSendsExpectedRequestAndAccepts204(t *testing.T) {
-	expectedContent := "Health Check Result:\n**Alpha OK**\n*Sum: 1*"
+	expectedContent := "Health Check Result:\n**Alpha OK**\n*All: 1 | Passed: 1 | Failed: 0*"
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++

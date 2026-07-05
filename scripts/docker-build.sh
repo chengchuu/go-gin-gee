@@ -1,5 +1,4 @@
 #!/bin/bash
-# bash ./scripts/docker-build.sh -r "WECOM_ROBOT_CHECK=b2lsjd46-7146-4nv2-8767-86cb0cncjdbe" "BASE_URL=https://example.com/path"
 
 echo "Start Build Docker"
 

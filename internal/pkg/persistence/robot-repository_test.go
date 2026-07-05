@@ -30,7 +30,7 @@ func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
 		"**Beta FAIL**\n" +
 		"Error Code: 503\n" +
 		"Link: https://beta.example\n" +
-		"*Sum: 2*"
+		"*All: 2 | Passed: 1 | Failed: 1*"
 
 	if got != want {
 		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)

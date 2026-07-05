@@ -176,7 +176,12 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 			siteLink,
 		)
 	})
-	mdStr += fmt.Sprintf("*%s%d*", "Sum: ", len(*healthySites)+len(*failSites))
+	mdStr += fmt.Sprintf(
+		"*All: %d | Passed: %d | Failed: %d*",
+		len(*healthySites)+len(*failSites),
+		len(*healthySites),
+		len(*failSites),
+	)
 	return mdStr
 }
 

@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
 )
 
 func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
@@ -91,6 +94,42 @@ func TestGetWebSiteStatusUsesNoRedirectPolicyForExpected301(t *testing.T) {
 	}
 	if len(*healthySites) != 2 {
 		t.Fatalf("healthySites length = %d, want 2", len(*healthySites))
+	}
+}
+
+func TestClearCheckResultSkipsNotificationWhenDiscordConfigMissing(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	tempDir := t.TempDir()
+	if err := os.Mkdir(filepath.Join(tempDir, "log"), 0755); err != nil {
+		t.Fatalf("failed to create temp log directory: %v", err)
+	}
+	oldWd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working directory: %v", err)
+	}
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("failed to enter temp directory: %v", err)
+	}
+	defer os.Chdir(oldWd)
+
+	oldConfig := config.Config
+	config.Config = &config.Configuration{}
+	defer func() { config.Config = oldConfig }()
+
+	webSites := []models.WebSite{
+		{Name: "Alpha", Link: server.URL, Code: http.StatusOK},
+	}
+	message, err := (&Sites{}).ClearCheckResult(&webSites)
+	if err != nil {
+		t.Fatalf("ClearCheckResult() error = %v, want nil when webhook config is missing", err)
+	}
+	want := "Health Check Result:\nAlpha OK\nAll: 1 | Passed: 1 | Failed: 0"
+	if message.Content != want {
+		t.Fatalf("message.Content = %q, want %q", message.Content, want)
 	}
 }
 

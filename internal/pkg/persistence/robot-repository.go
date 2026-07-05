@@ -26,6 +26,8 @@ const (
 
 var discordWebhookBaseURL = "https://discord.com/api/webhooks"
 
+var errDiscordWebhookConfigMissing = errors.New("discord webhook id or token is empty")
+
 type Sites struct {
 	List map[string]SiteStatus
 }
@@ -144,15 +146,19 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*DiscordMessage, e
 	}
 
 	mdStr := buildHealthCheckMarkdown(ss, healthySites, failSites)
-
-	webhookID, webhookToken, err := getDiscordWebhookConfig()
-	if err != nil {
-		return nil, err
-	}
-	webhookURL := buildDiscordWebhookURL(webhookID, webhookToken)
 	message := DiscordMessage{
 		Content: mdStr,
 	}
+
+	webhookID, webhookToken, err := getDiscordWebhookConfig()
+	if err != nil {
+		if errors.Is(err, errDiscordWebhookConfigMissing) {
+			logger.Warn("discord webhook config is empty, skip sending notification")
+			return &message, nil
+		}
+		return nil, err
+	}
+	webhookURL := buildDiscordWebhookURL(webhookID, webhookToken)
 	if err := sendDiscordWebhook(webhookURL, message); err != nil {
 		logger.Error("error: %v", err)
 		return nil, err
@@ -161,13 +167,13 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*DiscordMessage, e
 }
 
 func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) string {
-	sucessNames := []string{}
+	successNames := []string{}
 	lo.ForEach(*healthySites, func(site SiteStatus, _ int) {
-		sucessNames = append(sucessNames, site.Name)
+		successNames = append(successNames, site.Name)
 	})
 	// Sort Success Names
-	sort.Strings(sucessNames)
-	displayedSuccessNames := sucessNames
+	sort.Strings(successNames)
+	displayedSuccessNames := successNames
 	if len(displayedSuccessNames) > displayedPassedSitesLimit {
 		displayedSuccessNames = displayedSuccessNames[:displayedPassedSitesLimit]
 	}
@@ -227,7 +233,7 @@ func getDiscordWebhookConfig() (string, string, error) {
 	}
 
 	if webhookID == "" || webhookToken == "" {
-		return "", "", errors.New("discord webhook id or token is empty")
+		return "", "", errDiscordWebhookConfigMissing
 	}
 	return webhookID, webhookToken, nil
 }

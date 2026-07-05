@@ -155,7 +155,7 @@ GOOS=windows GOARCH=amd64 go build -o dist/api-windows-amd64 cmd/api/main.go
 
 ## Deployment
 
-Environment Variates:
+Environment Variables:
 
 - `${WEBHOOK_ID}`: Discord Webhook ID.
 - `${WEBHOOK_TOKEN}`: Discord Webhook Token.

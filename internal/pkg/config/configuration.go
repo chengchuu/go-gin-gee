@@ -127,7 +127,7 @@ func Setup() {
 // GetConfig helps you to get configuration data
 func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
-		logger.Info("Config: %+v", Config)
+		logger.Info("Config.Server: %+v", Config.Server)
 	}
 	return Config
 }

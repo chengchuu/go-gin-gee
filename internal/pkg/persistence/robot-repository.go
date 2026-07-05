@@ -170,10 +170,9 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 		mdStr += fmt.Sprintf(
 			"**%s FAIL**\n"+
 				"Error Code: %d\n"+
-				"Link: [%s](%s)\n",
+				"Link: %s\n",
 			site.Name,
 			site.Code,
-			siteLink,
 			siteLink,
 		)
 	})

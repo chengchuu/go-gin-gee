@@ -29,7 +29,7 @@ func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
 		"**Alpha OK**\n" +
 		"**Beta FAIL**\n" +
 		"Error Code: 503\n" +
-		"Link: [https://beta.example](https://beta.example)\n" +
+		"Link: https://beta.example\n" +
 		"*Sum: 2*"
 
 	if got != want {

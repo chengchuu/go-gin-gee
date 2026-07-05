@@ -26,11 +26,11 @@ func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
 
 	got := buildHealthCheckMarkdown(sites, &healthySites, &failedSites)
 	want := "Health Check Result:\n" +
-		"**Alpha OK**\n" +
-		"**Beta FAIL**\n" +
+		"Alpha OK\n" +
+		"Beta FAIL\n" +
 		"Error Code: 503\n" +
-		"Link: https://beta.example\n" +
-		"*All: 2 | Passed: 1 | Failed: 1*"
+		"Link: <https://beta.example>\n" +
+		"All: 2 | Passed: 1 | Failed: 1"
 
 	if got != want {
 		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)
@@ -49,10 +49,10 @@ func TestBuildHealthCheckMarkdownLimitsPassedSites(t *testing.T) {
 
 	got := buildHealthCheckMarkdown(sites, &healthySites, &failedSites)
 	want := "Health Check Result:\n" +
-		"**Alpha OK**\n" +
-		"**Bravo OK**\n" +
-		"**Charlie OK**\n" +
-		"*All: 4 | Passed: 4 | Failed: 0*"
+		"Alpha OK\n" +
+		"Bravo OK\n" +
+		"Charlie OK\n" +
+		"All: 4 | Passed: 4 | Failed: 0"
 
 	if got != want {
 		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)
@@ -62,8 +62,40 @@ func TestBuildHealthCheckMarkdownLimitsPassedSites(t *testing.T) {
 	}
 }
 
+func TestGetWebSiteStatusUsesNoRedirectPolicyForExpected301(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/redirect-301", "/redirect-200":
+			http.Redirect(w, r, "/ok", http.StatusMovedPermanently)
+		case "/ok":
+			w.WriteHeader(http.StatusOK)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	sites := &Sites{
+		List: map[string]SiteStatus{
+			server.URL + "/redirect-301": {Name: "Redirect Expected", Code: http.StatusMovedPermanently},
+			server.URL + "/redirect-200": {Name: "Redirect Followed", Code: http.StatusOK},
+		},
+	}
+
+	healthySites, failSites, err := sites.getWebSiteStatus()
+	if err != nil {
+		t.Fatalf("getWebSiteStatus() error = %v", err)
+	}
+	if len(*failSites) != 0 {
+		t.Fatalf("failSites = %+v, want empty", *failSites)
+	}
+	if len(*healthySites) != 2 {
+		t.Fatalf("healthySites length = %d, want 2", len(*healthySites))
+	}
+}
+
 func TestSendDiscordWebhookSendsExpectedRequestAndAccepts204(t *testing.T) {
-	expectedContent := "Health Check Result:\n**Alpha OK**\n*All: 1 | Passed: 1 | Failed: 0*"
+	expectedContent := "Health Check Result:\nAlpha OK\nAll: 1 | Passed: 1 | Failed: 0"
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++

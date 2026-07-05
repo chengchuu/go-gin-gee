@@ -63,16 +63,23 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	// http://c.biancheng.net/view/32.html
 	healthySites := []SiteStatus{}
 	failSites := []SiteStatus{}
-	client := resty.New().
+	redirectClient := resty.New().
 		SetTimeout(5 * time.Second).
 		SetRedirectPolicy(resty.FlexibleRedirectPolicy(10))
+	noRedirectClient := resty.New().
+		SetTimeout(5 * time.Second).
+		SetRedirectPolicy(resty.NoRedirectPolicy())
 	// https://github.com/go-resty/resty/blob/master/redirect.go
 	for url, status := range r.List {
 		resCode := 0
+		client := redirectClient
+		if status.Code == http.StatusMovedPermanently {
+			client = noRedirectClient
+		}
 		resp, err := client.R().
 			SetDoNotParseResponse(true).
 			Get(url)
-		if err != nil {
+		if err != nil && !(status.Code == http.StatusMovedPermanently && resp != nil) {
 			logger.Error("error: %v", err)
 			resCode = 0
 		} else {
@@ -166,23 +173,23 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 	}
 	mdStr := "Health Check Result:\n"
 	lo.ForEach(displayedSuccessNames, func(name string, _ int) {
-		mdStr += fmt.Sprintf("**%s OK**\n", name)
+		mdStr += fmt.Sprintf("%s OK\n", name)
 	})
 	lo.ForEach(*failSites, func(site SiteStatus, _ int) {
 		siteLink, _ := lo.FindKeyBy(ss.List, func(k string, v SiteStatus) bool {
 			return v.Name == site.Name
 		})
 		mdStr += fmt.Sprintf(
-			"**%s FAIL**\n"+
+			"%s FAIL\n"+
 				"Error Code: %d\n"+
-				"Link: %s\n",
+				"Link: <%s>\n",
 			site.Name,
 			site.Code,
 			siteLink,
 		)
 	})
 	mdStr += fmt.Sprintf(
-		"*All: %d | Passed: %d | Failed: %d*",
+		"All: %d | Passed: %d | Failed: %d",
 		len(*healthySites)+len(*failSites),
 		len(*healthySites),
 		len(*failSites),

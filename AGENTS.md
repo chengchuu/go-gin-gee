@@ -162,7 +162,7 @@ Flow:
 1. Site list is read from config.
 2. Each site is checked via HTTP using `resty`.
 3. An HTML report is written to `log/robot.html`.
-4. A Markdown summary may be sent to a WeCom robot.
+4. A summary message may be sent to a Discord webhook when `WEBHOOK_ID` and `WEBHOOK_TOKEN` are configured.
 
 ### Agent/server utilities
 
@@ -222,7 +222,8 @@ Important config fields:
 - `Server.Mode`
 - `Database.*`
 - `Data.EnableCORS`
-- `Data.WeComRobotCheck`
+- `Data.WebhookID`
+- `Data.WebhookToken`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`

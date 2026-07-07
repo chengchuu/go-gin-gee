@@ -161,6 +161,11 @@ Environment Variables:
 - `${WEBHOOK_TOKEN}`: Discord Webhook Token.
 - `${BASE_URL}`: The Base URL for this Service.
 
+Config-file only private webhook API fields:
+
+- `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/send-discord-message`.
+- `Data.WebhookAPIKeys`: API keys accepted by the private webhook API via `X-Webhook-API-Key`.
+
 ### Supervisor
 
 ```text

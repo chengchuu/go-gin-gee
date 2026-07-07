@@ -38,9 +38,12 @@ type DatabaseConfiguration struct {
 }
 
 type DataConfiguration struct {
-	EnableCORS       string
+	EnableCORS string
+	// mapstructure maps config-file keys such as Data.WEBHOOK_ID into these Go fields.
 	WebhookID        string `mapstructure:"WEBHOOK_ID"`
 	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
+	EnableWebhookAPI string
+	WebhookAPIKeys   []string
 	BaseURL          string
 	AgentRecordsPath string
 	Sites            []modelsS.WebSite
@@ -63,6 +66,7 @@ func Setup() {
 	viper.AutomaticEnv()
 	// Default value
 	viper.SetDefault("EnableCORS", "")
+	viper.SetDefault("EnableWebhookAPI", "off")
 	viper.SetDefault("WEBHOOK_ID", "")
 	viper.SetDefault("WEBHOOK_TOKEN", "")
 	viper.SetDefault("BASE_URL", "")
@@ -128,6 +132,8 @@ func Setup() {
 func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config.Server: %+v", Config.Server)
+		logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
+		logger.Info("Config.Data.WebhookAPIKeys: %+v", Config.Data.WebhookAPIKeys)
 	}
 	return Config
 }

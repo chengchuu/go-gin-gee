@@ -153,6 +153,7 @@ Special behavior:
 
 - Route:
   - `/api/gee/check`
+  - `/api/gee/send-discord-message`
 - Main files:
   - `internal/api/controllers/schedules-controller.go`
   - `internal/pkg/persistence/robot-repository.go`
@@ -163,6 +164,7 @@ Flow:
 2. Each site is checked via HTTP using `resty`.
 3. An HTML report is written to `log/robot.html`.
 4. A summary message may be sent to a Discord webhook when `WEBHOOK_ID` and `WEBHOOK_TOKEN` are configured.
+5. `/api/gee/send-discord-message` reuses the Discord sender and is disabled unless `Data.EnableWebhookAPI` is `on` with a matching `X-Webhook-API-Key`.
 
 ### Agent/server utilities
 
@@ -224,6 +226,8 @@ Important config fields:
 - `Data.EnableCORS`
 - `Data.WebhookID`
 - `Data.WebhookToken`
+- `Data.EnableWebhookAPI`
+- `Data.WebhookAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`

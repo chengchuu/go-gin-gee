@@ -53,10 +53,11 @@ func Setup() *gin.Engine {
 		)
 	}))
 	app.Use(gin.Recovery())
-	if conf.Data.EnableCORS == "on" {
+	switch conf.Data.EnableCORS {
+	case "on":
 		logger.Info("CORS enabled")
 		app.Use(middlewares.CORS())
-	} else if conf.Data.EnableCORS == "off" {
+	case "off":
 		logger.Info("CORS disabled")
 		app.Use(middlewares.PreflightHandler())
 	}
@@ -101,6 +102,7 @@ func Setup() *gin.Engine {
 		gee.POST("/create-alias2data", controllers.CreateAlias2data)
 		gee.GET("/count-alias2data", controllers.CountAlias2data)
 		gee.GET("/check", controllers.CheckSitesHealth)
+		gee.POST("/webhook-message", controllers.SendDiscordMessage)
 		gee.GET("/query-short-link", controllers.GetTiny)
 		gee.POST("/generate-short-link", controllers.CreateTiny)
 		gee.GET("/get-tag-name", controllers.GetTag)

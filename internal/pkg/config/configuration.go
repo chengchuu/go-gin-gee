@@ -66,7 +66,6 @@ func Setup() {
 	viper.AutomaticEnv()
 	// Default value
 	viper.SetDefault("EnableCORS", "")
-	viper.SetDefault("EnableWebhookAPI", "off")
 	viper.SetDefault("WEBHOOK_ID", "")
 	viper.SetDefault("WEBHOOK_TOKEN", "")
 	viper.SetDefault("BASE_URL", "")

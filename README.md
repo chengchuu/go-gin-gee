@@ -163,7 +163,7 @@ Environment Variables:
 
 Config-file only private webhook API fields:
 
-- `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/send-discord-message`.
+- `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/webhook-message`.
 - `Data.WebhookAPIKeys`: API keys accepted by the private webhook API via `X-Webhook-API-Key`.
 
 ### Supervisor

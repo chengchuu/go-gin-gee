@@ -83,7 +83,7 @@ func performSendDiscordMessageRequest(apiKey, body string) *httptest.ResponseRec
 	gin.SetMode(gin.TestMode)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	req := httptest.NewRequest(http.MethodPost, "/api/gee/send-discord-message", strings.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/api/gee/webhook-message", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	if apiKey != "" {
 		req.Header.Set(webhookAPIKeyHeader, apiKey)

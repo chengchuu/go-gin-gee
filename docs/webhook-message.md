@@ -3,7 +3,7 @@
 Use this endpoint to send a message to the configured Discord webhook:
 
 ```http
-POST /api/gee/send-discord-message
+POST /api/gee/webhook-message
 ```
 
 **Important Security Rule**
@@ -82,7 +82,7 @@ Body:
 
 ```ts
 export async function sendDiscordMessage(content: string) {
-  const res = await fetch("BASE_URL/api/gee/send-discord-message", {
+  const res = await fetch("BASE_URL/api/gee/webhook-message", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -104,7 +104,7 @@ export async function sendDiscordMessage(content: string) {
 **curl Test**
 
 ```bash
-curl -i -X POST "BASE_URL/api/gee/send-discord-message" \
+curl -i -X POST "BASE_URL/api/gee/webhook-message" \
   -H "Content-Type: application/json" \
   -H "X-Webhook-API-Key: gee_webhook_12345" \
   -d '{"content":"Hello from API"}'

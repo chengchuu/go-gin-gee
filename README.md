@@ -166,6 +166,10 @@ Config-file only private webhook API fields:
 - `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/webhook-message`.
 - `Data.WebhookAPIKeys`: API keys accepted by the private webhook API via `X-Webhook-API-Key`.
 
+API-key checks apply only where handlers explicitly implement them; currently, the private webhook endpoint uses this access control.
+
+Upgrading does not automatically drop legacy user tables. After backing up the database and verifying the deployment, operators may optionally remove obsolete tables such as `gee_user` and `gee_user_role` manually.
+
 ### Supervisor
 
 ```text

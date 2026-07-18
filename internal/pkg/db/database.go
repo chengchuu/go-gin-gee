@@ -8,7 +8,6 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/alias2data"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
-	"github.com/chengchuu/go-gin-gee/internal/pkg/models/users"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -71,8 +70,6 @@ func SetupDB() {
 
 // Auto migrate project models
 func migration() {
-	DB.AutoMigrate(&users.User{})
-	DB.AutoMigrate(&users.UserRole{})
 	DB.AutoMigrate(&alias2data.Alias2data{})
 	DB.AutoMigrate(&tiny.Tiny{})
 }

@@ -20,9 +20,8 @@ type Configuration struct {
 }
 
 type ServerConfiguration struct {
-	Port   string
-	Secret string
-	Mode   string
+	Port string
+	Mode string
 }
 
 type DatabaseConfiguration struct {
@@ -117,9 +116,6 @@ func Setup() {
 	if configuration.Server.Port == "" {
 		configuration.Server.Port = "3000"
 	}
-	if configuration.Server.Secret == "" {
-		configuration.Server.Secret = "wednov23rd2022"
-	}
 	if configuration.Server.Mode == "" {
 		configuration.Server.Mode = "release"
 	}
@@ -132,7 +128,6 @@ func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config.Server: %+v", Config.Server)
 		logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
-		logger.Info("Config.Data.WebhookAPIKeys: %+v", Config.Data.WebhookAPIKeys)
 	}
 	return Config
 }

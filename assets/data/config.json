@@ -12,7 +12,6 @@
   },
   "Server": {
     "Port": "3000",
-    "Secret": "wednov23rd2022",
     "Mode": "release"
   },
   "Data": {

@@ -13,7 +13,6 @@
   },
   "Server": {
     "Port": "3000",
-    "Secret": "frijan27th2023",
     "_Mode": "#release | debug",
     "Mode": "debug"
   },

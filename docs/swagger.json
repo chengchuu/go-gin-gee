@@ -360,7 +360,8 @@
             ],
             "properties": {
                 "content_type": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "text/plain"
                 },
                 "key": {
                     "type": "string"
@@ -369,7 +370,12 @@
                     "type": "string"
                 },
                 "visibility": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "private",
+                    "enum": [
+                        "public",
+                        "private"
+                    ]
                 }
             }
         },

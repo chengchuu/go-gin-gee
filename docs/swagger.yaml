@@ -56,12 +56,17 @@ definitions:
   controllers.SetKVRequest:
     properties:
       content_type:
+        default: text/plain
         type: string
       key:
         type: string
       value:
         type: string
       visibility:
+        default: private
+        enum:
+        - public
+        - private
         type: string
     required:
     - key

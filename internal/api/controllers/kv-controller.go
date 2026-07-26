@@ -27,8 +27,8 @@ type GetKVRequest struct {
 type SetKVRequest struct {
 	Key         string `json:"key" binding:"required"`
 	Value       string `json:"value"`
-	ContentType string `json:"content_type"`
-	Visibility  string `json:"visibility"`
+	ContentType string `json:"content_type" default:"text/plain"`
+	Visibility  string `json:"visibility" default:"private" enums:"public,private"`
 }
 
 type IncrementKVRequest struct {

@@ -369,7 +369,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "content_type": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "text/plain"
                 },
                 "key": {
                     "type": "string"
@@ -378,7 +379,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "visibility": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "private",
+                    "enum": [
+                        "public",
+                        "private"
+                    ]
                 }
             }
         },

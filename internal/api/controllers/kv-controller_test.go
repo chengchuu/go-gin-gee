@@ -85,6 +85,18 @@ func TestSetKV(t *testing.T) {
 		t.Fatalf("unexpected update data: %#v", updatedData)
 	}
 
+	defaultVisibility := performKVRequest(app, "/api/gee/kv/set", `{"key":"site.json","content_type":"application/json"}`, kvTestAPIKey)
+	defaultVisibilityData := assertKVEnvelope(t, defaultVisibility, http.StatusCreated, 0)["data"].(map[string]interface{})
+	if defaultVisibilityData["content_type"] != "application/json" || defaultVisibilityData["visibility"] != "private" {
+		t.Fatalf("unexpected default visibility data: %#v", defaultVisibilityData)
+	}
+
+	defaultContentType := performKVRequest(app, "/api/gee/kv/set", `{"key":"site.public","visibility":"public"}`, kvTestAPIKey)
+	defaultContentTypeData := assertKVEnvelope(t, defaultContentType, http.StatusCreated, 0)["data"].(map[string]interface{})
+	if defaultContentTypeData["content_type"] != "text/plain" || defaultContentTypeData["visibility"] != "public" {
+		t.Fatalf("unexpected default content type data: %#v", defaultContentTypeData)
+	}
+
 	tests := []struct {
 		name   string
 		body   string

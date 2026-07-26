@@ -26,9 +26,9 @@ func TestRegisterRoutesIncludesOnlyCurrentRoutes(t *testing.T) {
 		"GET /",
 		"GET /api/ping",
 		"GET /api/index",
-		"GET /api/gee/get-data-by-alias",
-		"POST /api/gee/create-alias2data",
-		"GET /api/gee/count-alias2data",
+		"POST /api/gee/kv/get",
+		"POST /api/gee/kv/set",
+		"POST /api/gee/kv/increment",
 		"GET /api/gee/check",
 		"POST /api/gee/webhook-message",
 		"GET /api/gee/query-short-link",
@@ -45,6 +45,13 @@ func TestRegisterRoutesIncludesOnlyCurrentRoutes(t *testing.T) {
 	}
 
 	legacyRoutes := []string{
+		"GET /api/gee/get-data-by-" + "alias",
+		"POST /api/gee/create-" + "alias2" + "data",
+		"GET /api/gee/count-" + "alias2" + "data",
+		"POST /api/gee/kv/delete",
+		"POST /api/gee/kv/list",
+		"POST /api/kv/get",
+		"POST /api/v1/kv/get",
 		"POST /api/login",
 		"POST /api/login/add",
 		"GET /api/users",

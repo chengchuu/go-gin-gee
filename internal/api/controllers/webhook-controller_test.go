@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/chengchuu/go-gin-gee/internal/api/auth"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/gin-gonic/gin"
 )
@@ -57,10 +58,10 @@ func TestSendDiscordMessageValidatesBody(t *testing.T) {
 }
 
 func TestSendDiscordMessageDoesNotAuthorizeEmptyConfiguredKeys(t *testing.T) {
-	if isValidWebhookAPIKey("", []string{""}) {
+	if auth.ValidAPIKey("", []string{""}) {
 		t.Fatal("empty input and empty configured key should not authorize")
 	}
-	if isValidWebhookAPIKey("anything", []string{""}) {
+	if auth.ValidAPIKey("anything", []string{""}) {
 		t.Fatal("empty configured key should not authorize any input")
 	}
 }

@@ -94,9 +94,6 @@ func registerRoutes(app *gin.Engine) {
 	// Gee - begin
 	gee := app.Group("/api/gee")
 	{
-		gee.GET("/get-data-by-alias", controllers.GetDataByAlias)
-		gee.POST("/create-alias2data", controllers.CreateAlias2data)
-		gee.GET("/count-alias2data", controllers.CountAlias2data)
 		gee.GET("/check", controllers.CheckSitesHealth)
 		gee.POST("/webhook-message", controllers.SendDiscordMessage)
 		gee.GET("/query-short-link", controllers.GetTiny)
@@ -104,6 +101,15 @@ func registerRoutes(app *gin.Engine) {
 		gee.GET("/get-tag-name", controllers.GetTag)
 	}
 	// Gee - end
+
+	// Key-value - begin
+	kvGroup := app.Group("/api/gee/kv")
+	{
+		kvGroup.POST("/get", controllers.GetKV)
+		kvGroup.POST("/set", controllers.SetKV)
+		kvGroup.POST("/increment", controllers.IncrementKV)
+	}
+	// Key-value - end
 
 	// Tiny - begin
 	app.GET("/t/:key", controllers.RedirectTiny)

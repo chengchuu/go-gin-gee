@@ -43,6 +43,7 @@ type DataConfiguration struct {
 	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
 	EnableWebhookAPI string
 	WebhookAPIKeys   []string
+	KVAPIKeys        []string
 	BaseURL          string
 	AgentRecordsPath string
 	Sites            []modelsS.WebSite

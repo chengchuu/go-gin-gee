@@ -22,6 +22,7 @@
     "WEBHOOK_TOKEN": "",
     "EnableWebhookAPI": "off",
     "WebhookAPIKeys": [],
+    "KVAPIKeys": [],
     "Sites": [],
     "SpecialLinks": []
   }

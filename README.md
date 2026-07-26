@@ -7,6 +7,7 @@ Gee is a project that provides several services for everyday work. The project i
 
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
+  - [Key-Value Store](#key-value-store)
 - [Build](#build)
 - [Deployment](#deployment)
   - [Supervisor](#supervisor)
@@ -73,6 +74,113 @@ More in folder [`scripts`](./scripts/README.md).
 ## API Examples
 
 The base URL for this API is an environment variate `${BASE_URL}`, such as `https://example.com/path`.
+
+### Key-Value Store
+
+The key-value API exposes exactly three JSON endpoints:
+
+| Method | Path | Authorization | Behavior |
+| :-- | :-- | :-- | :-- |
+| POST | `/api/gee/kv/get` | Required only for private entries | Read an entry using a key from the JSON body |
+| POST | `/api/gee/kv/set` | `X-API-Key` required | Create or replace an entry (upsert) |
+| POST | `/api/gee/kv/increment` | `X-API-Key` required | Atomically increment a numeric counter |
+
+Configure accepted keys in `Data.KVAPIKeys`. Keys must match `^[a-z0-9][a-z0-9._:-]{0,127}$`; they are never read from paths, query strings, or headers. Entry visibility is `public` or `private` and defaults to `private`. An unauthorized read of a private entry returns the same `404` response as an unknown key.
+
+All responses contain exactly `code`, `message`, and `data`. Application codes complement, rather than replace, meaningful HTTP statuses:
+
+| Code | Message | HTTP status |
+| --: | :-- | --: |
+| 0 | success | 200 or 201 |
+| 40001 | invalid request | 400 |
+| 40002 | invalid key | 400 |
+| 40003 | invalid value | 400 |
+| 40101 | API key required | 401 |
+| 40301 | access denied | 403 |
+| 40401 | key not found | 404 |
+| 40901 | incompatible value type | 409 |
+| 50001 | internal server error | 500 |
+
+Get a public value:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/get' \
+  --header 'Content-Type: application/json' \
+  --data '{"key":"site.title"}'
+```
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "site.title",
+    "value": "Gee Service",
+    "content_type": "text/plain",
+    "visibility": "public",
+    "created_at": "2026-07-26T03:00:00Z",
+    "updated_at": "2026-07-26T03:00:00Z"
+  }
+}
+```
+
+Create or replace a value:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/set' \
+  --header 'Content-Type: application/json' \
+  --header "X-API-Key: ${GEE_KV_API_KEY}" \
+  --data '{"key":"site.title","value":"Gee Service","content_type":"text/plain","visibility":"private"}'
+```
+
+Creation returns HTTP `201`; replacement returns HTTP `200`. The response data includes `created: true` or `created: false`.
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "site.title",
+    "value": "Gee Service",
+    "content_type": "text/plain",
+    "visibility": "private",
+    "created": true
+  }
+}
+```
+
+Increment a counter:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/increment' \
+  --header 'Content-Type: application/json' \
+  --header "X-API-Key: ${GEE_KV_API_KEY}" \
+  --data '{"key":"page.views","delta":1}'
+```
+
+An omitted `delta` defaults to `1`; explicit zero, positive, and negative deltas are supported. Missing counters start at zero, and increments use database-side arithmetic. A key already used for a non-counter entry returns HTTP `409`.
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "page.views",
+    "value": 101,
+    "delta": 1
+  }
+}
+```
+
+Errors contain no internal details and normally use `data: null`:
+
+```json
+{
+  "code": 40401,
+  "message": "key not found",
+  "data": null
+}
+```
 
 <!-- omit from toc -->
 ### Generate Short Link
@@ -166,7 +274,11 @@ Config-file only private webhook API fields:
 - `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/webhook-message`.
 - `Data.WebhookAPIKeys`: API keys accepted by the private webhook API via `X-Webhook-API-Key`.
 
-API-key checks apply only where handlers explicitly implement them; currently, the private webhook endpoint uses this access control.
+Key-value API configuration:
+
+- `Data.KVAPIKeys`: API keys accepted by key-value write operations and private reads via `X-API-Key`.
+
+API-key checks apply only where handlers explicitly implement them. The webhook endpoint uses its webhook-specific header and key list; the key-value endpoints use `X-API-Key` and `Data.KVAPIKeys`.
 
 Upgrading does not automatically drop legacy user tables. After backing up the database and verifying the deployment, operators may optionally remove obsolete tables such as `gee_user` and `gee_user_role` manually.
 
@@ -286,7 +398,7 @@ go install github.com/swaggo/swag/cmd/swag@v1.8.12
 Generate:
 
 ```bash
-swag init --dir cmd/api --parseDependency --output docs
+swag init --dir cmd/api,internal/api/controllers --parseDependency --output docs
 ```
 
 Make sure your GO Path is on the PATH environment variable `export PATH=$(go env GOPATH)/bin:$PATH` if the following error occurs `command not found: swag`.

@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"crypto/subtle"
 	"errors"
 	"net/http"
 	"strings"
 
+	"github.com/chengchuu/go-gin-gee/internal/api/auth"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
@@ -21,7 +21,7 @@ func SendDiscordMessage(c *gin.Context) {
 		http_err.NewError(c, http.StatusNotFound, errors.New("webhook api is disabled"))
 		return
 	}
-	if !isValidWebhookAPIKey(c.GetHeader(webhookAPIKeyHeader), conf.Data.WebhookAPIKeys) {
+	if !auth.ValidAPIKey(c.GetHeader(webhookAPIKeyHeader), conf.Data.WebhookAPIKeys) {
 		http_err.NewError(c, http.StatusUnauthorized, errors.New("invalid webhook api key"))
 		return
 	}
@@ -57,19 +57,4 @@ func SendDiscordMessage(c *gin.Context) {
 
 func isWebhookAPIEnabled(conf *config.Configuration) bool {
 	return conf != nil && conf.Data.EnableWebhookAPI == "on"
-}
-
-func isValidWebhookAPIKey(input string, keys []string) bool {
-	if input == "" {
-		return false
-	}
-	for _, key := range keys {
-		if key == "" {
-			continue
-		}
-		if subtle.ConstantTimeCompare([]byte(input), []byte(key)) == 1 {
-			return true
-		}
-	}
-	return false
 }

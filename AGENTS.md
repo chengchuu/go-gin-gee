@@ -86,20 +86,23 @@ Common route registration lives in `internal/api/router/router.go`.
 
 ## Major Functional Areas
 
-### Alias-to-data storage
+### Key-Value Store
 
 - Routes:
-  - `/api/gee/get-data-by-alias`
-  - `/api/gee/create-alias2data`
-  - `/api/gee/count-alias2data`
+  - `POST /api/gee/kv/get`
+  - `POST /api/gee/kv/set`
+  - `POST /api/gee/kv/increment`
 - Main files:
-  - `internal/api/controllers/alias2data-controller.go`
-  - `internal/pkg/persistence/alias2data-repository.go`
+  - `internal/api/controllers/kv-controller.go`
+  - `internal/pkg/persistence/kv-repository.go`
+  - `internal/pkg/models/kv/`
 
 Flow:
 
-- `get-data-by-alias` retrieves a stored alias record and only returns it if `Public` is true.
-- `count-alias2data` is stateful: it reads a record, initializes it when missing, increments a count stored in `Data`, and saves it back.
+- Keys are provided in JSON request bodies, never paths or query strings.
+- `set` uses upsert semantics.
+- `increment` uses atomic database arithmetic and a dedicated counter table.
+- The key-value endpoints follow the project API response convention.
 
 ### Short links
 
@@ -186,7 +189,8 @@ Flow:
   - `postgres`
   - `mysql`
 - Auto-migrations run for:
-  - `alias2data.Alias2data`
+  - `kv.Entry`
+  - `kv.Counter`
   - `tiny.Tiny`
 
 Legacy user tables are not dropped automatically. Operators may remove them manually only after backing up the database and verifying a deployment without the users module.
@@ -213,6 +217,7 @@ Important config fields:
 - `Data.WebhookToken`
 - `Data.EnableWebhookAPI`
 - `Data.WebhookAPIKeys`
+- `Data.KVAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`
@@ -227,6 +232,37 @@ When changing behavior, start here:
 - config: `internal/pkg/config/configuration.go`
 - DB wiring: `internal/pkg/db/database.go`
 - shared persistence helpers: `internal/pkg/persistence/common.go`
+
+## API Response Convention
+
+New JSON APIs must return a consistent response envelope:
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+Rules:
+
+* The top-level fields are always `code`, `message`, and `data`.
+* Successful responses use application code `0`.
+* Failed responses use a documented non-zero application code.
+* HTTP status codes must continue to represent the actual HTTP result.
+* `data` contains the actual result using its natural JSON type.
+* Object results use `{ ... }`.
+* Collection results use `[ ... ]`; an empty collection uses `[]`.
+* Scalar results use their actual string, number, or boolean type.
+* Responses with no result use `null`.
+* Failed responses normally use `data: null`.
+* Do not use `{}` as a generic placeholder for missing data.
+* Do not duplicate response values in deprecated top-level fields.
+* Do not expose internal errors, SQL, API keys, stack traces, configuration values, or filesystem paths.
+* JSON APIs following this envelope should not use `204 No Content`; use a suitable success status with `data: null` when no result is returned.
+
+This convention applies to the key-value API and future newly added JSON APIs. Existing APIs are not retroactively migrated unless a task explicitly requests it.
 
 ## Working Guidelines
 

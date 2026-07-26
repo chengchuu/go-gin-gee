@@ -4,11 +4,11 @@ on:
   # Test
   pull_request:
     branches:
-      - feature/v1/discord-message-tue-jul-7-2026
+      - main
   # Publish
   push:
     branches:
-      - feature/v1/discord-message-tue-jul-7-2026
+      - release/v1
 
 jobs:
   test:

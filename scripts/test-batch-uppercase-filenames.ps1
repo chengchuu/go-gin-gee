@@ -44,12 +44,14 @@ try {
 
   New-Item -ItemType File -Path (Join-Path $testRoot "abc-123.txt") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "NAME-OK.TXT") | Out-Null
+  New-Item -ItemType File -Path (Join-Path $testRoot "xtm.dvd-halfcd2.mkv") | Out-Null
   New-Item -ItemType File -Path (Join-Path $childDir "nested.txt") | Out-Null
 
   & $scriptPath -Path $testRoot
 
   Assert-Exists (Join-Path $testRoot "ABC-123.TXT")
   Assert-Exists (Join-Path $testRoot "NAME-OK.TXT")
+  Assert-Exists (Join-Path $testRoot "XTM.DVD-HALFCD2.MKV")
   Assert-Exists (Join-Path $childDir "nested.txt")
   Assert-NotExists (Join-Path $testRoot "abc-123.txt")
 

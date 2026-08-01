@@ -47,6 +47,22 @@ function New-TemporaryFileName {
   return $name
 }
 
+function Test-SameFilesystemPath {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Left,
+
+    [Parameter(Mandatory = $true)]
+    [string]$Right
+  )
+
+  if ($IsWindows -or $env:OS -eq "Windows_NT") {
+    return [string]::Equals($Left, $Right, [System.StringComparison]::OrdinalIgnoreCase)
+  }
+
+  return [string]::Equals($Left, $Right, [System.StringComparison]::Ordinal)
+}
+
 if (!(Test-Path -LiteralPath $Path -PathType Container)) {
   throw "Path not found or not a directory: $Path"
 }
@@ -93,7 +109,7 @@ if ($collisions.Count -gt 0) {
 
 foreach ($item in $renamePlan) {
   $existingTarget = Get-Item -LiteralPath $item.TargetPath -ErrorAction SilentlyContinue
-  if ($null -ne $existingTarget -and ($existingTarget.FullName -cne $item.File.FullName)) {
+  if ($null -ne $existingTarget -and !(Test-SameFilesystemPath -Left $existingTarget.FullName -Right $item.File.FullName)) {
     Write-Error ("Target already exists, skipping all renames: {0}" -f $item.TargetPath)
     exit 1
   }

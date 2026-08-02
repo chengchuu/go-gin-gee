@@ -34,6 +34,36 @@ function Assert-NotExists {
   }
 }
 
+function Assert-DirectoryHasName {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Directory,
+
+    [Parameter(Mandatory = $true)]
+    [string]$Name
+  )
+
+  $names = Get-ChildItem -LiteralPath $Directory -Force | ForEach-Object { $_.Name }
+  if (!($names -ccontains $Name)) {
+    throw "Expected directory '$Directory' to contain entry named '$Name'"
+  }
+}
+
+function Assert-DirectoryDoesNotHaveName {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Directory,
+
+    [Parameter(Mandatory = $true)]
+    [string]$Name
+  )
+
+  $names = Get-ChildItem -LiteralPath $Directory -Force | ForEach-Object { $_.Name }
+  if ($names -ccontains $Name) {
+    throw "Unexpected directory entry '$Name' exists in '$Directory'"
+  }
+}
+
 $scriptPath = Join-Path $PSScriptRoot "batch-uppercase-filenames.ps1"
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("uppercase-file-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
@@ -44,27 +74,29 @@ try {
 
   New-Item -ItemType File -Path (Join-Path $testRoot "abc-123.txt") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "NAME-OK.TXT") | Out-Null
+  New-Item -ItemType File -Path (Join-Path $testRoot "xtm.dvd-halfcd2.mkv") | Out-Null
   New-Item -ItemType File -Path (Join-Path $childDir "nested.txt") | Out-Null
 
   & $scriptPath -Path $testRoot
 
   Assert-Exists (Join-Path $testRoot "ABC-123.TXT")
   Assert-Exists (Join-Path $testRoot "NAME-OK.TXT")
+  Assert-Exists (Join-Path $testRoot "XTM.DVD-HALFCD2.MKV")
   Assert-Exists (Join-Path $childDir "nested.txt")
-  Assert-NotExists (Join-Path $testRoot "abc-123.txt")
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "abc-123.txt"
 
   & $scriptPath -Path $testRoot -Recurse
 
   Assert-Exists (Join-Path $childDir "NESTED.TXT")
-  Assert-NotExists (Join-Path $childDir "nested.txt")
+  Assert-DirectoryDoesNotHaveName -Directory $childDir -Name "nested.txt"
 
   & $scriptPath -Path $testRoot -Recurse
 
   New-Item -ItemType File -Path (Join-Path $testRoot "preview.txt") | Out-Null
   & $scriptPath -Path $testRoot -WhatIf
 
-  Assert-Exists (Join-Path $testRoot "preview.txt")
-  Assert-NotExists (Join-Path $testRoot "PREVIEW.TXT")
+  Assert-DirectoryHasName -Directory $testRoot -Name "preview.txt"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "PREVIEW.TXT"
 
   Write-Host "All regression checks passed." -ForegroundColor Green
 } finally {

@@ -60,7 +60,27 @@ function Test-SameFilesystemPath {
     return [string]::Equals($Left, $Right, [System.StringComparison]::OrdinalIgnoreCase)
   }
 
-  return [string]::Equals($Left, $Right, [System.StringComparison]::Ordinal)
+  if ([string]::Equals($Left, $Right, [System.StringComparison]::Ordinal)) {
+    return $true
+  }
+
+  if (![string]::Equals($Left, $Right, [System.StringComparison]::OrdinalIgnoreCase)) {
+    return $false
+  }
+
+  $leftIdentity = if ($IsMacOS) {
+    & stat -f "%d:%i" -- $Left 2>$null
+  } else {
+    & stat -c "%d:%i" -- $Left 2>$null
+  }
+
+  $rightIdentity = if ($IsMacOS) {
+    & stat -f "%d:%i" -- $Right 2>$null
+  } else {
+    & stat -c "%d:%i" -- $Right 2>$null
+  }
+
+  return ($LASTEXITCODE -eq 0 -and $leftIdentity -eq $rightIdentity)
 }
 
 if (!(Test-Path -LiteralPath $Path -PathType Container)) {

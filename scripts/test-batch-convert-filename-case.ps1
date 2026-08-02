@@ -1,11 +1,11 @@
 # PowerShell
-# Regression checks for batch-uppercase-filenames.ps1.
+# Regression checks for batch-convert-filename-case.ps1.
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test-batch-uppercase-filenames.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test-batch-convert-filename-case.ps1"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -File "scripts/test-batch-uppercase-filenames.ps1"
+# pwsh -NoProfile -File "scripts/test-batch-convert-filename-case.ps1"
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -64,8 +64,8 @@ function Assert-DirectoryDoesNotHaveName {
   }
 }
 
-$scriptPath = Join-Path $PSScriptRoot "batch-uppercase-filenames.ps1"
-$testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("uppercase-file-test-{0}" -f ([guid]::NewGuid().ToString('N')))
+$scriptPath = Join-Path $PSScriptRoot "batch-convert-filename-case.ps1"
+$testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("filename-case-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
 
 try {
@@ -77,7 +77,7 @@ try {
   New-Item -ItemType File -Path (Join-Path $testRoot "xtm.dvd-halfcd2.mkv") | Out-Null
   New-Item -ItemType File -Path (Join-Path $childDir "nested.txt") | Out-Null
 
-  & $scriptPath -Path $testRoot
+  & $scriptPath -Path $testRoot -Mode Upper
 
   Assert-Exists (Join-Path $testRoot "ABC-123.TXT")
   Assert-Exists (Join-Path $testRoot "NAME-OK.TXT")
@@ -85,15 +85,21 @@ try {
   Assert-Exists (Join-Path $childDir "nested.txt")
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "abc-123.txt"
 
-  & $scriptPath -Path $testRoot -Recurse
+  & $scriptPath -Path $testRoot -Mode Upper -Recurse
 
   Assert-Exists (Join-Path $childDir "NESTED.TXT")
   Assert-DirectoryDoesNotHaveName -Directory $childDir -Name "nested.txt"
 
-  & $scriptPath -Path $testRoot -Recurse
+  & $scriptPath -Path $testRoot -Mode Upper -Recurse
+
+  New-Item -ItemType File -Path (Join-Path $testRoot "MIXED-Case.MKV") | Out-Null
+  & $scriptPath -Path $testRoot -Mode Lower
+
+  Assert-DirectoryHasName -Directory $testRoot -Name "mixed-case.mkv"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "MIXED-Case.MKV"
 
   New-Item -ItemType File -Path (Join-Path $testRoot "preview.txt") | Out-Null
-  & $scriptPath -Path $testRoot -WhatIf
+  & $scriptPath -Path $testRoot -Mode Upper -WhatIf
 
   Assert-DirectoryHasName -Directory $testRoot -Name "preview.txt"
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "PREVIEW.TXT"

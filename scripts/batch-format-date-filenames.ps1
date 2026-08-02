@@ -1,19 +1,24 @@
 # PowerShell
-# Convert lowercase English characters in file names to uppercase for a target path.
+# Convert leading YY-MMDD date strings in file names to YYYYMMDD.
+#
+# Example:
+# 26-0802-project-topic.md -> 20260802-project-topic.md
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-uppercase-filenames.ps1" -Path "E:\VIDEO"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-uppercase-filenames.ps1" -Path "/path/to/files"
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files"
 #
 # Preview only
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-uppercase-filenames.ps1" -Path "/path/to/files" -WhatIf
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files" -WhatIf
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
   [Parameter(Mandatory = $true)]
   [string]$Path,
+
+  [int]$Century = 2000,
 
   [switch]$Recurse
 )
@@ -21,16 +26,32 @@ param(
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-function Convert-EnglishLowerToUpper {
+function Convert-LeadingDateString {
   param(
     [Parameter(Mandatory = $true)]
-    [string]$Value
+    [string]$Name,
+
+    [Parameter(Mandatory = $true)]
+    [int]$Century
   )
 
-  return [regex]::Replace($Value, '[a-z]', {
-    param($match)
-    return $match.Value.ToUpperInvariant()
-  })
+  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})(-.+)$')
+  if (!$match.Success) {
+    return $Name
+  }
+
+  $year = $Century + [int]$match.Groups[1].Value
+  $month = [int]$match.Groups[2].Value
+  $day = [int]$match.Groups[3].Value
+
+  try {
+    $null = [datetime]::new($year, $month, $day)
+  } catch {
+    Write-Warning ("Invalid date in file name, skipping: {0}" -f $Name)
+    return $Name
+  }
+
+  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups[2].Value, $match.Groups[3].Value, $match.Groups[4].Value
 }
 
 function New-TemporaryFileName {
@@ -40,7 +61,7 @@ function New-TemporaryFileName {
   )
 
   do {
-    $name = "__tmp_uppercase_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
+    $name = "__tmp_dateformat_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
     $fullPath = Join-Path $Directory $name
   } while (Test-Path -LiteralPath $fullPath)
 
@@ -93,7 +114,7 @@ $files = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
 
 $renamePlan = @()
 foreach ($file in $files) {
-  $newName = Convert-EnglishLowerToUpper -Value $file.Name
+  $newName = Convert-LeadingDateString -Name $file.Name -Century $Century
   if ($newName -ceq $file.Name) {
     continue
   }
@@ -117,7 +138,7 @@ $collisions = $renamePlan |
   Where-Object { $_.Count -gt 1 }
 
 if ($collisions.Count -gt 0) {
-  Write-Error "Rename collision detected after uppercasing. No files were renamed."
+  Write-Error "Rename collision detected after date formatting. No files were renamed."
   foreach ($collision in $collisions) {
     Write-Error ("Target collision: {0}" -f $collision.Group[0].TargetPath)
     foreach ($item in $collision.Group) {
@@ -135,15 +156,12 @@ foreach ($item in $renamePlan) {
   }
 }
 
-# Pass 1: move every file to a temporary unique name. This makes case-only
-# renames reliable on case-insensitive filesystems.
 foreach ($item in $renamePlan) {
   if ($PSCmdlet.ShouldProcess($item.File.FullName, "Rename to temporary name $($item.TempName)")) {
     Rename-Item -LiteralPath $item.File.FullName -NewName $item.TempName
   }
 }
 
-# Pass 2: move temporary names to final uppercase names.
 foreach ($item in $renamePlan) {
   $tempPath = Join-Path $item.File.DirectoryName $item.TempName
   if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {

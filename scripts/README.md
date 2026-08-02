@@ -1,6 +1,7 @@
 # Scripts
 
 - [Scripts](#scripts)
+  - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
   - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
   - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
   - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
@@ -8,6 +9,18 @@
   - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
   - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
   - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+
+## Filename Batch Rename Helpers
+
+Windows 10 PowerShell:
+
+```powershell
+$Path = "E:\NOTES"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $Path -Mode Lower -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-underscore-filenames.ps1" -Path $Path -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $Path -Recurse
+```
 
 ## Change Git Name and Email for Different Projects
 

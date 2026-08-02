@@ -3,6 +3,7 @@
 #
 # Example:
 # 26-0802-project-topic.md -> 20260802-project-topic.md
+# 25-0330_Video.md -> 20250330_Video.md
 #
 # Windows GitBash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
@@ -35,7 +36,7 @@ function Convert-LeadingDateString {
     [int]$Century
   )
 
-  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})(-.+)$')
+  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})([-_].+)$')
   if (!$match.Success) {
     return $Name
   }

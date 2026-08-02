@@ -51,6 +51,8 @@ try {
   New-Item -ItemType Directory -Path $childDir | Out-Null
 
   New-Item -ItemType File -Path (Join-Path $testRoot "26-0802-project-topic.md") | Out-Null
+  New-Item -ItemType File -Path (Join-Path $testRoot "25-0330_Video.md") | Out-Null
+  New-Item -ItemType File -Path (Join-Path $testRoot "20-0818_TypeScript_Project.md") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "26-0230-invalid.md") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "20260802-already-formatted.md") | Out-Null
   New-Item -ItemType File -Path (Join-Path $childDir "25-0105-child-note.md") | Out-Null
@@ -58,10 +60,14 @@ try {
   & $scriptPath -Path $testRoot
 
   Assert-DirectoryHasName -Directory $testRoot -Name "20260802-project-topic.md"
+  Assert-DirectoryHasName -Directory $testRoot -Name "20250330_Video.md"
+  Assert-DirectoryHasName -Directory $testRoot -Name "20200818_TypeScript_Project.md"
   Assert-DirectoryHasName -Directory $testRoot -Name "26-0230-invalid.md"
   Assert-DirectoryHasName -Directory $testRoot -Name "20260802-already-formatted.md"
   Assert-DirectoryHasName -Directory $childDir -Name "25-0105-child-note.md"
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "26-0802-project-topic.md"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "25-0330_Video.md"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "20-0818_TypeScript_Project.md"
 
   & $scriptPath -Path $testRoot -Recurse
 

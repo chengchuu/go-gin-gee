@@ -67,10 +67,13 @@ function Assert-DirectoryDoesNotHaveName {
 $scriptPath = Join-Path $PSScriptRoot "batch-convert-filename-case.ps1"
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("filename-case-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
+$dirModeRoot = Join-Path $testRoot "Dir_Mode"
+$dirModeChild = Join-Path $dirModeRoot "Child_Dir"
 
 try {
   New-Item -ItemType Directory -Path $testRoot | Out-Null
   New-Item -ItemType Directory -Path $childDir | Out-Null
+  New-Item -ItemType Directory -Path $dirModeChild | Out-Null
 
   New-Item -ItemType File -Path (Join-Path $testRoot "abc-123.txt") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "NAME-OK.TXT") | Out-Null
@@ -103,6 +106,13 @@ try {
 
   Assert-DirectoryHasName -Directory $testRoot -Name "preview.txt"
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "PREVIEW.TXT"
+
+  & $scriptPath -Path $testRoot -Mode Lower -TargetType Directory -Recurse
+
+  $lowerDirModeRoot = Join-Path $testRoot "dir_mode"
+  Assert-DirectoryHasName -Directory $testRoot -Name "dir_mode"
+  Assert-DirectoryHasName -Directory $lowerDirModeRoot -Name "child_dir"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "Dir_Mode"
 
   Write-Host "All regression checks passed." -ForegroundColor Green
 } finally {

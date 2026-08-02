@@ -18,7 +18,7 @@ Windows 10 PowerShell:
 $Path = "E:\NOTES"
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $Path -Mode Lower -Recurse
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-underscore-filenames.ps1" -Path $Path -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $Path -Replace "_=-" -Recurse
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $Path -Recurse
 ```
 

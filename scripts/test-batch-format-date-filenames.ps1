@@ -45,10 +45,13 @@ function Assert-DirectoryDoesNotHaveName {
 $scriptPath = Join-Path $PSScriptRoot "batch-format-date-filenames.ps1"
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("date-filename-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
+$dirModeRoot = Join-Path $testRoot "24-0401_notes"
+$dirModeChild = Join-Path $dirModeRoot "23-0102-child"
 
 try {
   New-Item -ItemType Directory -Path $testRoot | Out-Null
   New-Item -ItemType Directory -Path $childDir | Out-Null
+  New-Item -ItemType Directory -Path $dirModeChild | Out-Null
 
   New-Item -ItemType File -Path (Join-Path $testRoot "26-0802-project-topic.md") | Out-Null
   New-Item -ItemType File -Path (Join-Path $testRoot "25-0330_Video.md") | Out-Null
@@ -79,6 +82,13 @@ try {
 
   Assert-DirectoryHasName -Directory $testRoot -Name "27-1201-preview.md"
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "20271201-preview.md"
+
+  & $scriptPath -Path $testRoot -TargetType Directory -Recurse
+
+  $renamedDirModeRoot = Join-Path $testRoot "20240401_notes"
+  Assert-DirectoryHasName -Directory $testRoot -Name "20240401_notes"
+  Assert-DirectoryHasName -Directory $renamedDirModeRoot -Name "20230102-child"
+  Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "24-0401_notes"
 
   Write-Host "All regression checks passed." -ForegroundColor Green
 } finally {

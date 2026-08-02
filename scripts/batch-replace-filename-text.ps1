@@ -1,62 +1,36 @@
 # PowerShell
-# Convert leading YY-MMDD date strings in file or directory names to YYYYMMDD.
+# Replace literal text combinations in file or directory names for a target path.
 #
 # Example:
-# 26-0802-project-topic.md -> 20260802-project-topic.md
-# 25-0330_Video.md -> 20250330_Video.md
+# my_file_name.md -> my-file-name.md
+# -Replace="_=-"
+# -Replace="*=-" -Replace="abc=xyz"
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-replace-filename-text.ps1" -Path "E:\NOTES" -Replace="_=-"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files"
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-replace-filename-text.ps1" -Path "/path/to/files" -Replace="_=-"
 #
 # Preview only
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files" -WhatIf
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-replace-filename-text.ps1" -Path "/path/to/files" -Replace="_=-" -WhatIf
 
-[CmdletBinding(SupportsShouldProcess = $true)]
+[CmdletBinding(SupportsShouldProcess = $true, PositionalBinding = $false)]
 param(
   [Parameter(Mandatory = $true)]
   [string]$Path,
 
-  [int]$Century = 2000,
-
   [ValidateSet("File", "Directory")]
   [string]$TargetType = "File",
 
-  [switch]$Recurse
+  [switch]$Recurse,
+
+  [Parameter(ValueFromRemainingArguments = $true)]
+  [string[]]$RemainingArguments
 )
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
-function Convert-LeadingDateString {
-  param(
-    [Parameter(Mandatory = $true)]
-    [string]$Name,
-
-    [Parameter(Mandatory = $true)]
-    [int]$Century
-  )
-
-  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})([-_].+)$')
-  if (!$match.Success) {
-    return $Name
-  }
-
-  $year = $Century + [int]$match.Groups[1].Value
-  $month = [int]$match.Groups[2].Value
-  $day = [int]$match.Groups[3].Value
-
-  try {
-    $null = [datetime]::new($year, $month, $day)
-  } catch {
-    Write-Warning ("Invalid date in file name, skipping: {0}" -f $Name)
-    return $Name
-  }
-
-  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups[2].Value, $match.Groups[3].Value, $match.Groups[4].Value
-}
 
 function New-TemporaryFileName {
   param(
@@ -65,11 +39,83 @@ function New-TemporaryFileName {
   )
 
   do {
-    $name = "__tmp_dateformat_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
+    $name = "__tmp_replace_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
     $fullPath = Join-Path $Directory $name
   } while (Test-Path -LiteralPath $fullPath)
 
   return $name
+}
+
+function Convert-ReplacementTextToRule {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Value
+  )
+
+  $separatorIndex = $Value.IndexOf("=")
+  if ($separatorIndex -lt 1) {
+    throw "Invalid replacement value '$Value'. Expected format: from=to"
+  }
+
+  return [pscustomobject]@{
+    From = $Value.Substring(0, $separatorIndex)
+    To   = $Value.Substring($separatorIndex + 1)
+  }
+}
+
+function Get-ReplacementRules {
+  param(
+    [string[]]$Arguments
+  )
+
+  $rules = @()
+  for ($i = 0; $i -lt $Arguments.Count; $i++) {
+    $argument = $Arguments[$i]
+
+    if ($argument -match '^-Replace[:=](.*)$') {
+      $rules += Convert-ReplacementTextToRule -Value $Matches[1]
+      continue
+    }
+
+    if ($argument -ieq "-Replace") {
+      if ($i + 1 -ge $Arguments.Count) {
+        throw "Missing replacement value after -Replace. Expected format: -Replace=""from=to"""
+      }
+
+      if ($Arguments[$i + 1].StartsWith("-")) {
+        throw "Missing replacement value after -Replace. Expected format: -Replace=""from=to"""
+      }
+
+      $rules += Convert-ReplacementTextToRule -Value $Arguments[$i + 1]
+      $i++
+      continue
+    }
+
+    throw "Unknown argument: $argument"
+  }
+
+  if ($rules.Count -eq 0) {
+    throw "At least one replacement is required. Example: -Replace=""_=-"""
+  }
+
+  return $rules
+}
+
+function Convert-NameWithReplacementRules {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Name,
+
+    [Parameter(Mandatory = $true)]
+    [object[]]$Rules
+  )
+
+  $newName = $Name
+  foreach ($rule in $Rules) {
+    $newName = $newName.Replace($rule.From, $rule.To)
+  }
+
+  return $newName
 }
 
 function Test-SameFilesystemPath {
@@ -112,6 +158,8 @@ if (!(Test-Path -LiteralPath $Path -PathType Container)) {
   throw "Path not found or not a directory: $Path"
 }
 
+$replacementRules = Get-ReplacementRules -Arguments $RemainingArguments
+
 $root = (Resolve-Path -LiteralPath $Path).Path
 if ($TargetType -eq "File") {
   $items = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
@@ -123,7 +171,7 @@ if ($TargetType -eq "File") {
 
 $renamePlan = @()
 foreach ($item in $items) {
-  $newName = Convert-LeadingDateString -Name $item.Name -Century $Century
+  $newName = Convert-NameWithReplacementRules -Name $item.Name -Rules $replacementRules
   if ($newName -ceq $item.Name) {
     continue
   }
@@ -149,7 +197,7 @@ $collisions = $renamePlan |
   Where-Object { $_.Count -gt 1 }
 
 if ($collisions.Count -gt 0) {
-  Write-Error "Rename collision detected after date formatting. No files were renamed."
+  Write-Error "Rename collision detected after applying replacements. No files were renamed."
   foreach ($collision in $collisions) {
     Write-Error ("Target collision: {0}" -f $collision.Group[0].TargetPath)
     foreach ($item in $collision.Group) {

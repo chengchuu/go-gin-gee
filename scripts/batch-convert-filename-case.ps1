@@ -1,5 +1,5 @@
 # PowerShell
-# Convert English characters in file names to uppercase or lowercase for a target path.
+# Convert English characters in file or directory names to uppercase or lowercase for a target path.
 #
 # Windows GitBash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-convert-filename-case.ps1" -Path "E:\VIDEO"
@@ -18,6 +18,9 @@ param(
 
   [ValidateSet("Upper", "Lower")]
   [string]$Mode = "Upper",
+
+  [ValidateSet("File", "Directory")]
+  [string]$TargetType = "File",
 
   [switch]$Recurse
 )
@@ -103,20 +106,27 @@ if (!(Test-Path -LiteralPath $Path -PathType Container)) {
 }
 
 $root = (Resolve-Path -LiteralPath $Path).Path
-$files = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
-  Sort-Object FullName
+if ($TargetType -eq "File") {
+  $items = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
+    Sort-Object FullName
+} else {
+  $items = Get-ChildItem -LiteralPath $root -Directory -Recurse:$Recurse |
+    Sort-Object FullName -Descending
+}
 
 $renamePlan = @()
-foreach ($file in $files) {
-  $newName = Convert-EnglishCase -Value $file.Name -Mode $Mode
-  if ($newName -ceq $file.Name) {
+foreach ($item in $items) {
+  $newName = Convert-EnglishCase -Value $item.Name -Mode $Mode
+  if ($newName -ceq $item.Name) {
     continue
   }
 
-  $targetPath = Join-Path $file.DirectoryName $newName
+  $parentPath = if ($TargetType -eq "File") { $item.DirectoryName } else { $item.Parent.FullName }
+  $targetPath = Join-Path $parentPath $newName
   $renamePlan += [pscustomobject]@{
-    File       = $file
-    TempName   = New-TemporaryFileName -Directory $file.DirectoryName
+    Item       = $item
+    ParentPath = $parentPath
+    TempName   = New-TemporaryFileName -Directory $parentPath
     NewName    = $newName
     TargetPath = $targetPath
   }
@@ -128,7 +138,7 @@ if ($renamePlan.Count -eq 0) {
 }
 
 $collisions = $renamePlan |
-  Group-Object { "{0}`0{1}" -f $_.File.DirectoryName, $_.NewName.ToUpperInvariant() } |
+  Group-Object { "{0}`0{1}" -f $_.ParentPath, $_.NewName.ToUpperInvariant() } |
   Where-Object { $_.Count -gt 1 }
 
 if ($collisions.Count -gt 0) {
@@ -136,7 +146,7 @@ if ($collisions.Count -gt 0) {
   foreach ($collision in $collisions) {
     Write-Error ("Target collision: {0}" -f $collision.Group[0].TargetPath)
     foreach ($item in $collision.Group) {
-      Write-Error ("  Source: {0}" -f $item.File.FullName)
+      Write-Error ("  Source: {0}" -f $item.Item.FullName)
     }
   }
   exit 1
@@ -144,7 +154,7 @@ if ($collisions.Count -gt 0) {
 
 foreach ($item in $renamePlan) {
   $existingTarget = Get-Item -LiteralPath $item.TargetPath -ErrorAction SilentlyContinue
-  if ($null -ne $existingTarget -and !(Test-SameFilesystemPath -Left $existingTarget.FullName -Right $item.File.FullName)) {
+  if ($null -ne $existingTarget -and !(Test-SameFilesystemPath -Left $existingTarget.FullName -Right $item.Item.FullName)) {
     Write-Error ("Target already exists, skipping all renames: {0}" -f $item.TargetPath)
     exit 1
   }
@@ -152,22 +162,37 @@ foreach ($item in $renamePlan) {
 
 # Pass 1: move every file to a temporary unique name. This makes case-only
 # renames reliable on case-insensitive filesystems.
-foreach ($item in $renamePlan) {
-  if ($PSCmdlet.ShouldProcess($item.File.FullName, "Rename to temporary name $($item.TempName)")) {
-    Rename-Item -LiteralPath $item.File.FullName -NewName $item.TempName
+if ($TargetType -eq "File") {
+  foreach ($item in $renamePlan) {
+    if ($PSCmdlet.ShouldProcess($item.Item.FullName, "Rename to temporary name $($item.TempName)")) {
+      Rename-Item -LiteralPath $item.Item.FullName -NewName $item.TempName
+    }
   }
-}
 
-# Pass 2: move temporary names to final uppercase names.
-foreach ($item in $renamePlan) {
-  $tempPath = Join-Path $item.File.DirectoryName $item.TempName
-  if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
-    Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+  # Pass 2: move temporary names to final names.
+  foreach ($item in $renamePlan) {
+    $tempPath = Join-Path $item.ParentPath $item.TempName
+    if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
+      Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+      Write-Host ("Renamed: {0} -> {1}" -f $item.Item.Name, $item.NewName)
+    }
+  }
+} else {
+  foreach ($item in $renamePlan) {
+    if ($PSCmdlet.ShouldProcess($item.Item.FullName, "Rename to temporary name $($item.TempName)")) {
+      Rename-Item -LiteralPath $item.Item.FullName -NewName $item.TempName
+    }
+
+    $tempPath = Join-Path $item.ParentPath $item.TempName
+    if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
+      Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+      Write-Host ("Renamed: {0} -> {1}" -f $item.Item.Name, $item.NewName)
+    }
   }
 }
 
 if ($WhatIfPreference) {
-  Write-Host ("Preview Complete! Would rename {0} file(s) to {1}case." -f $renamePlan.Count, $Mode.ToLowerInvariant()) -ForegroundColor Yellow
+  Write-Host ("Preview Complete! Would rename {0} {1}(s) to {2}case." -f $renamePlan.Count, $TargetType.ToLowerInvariant(), $Mode.ToLowerInvariant()) -ForegroundColor Yellow
 } else {
-  Write-Host ("Task Complete! Renamed {0} file(s) to {1}case." -f $renamePlan.Count, $Mode.ToLowerInvariant()) -ForegroundColor Green
+  Write-Host ("Task Complete! Renamed {0} {1}(s) to {2}case." -f $renamePlan.Count, $TargetType.ToLowerInvariant(), $Mode.ToLowerInvariant()) -ForegroundColor Green
 }

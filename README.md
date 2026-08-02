@@ -286,7 +286,7 @@ Run and visit: <http://localhost:3000/docs/index.html>
 ```bash
 git clone https://github.com/chengchuu/go-gin-gee.git
 go mod download
-go run scripts/init/main.go
+go run scripts/init/main.go && \
 go run cmd/api/main.go --config-path="data/config.dev.json"
 ```
 

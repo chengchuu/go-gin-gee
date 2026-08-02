@@ -96,6 +96,7 @@ func Setup() *gin.Engine {
 	// Static - end
 
 	// Basic - begin
+	app.GET("/", controllers.Index0310)
 	app.GET("/api/ping", controllers.Ping)
 	app.GET("/api/index", controllers.Index0920)
 	// Basic - end

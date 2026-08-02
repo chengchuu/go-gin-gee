@@ -1,7 +1,7 @@
 {
   "Database": {
     "_Driver": "sqlite | mysql | postgres",
-    "Driver": "sqlite",
+    "Driver": "",
     "Dbname": "data/database",
     "Username": "user",
     "Password": "password",

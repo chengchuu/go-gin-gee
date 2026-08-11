@@ -4,6 +4,8 @@
 # Windows GitBash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-convert-filename-case.ps1" -Path "E:\VIDEO"
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower -FileType Video
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower -IncludeExtension
 #
 # PowerShell 7/macOS/Linux
 # pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-convert-filename-case.ps1" -Path "/path/to/files"
@@ -21,6 +23,11 @@ param(
 
   [ValidateSet("File", "Directory")]
   [string]$TargetType = "File",
+
+  [ValidateSet("All", "Video", "Image")]
+  [string]$FileType = "All",
+
+  [switch]$IncludeExtension,
 
   [switch]$Recurse
 )
@@ -63,6 +70,43 @@ function New-TemporaryFileName {
   } while (Test-Path -LiteralPath $fullPath)
 
   return $name
+}
+
+function Get-PresetExtensions {
+  param(
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("All", "Video", "Image")]
+    [string]$FileType
+  )
+
+  if ($FileType -eq "Video") {
+    return @("mp4", "mov", "mkv", "avi", "wmv", "flv", "webm", "m4v", "mpeg", "mpg", "3gp", "ts", "m2ts", "mts", "ogv")
+  }
+
+  if ($FileType -eq "Image") {
+    return @("jpg", "jpeg", "png", "gif", "webp", "bmp", "tif", "tiff", "heic", "heif", "svg", "avif")
+  }
+
+  return @()
+}
+
+function Convert-FileNameCase {
+  param(
+    [Parameter(Mandatory = $true)]
+    [System.IO.FileInfo]$Item,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("Upper", "Lower")]
+    [string]$Mode,
+
+    [switch]$IncludeExtension
+  )
+
+  if ($IncludeExtension) {
+    return Convert-EnglishCase -Value $Item.Name -Mode $Mode
+  }
+
+  return ("{0}{1}" -f (Convert-EnglishCase -Value $Item.BaseName -Mode $Mode), $Item.Extension)
 }
 
 function Test-SameFilesystemPath {
@@ -109,6 +153,11 @@ $root = (Resolve-Path -LiteralPath $Path).Path
 if ($TargetType -eq "File") {
   $items = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
     Sort-Object FullName
+  $presetExtensions = Get-PresetExtensions -FileType $FileType
+  if ($presetExtensions.Count -gt 0) {
+    $items = $items |
+      Where-Object { $presetExtensions -contains $_.Extension.TrimStart(".").ToLowerInvariant() }
+  }
 } else {
   $items = Get-ChildItem -LiteralPath $root -Directory -Recurse:$Recurse |
     Sort-Object FullName -Descending
@@ -116,7 +165,11 @@ if ($TargetType -eq "File") {
 
 $renamePlan = @()
 foreach ($item in $items) {
-  $newName = Convert-EnglishCase -Value $item.Name -Mode $Mode
+  $newName = if ($TargetType -eq "File") {
+    Convert-FileNameCase -Item $item -Mode $Mode -IncludeExtension:$IncludeExtension
+  } else {
+    Convert-EnglishCase -Value $item.Name -Mode $Mode
+  }
   if ($newName -ceq $item.Name) {
     continue
   }

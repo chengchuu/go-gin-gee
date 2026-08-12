@@ -1,14 +1,13 @@
 # Scripts
 
-- [Scripts](#scripts)
-  - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
-  - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
-  - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
-  - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
-  - [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
-  - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
-  - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
-  - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+- [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
+- [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
+- [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
+- [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
+- [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
+- [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
+- [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
+- [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
 
 ## Filename Batch Rename Helpers
 
@@ -24,8 +23,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-
 
 ## Change Git Name and Email for Different Projects
 
+macOS Bash or zsh:
+
 ```bash
-go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="YOUR_NAME" -useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+```
+
+Windows 10 Git Bash:
+
+```bash
+bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)

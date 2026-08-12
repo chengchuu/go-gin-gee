@@ -17,6 +17,9 @@ require (
 	github.com/swaggo/swag v1.8.1
 	github.com/szyhf/go-excel v1.5.3
 	github.com/takuoki/clmconv v1.1.0
+	github.com/tdewolff/parse/v2 v2.8.16
+	golang.org/x/net v0.34.0
+	golang.org/x/sys v0.29.0
 )
 
 require (
@@ -84,8 +87,6 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

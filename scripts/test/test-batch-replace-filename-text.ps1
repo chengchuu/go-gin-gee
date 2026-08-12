@@ -2,10 +2,10 @@
 # Regression checks for batch-replace-filename-text.ps1.
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test-batch-replace-filename-text.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test\test-batch-replace-filename-text.ps1"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -File "scripts/test-batch-replace-filename-text.ps1"
+# pwsh -NoProfile -File "scripts/test/test-batch-replace-filename-text.ps1"
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -60,7 +60,7 @@ function Assert-Throws {
   throw $Message
 }
 
-$scriptPath = Join-Path $PSScriptRoot "batch-replace-filename-text.ps1"
+$scriptPath = Join-Path (Split-Path -Parent $PSScriptRoot) "batch-replace-filename-text.ps1"
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("replace-filename-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
 $dirModeRoot = Join-Path $testRoot "dir_mode"

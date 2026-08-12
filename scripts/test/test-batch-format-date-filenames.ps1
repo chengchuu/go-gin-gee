@@ -2,10 +2,10 @@
 # Regression checks for batch-format-date-filenames.ps1.
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test-batch-format-date-filenames.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test\test-batch-format-date-filenames.ps1"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -File "scripts/test-batch-format-date-filenames.ps1"
+# pwsh -NoProfile -File "scripts/test/test-batch-format-date-filenames.ps1"
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -42,7 +42,7 @@ function Assert-DirectoryDoesNotHaveName {
   }
 }
 
-$scriptPath = Join-Path $PSScriptRoot "batch-format-date-filenames.ps1"
+$scriptPath = Join-Path (Split-Path -Parent $PSScriptRoot) "batch-format-date-filenames.ps1"
 $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("date-filename-test-{0}" -f ([guid]::NewGuid().ToString('N')))
 $childDir = Join-Path $testRoot "child"
 $dirModeRoot = Join-Path $testRoot "24-0401_notes"

@@ -1,21 +1,20 @@
 # Scripts
 
-- [Scripts](#scripts)
-  - [Check Blog](#check-blog)
-  - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
-  - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
-  - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
-  - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
-  - [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
-  - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
-  - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
-  - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+- [Check Blog](#check-blog)
+- [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
+- [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
+- [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
+- [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
+- [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
+- [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
+- [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
+- [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
 
 ## Check Blog
 
 ```bash
 go run ./scripts/check-web-links \
-  -url="https://blog.mazey.nety/" \
+  -url="https://blog.mazey.net/" \
   -reportPath="log/MAZEY_LINKS_01.log"
 ```
 

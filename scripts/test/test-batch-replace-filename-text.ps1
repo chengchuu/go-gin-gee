@@ -65,6 +65,7 @@ $testRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("replace-filename-test-
 $childDir = Join-Path $testRoot "child"
 $dirModeRoot = Join-Path $testRoot "dir_mode"
 $dirModeChild = Join-Path $dirModeRoot "child_dir"
+$hyphenRoot = Join-Path $testRoot "hyphen"
 
 try {
   New-Item -ItemType Directory -Path $testRoot | Out-Null
@@ -102,6 +103,13 @@ try {
   Assert-DirectoryHasName -Directory $testRoot -Name "dir-mode"
   Assert-DirectoryHasName -Directory $renamedDirModeRoot -Name "child-dir"
   Assert-DirectoryDoesNotHaveName -Directory $testRoot -Name "dir_mode"
+
+  New-Item -ItemType Directory -Path $hyphenRoot | Out-Null
+  New-Item -ItemType File -Path (Join-Path $hyphenRoot "project-topic.md") | Out-Null
+  & $scriptPath -Path $hyphenRoot -Replace "-=_"
+
+  Assert-DirectoryHasName -Directory $hyphenRoot -Name "project_topic.md"
+  Assert-DirectoryDoesNotHaveName -Directory $hyphenRoot -Name "project-topic.md"
 
   Assert-Throws -ScriptBlock {
     & $scriptPath -Path $testRoot -Replace -TargetType File

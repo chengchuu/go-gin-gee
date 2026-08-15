@@ -30,6 +30,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $Path -Recurse
 ```
 
+macOS:
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-convert-filename-case.ps1" -Path "/Users/Path" -Recurse
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-replace-filename-text.ps1" -Path "/Users/Path" -Replace "-=_" -Recurse
+```
+
 ## Change Git Name and Email for Different Projects
 
 macOS Bash or zsh:

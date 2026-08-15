@@ -82,10 +82,6 @@ function Get-ReplacementRules {
         throw "Missing replacement value after -Replace. Expected format: -Replace=""from=to"""
       }
 
-      if ($Arguments[$i + 1].StartsWith("-")) {
-        throw "Missing replacement value after -Replace. Expected format: -Replace=""from=to"""
-      }
-
       $rules += Convert-ReplacementTextToRule -Value $Arguments[$i + 1]
       $i++
       continue

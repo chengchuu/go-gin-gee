@@ -7,7 +7,6 @@ import (
 	modelsS "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
 	modelsT "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -121,7 +120,7 @@ func Setup() {
 
 // GetConfig helps you to get configuration data
 func GetConfig() *Configuration {
-	if gin.IsDebugging() {
+	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config: %+v", Config)
 	}
 	return Config

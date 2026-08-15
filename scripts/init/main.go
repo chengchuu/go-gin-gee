@@ -23,7 +23,7 @@ func main() {
 		// Create the target directory if it doesn't exist
 		if _, err := os.Stat(targetDir); os.IsNotExist(err) {
 			if err := os.Mkdir(targetDir, 0755); err != nil {
-				logger.Fatal("Error creating directory %s: %v\n", targetDir, err)
+				logger.Fatal("Error creating directory %s: %v", targetDir, err)
 			}
 		}
 
@@ -32,9 +32,9 @@ func main() {
 			src := filepath.Join("assets", targetDir, file)
 			dst := filepath.Join(targetDir, file)
 			if err := copyFile(src, dst); err != nil {
-				logger.Printf("Error copying file %s: %v\n", file, err)
+				logger.Printf("Error copying file %s: %v", file, err)
 			} else {
-				logger.Printf("Copied file: %s/%s\n", targetDir, file)
+				logger.Printf("Copied file: %s/%s", targetDir, file)
 			}
 		}
 	} else {

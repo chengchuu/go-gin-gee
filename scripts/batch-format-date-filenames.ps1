@@ -1,9 +1,11 @@
 # PowerShell
-# Convert leading YY-MMDD date strings in file or directory names to YYYYMMDD.
+# Convert leading YY-MMDD or YY_MMDD date strings in file or directory names to YYYYMMDD.
 #
 # Example:
 # 26-0802-project-topic.md -> 20260802-project-topic.md
 # 25-0330_Video.md -> 20250330_Video.md
+# 25-0714 -> 20250714
+# 25_0714.md -> 20250714.md
 #
 # Windows GitBash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
@@ -39,14 +41,14 @@ function Convert-LeadingDateString {
     [int]$Century
   )
 
-  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})([-_].+)$')
+  $match = [regex]::Match($Name, '^(?<year>\d{2})[-_](?<month>\d{2})(?<day>\d{2})(?<rest>(?:[-_].+|\..+)?)$')
   if (!$match.Success) {
     return $Name
   }
 
-  $year = $Century + [int]$match.Groups[1].Value
-  $month = [int]$match.Groups[2].Value
-  $day = [int]$match.Groups[3].Value
+  $year = $Century + [int]$match.Groups["year"].Value
+  $month = [int]$match.Groups["month"].Value
+  $day = [int]$match.Groups["day"].Value
 
   try {
     $null = [datetime]::new($year, $month, $day)
@@ -55,7 +57,7 @@ function Convert-LeadingDateString {
     return $Name
   }
 
-  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups[2].Value, $match.Groups[3].Value, $match.Groups[4].Value
+  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups["month"].Value, $match.Groups["day"].Value, $match.Groups["rest"].Value
 }
 
 function New-TemporaryFileName {

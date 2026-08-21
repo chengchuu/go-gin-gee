@@ -19,6 +19,10 @@
   },
   "Data": {
     "EnableCORS": "on",
+    "WEBHOOK_ID": "",
+    "WEBHOOK_TOKEN": "",
+    "EnableWebhookAPI": "off",
+    "WebhookAPIKeys": [],
     "Sites": [],
     "SpecialLinks": []
   }

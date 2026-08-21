@@ -10,9 +10,4 @@ info:
     url: https://github.com/chengchuu/go-gin-gee/blob/main/LICENSE
   version: "1.0"
 paths: {}
-securityDefinitions:
-  ApiKeyAuth:
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

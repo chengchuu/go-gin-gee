@@ -29,7 +29,9 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 	var err error
 	var tiny models.Tiny
 	var linkForEncode string
+	baseUrl := config.GetConfig().Data.BaseURL
 	if addBaseUrl != "" {
+		baseUrl = addBaseUrl
 		linkForEncode, err = gurl.SetHashParam(OriLink, "base_url", addBaseUrl)
 		if err != nil {
 			return "", err
@@ -37,20 +39,16 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 	} else {
 		linkForEncode = OriLink
 	}
+	if baseUrl == "" {
+		return "", errors.New("BASE_URL is required")
+	}
 	OriMd5 := helpers.ConvertStringToMD5Hash(linkForEncode)
 	data, err := r.QueryOriLinkByOriMd5(OriMd5)
 	if err != nil {
 		return "", err
 	}
 	if data != nil {
-		return data.TinyLink, nil
-	}
-	baseUrl := config.GetConfig().Data.BaseURL
-	if addBaseUrl != "" {
-		baseUrl = addBaseUrl
-	}
-	if baseUrl == "" {
-		return "", errors.New("BASE_URL is required")
+		return r.BuildTinyLink(baseUrl, data.TinyKey), nil
 	}
 	tiny.OriLink = OriLink
 	tiny.OriMd5 = OriMd5
@@ -62,7 +60,6 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 	// https://github.com/takuoki/clmconv
 	converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
 	TinyKey := converter.Itoa(int(TinyId))
-	TinyLink := fmt.Sprintf("%s/t/%s", baseUrl, TinyKey)
 	// Compare
 	specialLinks := config.GetConfig().Data.SpecialLinks
 	if len(specialLinks) > 0 {
@@ -72,7 +69,6 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 				tiny.OriLink = v.Link
 				tiny.OriMd5 = helpers.ConvertStringToMD5Hash(v.Link)
 				tiny.TinyKey = TinyKey
-				tiny.TinyLink = TinyLink
 				err = Save(&tiny)
 				if err != nil {
 					return "", err
@@ -81,13 +77,16 @@ func (r *TinyRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime 
 			}
 		}
 	}
-	_, err = r.SaveTinyLink(TinyId, TinyLink, TinyKey, oneTime)
+	_, err = r.SaveTinyKey(TinyId, TinyKey, oneTime)
 	if err != nil {
 		return "", err
 	}
 	tiny.TinyKey = TinyKey
-	tiny.TinyLink = TinyLink
-	return tiny.TinyLink, err
+	return r.BuildTinyLink(baseUrl, tiny.TinyKey), err
+}
+
+func (r *TinyRepository) BuildTinyLink(baseUrl string, TinyKey string) string {
+	return fmt.Sprintf("%s/t/%s", baseUrl, TinyKey)
 }
 
 func (r *TinyRepository) QueryOriLinkByTinyKey(TinyKey string) (string, error) {
@@ -162,12 +161,11 @@ func (r *TinyRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Tiny, erro
 	return &tiny, err
 }
 
-func (r *TinyRepository) SaveTinyLink(TinyId uint64, TinyLink string, TinyKey string, oneTime bool) (bool, error) {
+func (r *TinyRepository) SaveTinyKey(TinyId uint64, TinyKey string, oneTime bool) (bool, error) {
 	var tiny models.Tiny
 	var err error
 	where := models.Tiny{}
 	where.ID = TinyId
-	tiny.TinyLink = TinyLink
 	tiny.TinyKey = TinyKey
 	tiny.OneTime = oneTime
 	err = Updates(&where, &tiny)

@@ -22,7 +22,7 @@ Use this file as a quick orientation guide before making changes.
   - Application bootstrap and HTTP layer.
   - Key subfolders:
     - `controllers/`: request handlers
-    - `middlewares/`: auth, CORS, logging, 404 handling
+    - `middlewares/`: CORS, logging, and 404 handling
     - `router/`: route registration and Gin setup
 
 - `internal/pkg/`
@@ -36,7 +36,6 @@ Use this file as a quick orientation guide before making changes.
 - `pkg/`
   - Reusable shared helpers used across the app.
   - Includes:
-    - `crypto/`: password hashing and JWT helpers
     - `http-err/`: standard JSON error response helper
     - `logger/`: project logger
     - `helpers/`: misc utility helpers
@@ -87,54 +86,23 @@ Common route registration lives in `internal/api/router/router.go`.
 
 ## Major Functional Areas
 
-### Users and auth
+### Key-Value Store
 
 - Routes:
-  - `/api/login`
-  - `/api/users`
-  - `/api/users/:id`
+  - `POST /api/gee/kv/get`
+  - `POST /api/gee/kv/set`
+  - `POST /api/gee/kv/increment`
 - Main files:
-  - `internal/api/controllers/auth-controller.go`
-  - `internal/api/controllers/users-controller.go`
-  - `internal/api/middlewares/auth.go`
-  - `internal/pkg/persistence/users-repository.go`
-  - `pkg/crypto/`
+  - `internal/api/controllers/kv-controller.go`
+  - `internal/pkg/persistence/kv-repository.go`
+  - `internal/pkg/models/kv/`
 
 Flow:
 
-- Login looks up a user by username, compares bcrypt password hashes, then returns a JWT.
-- Protected endpoints use `AuthRequired()` middleware to validate the token.
-- User create and update operations hash plaintext passwords before persistence.
-
-### Tasks
-
-- Routes:
-  - `/api/tasks`
-  - `/api/tasks/:id`
-- Main files:
-  - `internal/api/controllers/tasks-controller.go`
-  - `internal/pkg/persistence/tasks-repository.go`
-  - `internal/pkg/models/tasks/task.go`
-
-Flow:
-
-- Standard CRUD through controller -> repository -> Gorm.
-- Task queries preload related `User` records.
-
-### Alias-to-data storage
-
-- Routes:
-  - `/api/gee/get-data-by-alias`
-  - `/api/gee/create-alias2data`
-  - `/api/gee/count-alias2data`
-- Main files:
-  - `internal/api/controllers/alias2data-controller.go`
-  - `internal/pkg/persistence/alias2data-repository.go`
-
-Flow:
-
-- `get-data-by-alias` retrieves a stored alias record and only returns it if `Public` is true.
-- `count-alias2data` is stateful: it reads a record, initializes it when missing, increments a count stored in `Data`, and saves it back.
+- Keys are provided in JSON request bodies, never paths or query strings.
+- `set` uses upsert semantics.
+- `increment` uses atomic database arithmetic and a dedicated counter table.
+- The key-value endpoints follow the project API response convention.
 
 ### Short links
 
@@ -154,18 +122,21 @@ Flow:
 3. MD5 is used to deduplicate existing links.
 4. A DB row is created to obtain an auto-increment ID.
 5. The numeric ID is converted into a short key.
-6. Final tiny link is persisted and returned.
-7. `/t/:key` resolves the key and redirects to the original URL.
+6. The short key is persisted.
+7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
+8. `/t/:key` resolves the key and redirects to the original URL.
 
 Special behavior:
 
 - Supports configured `SpecialLinks` from config.
 - Supports one-time links by checking and incrementing `VisitCount`.
+- `tiny_link` is an API response value, not persisted model state.
 
 ### Site health checks
 
 - Route:
   - `/api/gee/check`
+  - `/api/gee/webhook-message`
 - Main files:
   - `internal/api/controllers/schedules-controller.go`
   - `internal/pkg/persistence/robot-repository.go`
@@ -175,7 +146,14 @@ Flow:
 1. Site list is read from config.
 2. Each site is checked via HTTP using `resty`.
 3. An HTML report is written to `log/robot.html`.
-4. A Markdown summary may be sent to a WeCom robot.
+4. A summary message may be sent to a Discord webhook when `WEBHOOK_ID` and `WEBHOOK_TOKEN` are configured.
+5. `/api/gee/webhook-message` reuses the Discord sender and is disabled unless `Data.EnableWebhookAPI` is `on` with a matching `X-Webhook-API-Key`.
+
+### API-key access control
+
+- The private webhook API uses config-file-based keys from `Data.WebhookAPIKeys`.
+- `POST /api/gee/webhook-message` validates the `X-Webhook-API-Key` header in `internal/api/controllers/webhook-controller.go`.
+- Other routes are not protected by this API-key check unless their handlers explicitly implement it.
 
 ### Agent/server utilities
 
@@ -211,11 +189,11 @@ Flow:
   - `postgres`
   - `mysql`
 - Auto-migrations run for:
-  - `users.User`
-  - `users.UserRole`
-  - `tasks.Task`
-  - `alias2data.Alias2data`
+  - `kv.Entry`
+  - `kv.Counter`
   - `tiny.Tiny`
+
+Legacy user tables are not dropped automatically. Operators may remove them manually only after backing up the database and verifying a deployment without the users module.
 
 If no database driver is configured, repository helpers will generally fail early through `checkDBDriver()`.
 
@@ -232,11 +210,14 @@ Sources:
 Important config fields:
 
 - `Server.Port`
-- `Server.Secret`
 - `Server.Mode`
 - `Database.*`
 - `Data.EnableCORS`
-- `Data.WeComRobotCheck`
+- `Data.WebhookID`
+- `Data.WebhookToken`
+- `Data.EnableWebhookAPI`
+- `Data.WebhookAPIKeys`
+- `Data.KVAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`
@@ -252,6 +233,37 @@ When changing behavior, start here:
 - DB wiring: `internal/pkg/db/database.go`
 - shared persistence helpers: `internal/pkg/persistence/common.go`
 
+## API Response Convention
+
+New JSON APIs must return a consistent response envelope:
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+Rules:
+
+* The top-level fields are always `code`, `message`, and `data`.
+* Successful responses use application code `0`.
+* Failed responses use a documented non-zero application code.
+* HTTP status codes must continue to represent the actual HTTP result.
+* `data` contains the actual result using its natural JSON type.
+* Object results use `{ ... }`.
+* Collection results use `[ ... ]`; an empty collection uses `[]`.
+* Scalar results use their actual string, number, or boolean type.
+* Responses with no result use `null`.
+* Failed responses normally use `data: null`.
+* Do not use `{}` as a generic placeholder for missing data.
+* Do not duplicate response values in deprecated top-level fields.
+* Do not expose internal errors, SQL, API keys, stack traces, configuration values, or filesystem paths.
+* JSON APIs following this envelope should not use `204 No Content`; use a suitable success status with `data: null` when no result is returned.
+
+This convention applies to the key-value API and future newly added JSON APIs. Existing APIs are not retroactively migrated unless a task explicitly requests it.
+
 ## Working Guidelines
 
 - Treat `cmd/api` as the service entry point.
@@ -266,6 +278,6 @@ If you are changing:
 
 - an endpoint: start in `internal/api/router` and `internal/api/controllers`
 - DB-backed behavior: continue into `internal/pkg/persistence` and `internal/pkg/models`
-- auth behavior: inspect `pkg/crypto` and `internal/api/middlewares/auth.go`
+- API-key access control: inspect `internal/api/controllers/webhook-controller.go` and `internal/pkg/config`
 - startup or environment behavior: inspect `internal/api/api.go` and `internal/pkg/config`
 - a CLI utility: work inside the relevant `scripts/<name>/main.go`

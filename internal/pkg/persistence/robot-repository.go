@@ -3,9 +3,11 @@ package persistence
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"text/template"
 	"time"
 
@@ -14,8 +16,19 @@ import (
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/go-resty/resty/v2"
 	"github.com/samber/lo"
-	wxworkbot "github.com/vimsucks/wxwork-bot-go"
 )
+
+const (
+	displayedPassedSitesLimit = 3
+)
+
+var discordWebhookBaseURL = "https://discord.com/api/webhooks"
+
+var errDiscordWebhookConfigMissing = errors.New("discord webhook id or token is empty")
+
+func IsDiscordWebhookConfigMissing(err error) bool {
+	return errors.Is(err, errDiscordWebhookConfigMissing)
+}
 
 type Sites struct {
 	List map[string]SiteStatus
@@ -36,6 +49,10 @@ type ReportData struct {
 	FailedSites  []SiteStatus
 }
 
+type DiscordMessage struct {
+	Content string `json:"content"`
+}
+
 // Return value
 var robotRepository *Sites
 
@@ -50,20 +67,30 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	// http://c.biancheng.net/view/32.html
 	healthySites := []SiteStatus{}
 	failSites := []SiteStatus{}
-	client := resty.New().
+	redirectClient := resty.New().
 		SetTimeout(5 * time.Second).
 		SetRedirectPolicy(resty.FlexibleRedirectPolicy(10))
+	noRedirectClient := resty.New().
+		SetTimeout(5 * time.Second).
+		SetRedirectPolicy(resty.NoRedirectPolicy())
 	// https://github.com/go-resty/resty/blob/master/redirect.go
 	for url, status := range r.List {
 		resCode := 0
+		client := redirectClient
+		if status.Code == http.StatusMovedPermanently {
+			client = noRedirectClient
+		}
 		resp, err := client.R().
 			SetDoNotParseResponse(true).
 			Get(url)
-		if err != nil {
+		if err != nil && !(status.Code == http.StatusMovedPermanently && resp != nil) {
 			logger.Error("error: %v", err)
 			resCode = 0
 		} else {
 			resCode = resp.StatusCode()
+			if resp.RawBody() != nil {
+				resp.RawBody().Close()
+			}
 		}
 		if status.Code == resCode {
 			healthySites = append(healthySites, status)
@@ -74,8 +101,7 @@ func (r *Sites) getWebSiteStatus() (*[]SiteStatus, *[]SiteStatus, error) {
 	return &healthySites, &failSites, nil
 }
 
-func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdown, error) {
-	sucessNames := []string{}
+func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*DiscordMessage, error) {
 	reportData := ReportData{
 		Timestamp:    "",
 		HealthyCount: 0,
@@ -121,52 +147,104 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*wxworkbot.Markdow
 		return nil, err
 	}
 
+	mdStr := buildHealthCheckMarkdown(ss, healthySites, failSites)
+	message := DiscordMessage{
+		Content: mdStr,
+	}
+
+	if err := r.SendDiscordMessage(message); err != nil {
+		if errors.Is(err, errDiscordWebhookConfigMissing) {
+			logger.Warn("discord webhook config is empty, skip sending notification")
+			return &message, nil
+		}
+		logger.Error("error: %v", err)
+		return nil, err
+	}
+	return &message, nil
+}
+
+func (r *Sites) SendDiscordMessage(message DiscordMessage) error {
+	webhookID, webhookToken, err := getDiscordWebhookConfig()
+	if err != nil {
+		return err
+	}
+	webhookURL := buildDiscordWebhookURL(webhookID, webhookToken)
+	return sendDiscordWebhook(webhookURL, message)
+}
+
+func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) string {
+	successNames := []string{}
 	lo.ForEach(*healthySites, func(site SiteStatus, _ int) {
-		sucessNames = append(sucessNames, site.Name)
+		successNames = append(successNames, site.Name)
 	})
 	// Sort Success Names
-	sort.Strings(sucessNames)
+	sort.Strings(successNames)
+	displayedSuccessNames := successNames
+	if len(displayedSuccessNames) > displayedPassedSitesLimit {
+		displayedSuccessNames = displayedSuccessNames[:displayedPassedSitesLimit]
+	}
 	mdStr := "Health Check Result:\n"
-	lo.ForEach(sucessNames, func(name string, _ int) {
-		mdStr += fmt.Sprintf("<font color=\"info\">%s OK</font>\n", name)
+	lo.ForEach(displayedSuccessNames, func(name string, _ int) {
+		mdStr += fmt.Sprintf("%s OK\n", name)
 	})
 	lo.ForEach(*failSites, func(site SiteStatus, _ int) {
 		siteLink, _ := lo.FindKeyBy(ss.List, func(k string, v SiteStatus) bool {
 			return v.Name == site.Name
 		})
 		mdStr += fmt.Sprintf(
-			"<font color=\"warning\">%s FAIL</font>\n"+
+			"%s FAIL\n"+
 				"Error Code: %d\n"+
-				"Link: [%s](%s)\n",
+				"Link: <%s>\n",
 			site.Name,
 			site.Code,
 			siteLink,
-			siteLink,
 		)
 	})
-	mdStr += fmt.Sprintf("<font color=\"comment\">*%s%d*</font>", "Sum: ", len(*healthySites)+len(*failSites))
-	sA := GetAlias2dataRepository()
-	data, err := sA.Get("WECOM_ROBOT_CHECK")
-	wxworkRobotKey := ""
+	mdStr += fmt.Sprintf(
+		"All: %d | Passed: %d | Failed: %d",
+		len(*healthySites)+len(*failSites),
+		len(*healthySites),
+		len(*failSites),
+	)
+	return mdStr
+}
+
+func getDiscordWebhookConfig() (string, string, error) {
+	webhookID := ""
+	webhookToken := ""
+	conf := config.GetConfig()
+	if conf != nil {
+		webhookID = conf.Data.WebhookID
+		webhookToken = conf.Data.WebhookToken
+	}
+
+	if webhookID == "" || webhookToken == "" {
+		return "", "", errDiscordWebhookConfigMissing
+	}
+	return webhookID, webhookToken, nil
+}
+
+func buildDiscordWebhookURL(webhookID, webhookToken string) string {
+	return fmt.Sprintf(
+		"%s/%s/%s",
+		strings.TrimRight(discordWebhookBaseURL, "/"),
+		webhookID,
+		webhookToken,
+	)
+}
+
+func sendDiscordWebhook(webhookURL string, message DiscordMessage) error {
+	client := resty.New().
+		SetTimeout(5 * time.Second)
+	resp, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(message).
+		Post(webhookURL)
 	if err != nil {
-		logger.Error("error: %v", err)
-		conf := config.GetConfig()
-		wxworkRobotKey = conf.Data.WeComRobotCheck
-	} else {
-		wxworkRobotKey = data.Data
+		return errors.New("discord webhook request failed")
 	}
-	logger.Println("Robot wxworkRobotKey:", wxworkRobotKey)
-	if wxworkRobotKey == "" {
-		return nil, errors.New("wecom robot key is empty")
+	if resp.StatusCode() < http.StatusOK || resp.StatusCode() >= http.StatusMultipleChoices {
+		return fmt.Errorf("discord webhook returned status %d: %s", resp.StatusCode(), resp.String())
 	}
-	// https://github.com/vimsucks/wxwork-bot-go
-	bot := wxworkbot.New(wxworkRobotKey)
-	markdown := wxworkbot.Markdown{
-		Content: mdStr,
-	}
-	err = bot.Send(markdown)
-	if err != nil {
-		logger.Error("error: %v", err)
-	}
-	return &markdown, nil
+	return nil
 }

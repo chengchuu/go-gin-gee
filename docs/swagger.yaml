@@ -1,4 +1,85 @@
 basePath: /api
+definitions:
+  controllers.GetKVRequest:
+    properties:
+      key:
+        type: string
+    required:
+    - key
+    type: object
+  controllers.IncrementKVRequest:
+    properties:
+      delta:
+        type: integer
+      key:
+        type: string
+    required:
+    - key
+    type: object
+  controllers.KVGetData:
+    properties:
+      content_type:
+        type: string
+      created_at:
+        type: string
+      key:
+        type: string
+      updated_at:
+        type: string
+      value:
+        type: string
+      visibility:
+        type: string
+    type: object
+  controllers.KVIncrementData:
+    properties:
+      delta:
+        type: integer
+      key:
+        type: string
+      value:
+        type: integer
+    type: object
+  controllers.KVSetData:
+    properties:
+      content_type:
+        type: string
+      created:
+        type: boolean
+      key:
+        type: string
+      value:
+        type: string
+      visibility:
+        type: string
+    type: object
+  controllers.SetKVRequest:
+    properties:
+      content_type:
+        default: text/plain
+        type: string
+      key:
+        type: string
+      value:
+        type: string
+      visibility:
+        default: private
+        enum:
+        - public
+        - private
+        type: string
+    required:
+    - key
+    type: object
+  http_err.APIResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
 info:
   contact:
     email: mazeyqian@gmail.com
@@ -9,10 +90,163 @@ info:
     name: MIT
     url: https://github.com/chengchuu/go-gin-gee/blob/main/LICENSE
   version: "1.0"
-paths: {}
-securityDefinitions:
-  ApiKeyAuth:
-    in: header
-    name: Authorization
-    type: apiKey
+paths:
+  /gee/kv/get:
+    post:
+      consumes:
+      - application/json
+      description: Public entries can be read without an API key. Private entries
+        require X-API-Key.
+      parameters:
+      - description: Required only for private entries
+        in: header
+        name: X-API-Key
+        type: string
+      - description: Key lookup
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.GetKVRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http_err.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.KVGetData'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+      summary: Get a key-value entry
+      tags:
+      - key-value
+  /gee/kv/increment:
+    post:
+      consumes:
+      - application/json
+      description: Requires a valid X-API-Key. Missing counters start at zero; omitted
+        delta defaults to one.
+      parameters:
+      - description: Key-value API key
+        in: header
+        name: X-API-Key
+        required: true
+        type: string
+      - description: Counter key and delta
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.IncrementKVRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http_err.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.KVIncrementData'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+      summary: Atomically increment a counter
+      tags:
+      - key-value
+  /gee/kv/set:
+    post:
+      consumes:
+      - application/json
+      description: Requires a valid X-API-Key and uses upsert semantics.
+      parameters:
+      - description: Key-value API key
+        in: header
+        name: X-API-Key
+        required: true
+        type: string
+      - description: Entry value and metadata
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.SetKVRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http_err.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.KVSetData'
+              type: object
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http_err.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/controllers.KVSetData'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http_err.APIResponse'
+      summary: Create or replace a key-value entry
+      tags:
+      - key-value
 swagger: "2.0"

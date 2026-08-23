@@ -23,11 +23,29 @@ go run ./scripts/check-web-links \
 Windows 10 PowerShell:
 
 ```powershell
-$Path = "C:\Directory\Path"
+$PathB = "C:\Directory\Path"
+$TargetTypeB = "File"
+$TargetTypeB = "Directory"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $Path -Mode Lower -Recurse
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $Path -Replace "_=-" -Replace " =-" -Recurse
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $Path -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB `
+  -Replace "_=-" `
+  -Replace " ="
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "__=_"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "PLACEHOLDER="
+
+$EnDashRuleB = '_{0}_=_' -f [char]0x2013
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace $EnDashRuleB
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+```
+
+```powershell
+$PathA = "C:\Directory\Path"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathA -Mode Lower -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathA -Replace "_=-" -Replace " =-" -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $PathA -Recurse
 ```
 
 macOS:

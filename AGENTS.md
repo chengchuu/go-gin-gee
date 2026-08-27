@@ -106,21 +106,6 @@ Flow:
 - Protected endpoints use `AuthRequired()` middleware to validate the token.
 - User create and update operations hash plaintext passwords before persistence.
 
-### Tasks
-
-- Routes:
-  - `/api/tasks`
-  - `/api/tasks/:id`
-- Main files:
-  - `internal/api/controllers/tasks-controller.go`
-  - `internal/pkg/persistence/tasks-repository.go`
-  - `internal/pkg/models/tasks/task.go`
-
-Flow:
-
-- Standard CRUD through controller -> repository -> Gorm.
-- Task queries preload related `User` records.
-
 ### Alias-to-data storage
 
 - Routes:
@@ -154,13 +139,15 @@ Flow:
 3. MD5 is used to deduplicate existing links.
 4. A DB row is created to obtain an auto-increment ID.
 5. The numeric ID is converted into a short key.
-6. Final tiny link is persisted and returned.
-7. `/t/:key` resolves the key and redirects to the original URL.
+6. The short key is persisted.
+7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
+8. `/t/:key` resolves the key and redirects to the original URL.
 
 Special behavior:
 
 - Supports configured `SpecialLinks` from config.
 - Supports one-time links by checking and incrementing `VisitCount`.
+- `tiny_link` is an API response value, not persisted model state.
 
 ### Site health checks
 
@@ -213,7 +200,6 @@ Flow:
 - Auto-migrations run for:
   - `users.User`
   - `users.UserRole`
-  - `tasks.Task`
   - `alias2data.Alias2data`
   - `tiny.Tiny`
 

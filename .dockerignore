@@ -33,6 +33,8 @@ temp/
 *.out
 coverage.out
 test-*.out
+test/unit/coverage
+test/e2e/reports
 
 # Go build artifacts and binaries
 bin/
@@ -43,3 +45,28 @@ dist/
 *.so
 *.dylib
 *.o
+
+# Dependency / cache folders
+node_modules/
+.sass-cache/
+.gocache/
+undefined/
+
+# Repo-specific local files
+# *.secret.json
+# *.prd.json
+*.secret/
+*.temp/
+*.secret.conf
+*.temp.conf
+*.secret.ini
+*.temp.ini
+*.secret.yml
+*.temp.yml
+*.temp.json
+*.secret.go
+*.temp.go
+*.secret.sh
+*.temp.sh
+*.secret.txt
+*.temp.txt

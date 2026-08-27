@@ -1,4 +1,3 @@
-<!-- omit from toc -->
 # go-gin-gee
 
 Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts`, which can be used by the command `run` directly.
@@ -9,7 +8,7 @@ Gee is a project that provides several services for everyday work. The project i
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
 - [Build](#build)
-- [Deploy](#deploy)
+- [Deployment](#deployment)
   - [Supervisor](#supervisor)
 - [Docker](#docker)
   - [Quick Start](#quick-start)
@@ -154,7 +153,7 @@ Windows:
 GOOS=windows GOARCH=amd64 go build -o dist/api-windows-amd64 cmd/api/main.go
 ```
 
-## Deploy
+## Deployment
 
 Environment Variates:
 
@@ -177,9 +176,10 @@ environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="h
 ### Quick Start
 
 ```bash
-GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
+GEE_VERSION="v$(date +"%Y%m%d%H%M%S")" && \
+GEE_TAG="go-gin-gee:${GEE_VERSION}" && \
 docker build -t "${GEE_TAG}" . && \
-docker run --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+docker run --name "go-gin-gee-${GEE_VERSION}" -p 3000:3000 "${GEE_TAG}"
 ```
 
 ### Build Image

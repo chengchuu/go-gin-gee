@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
 )
@@ -19,13 +19,13 @@ func CheckSitesHealth(c *gin.Context) {
 	per := persistence.GetRobotRepository()
 	webSites, err := getWebSites()
 	if err != nil {
-		log.Println("error:", err)
+		logger.Warn("check: %s", err)
 		http_err.NewError(c, http.StatusInternalServerError, err)
 		return
 	}
 	markdown, err := per.ClearCheckResult(webSites)
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("check: %s", err)
 		http_err.NewError(c, http.StatusInternalServerError, err)
 	} else {
 		c.JSON(http.StatusOK, gin.H{"data": *markdown})
@@ -42,7 +42,7 @@ func RunCheck() {
 	everyDayAtFn := func() {
 		sites, err := getWebSites()
 		if err != nil {
-			log.Println("error:", err)
+			logger.Warn("check: %s", err)
 		} else {
 			per.ClearCheckResult(sites)
 		}

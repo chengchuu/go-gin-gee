@@ -8,12 +8,12 @@ import (
 
 type Tiny struct {
 	models.Model
-	OriLink    string `gorm:"column:ori_link;not null;size:350" json:"ori_link" form:"ori_link"`
-	OriMd5     string `gorm:"column:ori_md5;not null;size:40" json:"ori_md5" form:"ori_md5"`
-	TinyKey    string `gorm:"column:tiny_key;not null;size:20" json:"tiny_key" form:"tiny_key"`
-	TinyLink   string `gorm:"column:tiny_link;not null;size:30" json:"tiny_link" form:"tiny_link"`
+	OriLink    string `gorm:"column:ori_link;type:text;not null" json:"ori_link" form:"ori_link"`
+	OriMd5     string `gorm:"column:ori_md5;size:32;not null;unique_index:uk_tiny_ori_md5" json:"ori_md5" form:"ori_md5"`
+	TinyKey    string `gorm:"column:tiny_key;size:32;not null;index:idx_tiny_key" json:"tiny_key" form:"tiny_key"`
+	TinyLink   string `gorm:"column:tiny_link;size:50;not null;default:''" json:"tiny_link" form:"tiny_link"`
 	OneTime    bool   `gorm:"column:one_time;not null;default:false" json:"one_time" form:"one_time"`
-	VisitCount int    `gorm:"column:visit_count;not null;default:0" json:"visit_count" form:"visit_count"`
+	VisitCount int    `gorm:"column:visit_count;type:int;not null;default:0" json:"visit_count" form:"visit_count"`
 }
 
 type SpecialLink struct {
@@ -22,7 +22,7 @@ type SpecialLink struct {
 }
 
 func (Tiny) TableName() string {
-	return "tiny"
+	return "gee_tiny"
 }
 
 func (m *Tiny) BeforeCreate() error {

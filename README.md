@@ -1,4 +1,3 @@
-<!-- omit from toc -->
 # go-gin-gee
 
 Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts`, which can be used by the command `run` directly.
@@ -9,7 +8,7 @@ Gee is a project that provides several services for everyday work. The project i
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
 - [Build](#build)
-- [Deploy](#deploy)
+- [Deployment](#deployment)
   - [Supervisor](#supervisor)
 - [Docker](#docker)
   - [Quick Start](#quick-start)
@@ -154,11 +153,12 @@ Windows:
 GOOS=windows GOARCH=amd64 go build -o dist/api-windows-amd64 cmd/api/main.go
 ```
 
-## Deploy
+## Deployment
 
-Environment Variates:
+Environment Variables:
 
-- `${WECOM_ROBOT_CHECK}`: WeCom Robot Key.
+- `${WEBHOOK_ID}`: Discord Webhook ID.
+- `${WEBHOOK_TOKEN}`: Discord Webhook Token.
 - `${BASE_URL}`: The Base URL for this Service.
 
 ### Supervisor
@@ -169,7 +169,7 @@ directory=/web/go-gin-gee
 command=/web/go-gin-gee/dist/api-linux-amd64 --config-path="/web/go-gin-gee/data/config.json"
 autostart=true
 autorestart=true
-environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="https://example.com/path"
+environment=WEBHOOK_ID="WEBHOOK_ID",WEBHOOK_TOKEN="WEBHOOK_TOKEN",BASE_URL="https://example.com/path"
 ```
 
 ## Docker
@@ -177,9 +177,10 @@ environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="h
 ### Quick Start
 
 ```bash
-GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
+GEE_VERSION="v$(date +"%Y%m%d%H%M%S")" && \
+GEE_TAG="go-gin-gee:${GEE_VERSION}" && \
 docker build -t "${GEE_TAG}" . && \
-docker run --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+docker run --name "go-gin-gee-${GEE_VERSION}" -p 3000:3000 "${GEE_TAG}"
 ```
 
 ### Build Image
@@ -201,11 +202,12 @@ Environment variables:
 
 Usage:
 
-`${RUN_FLAG}` is optional, default is `-r`("RUN"). `${WECOM_ROBOT_CHECK}` is optional. If you don't want to send the message to WeCom Robot, just remove it. `${BASE_URL}` is required. It's the Base URL for this Service.
+`${RUN_FLAG}` is optional, default is `-r`("RUN"). `${WEBHOOK_ID}` and `${WEBHOOK_TOKEN}` are optional. If you don't want to send the message to Discord, just remove them. `${BASE_URL}` is required. It's the Base URL for this Service.
 
 ```bash
 bash ./scripts/docker-build.sh ${RUN_FLAG} \
-  "WECOM_ROBOT_CHECK=${WECOM_ROBOT_CHECK}" \
+  "WEBHOOK_ID=${WEBHOOK_ID}" \
+  "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
 ```
 
@@ -221,7 +223,8 @@ Example 2: Build and Run
 
 ```bash
 bash ./scripts/docker-build.sh -r \
-  "WECOM_ROBOT_CHECK=b2lsjd46-7146-4nv2-8767-86cb0cncjdbe" \
+  "WEBHOOK_ID=WEBHOOK_ID" \
+  "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"
 ```
 
@@ -249,7 +252,8 @@ Usage:
 
 ```bash
 bash ./scripts/docker-run.sh "${DOCKER_HUB_REPOSITORY_TAGNAME}" \
-  "WECOM_ROBOT_CHECK=${WECOM_ROBOT_CHECK}" \
+  "WEBHOOK_ID=${WEBHOOK_ID}" \
+  "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
 ```
 
@@ -257,7 +261,8 @@ Example:
 
 ```bash
 bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api" \
-  "WECOM_ROBOT_CHECK=b2lsjd46-7146-4nv2-8767-86cb0cncjdbe" \
+  "WEBHOOK_ID=WEBHOOK_ID" \
+  "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"
 ```
 

@@ -2,12 +2,16 @@
 node_modules/
 test/unit/coverage
 test/e2e/reports
-/dist/
-/log/
-/data/
+dist/
+log/*.log
+log/*.txt
+log/*.json
+log/*.html
+data/
 
 # Cache folders
 .sass-cache/
+.gocache/
 undefined/
 temp/
 

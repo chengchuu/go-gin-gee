@@ -18,7 +18,6 @@ require (
 	github.com/swaggo/swag v1.8.1
 	github.com/szyhf/go-excel v1.5.3
 	github.com/takuoki/clmconv v1.1.0
-	github.com/vimsucks/wxwork-bot-go v0.0.0-20210525031914-b584a24ed8c5
 )
 
 require (

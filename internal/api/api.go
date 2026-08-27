@@ -25,7 +25,6 @@ func Run() {
 	os.Setenv("TZ", "UTC")
 	setConfiguration()
 	conf := config.GetConfig()
-	// log.Println("Config:", conf)
 	// Run before the API starts
 	if len(conf.Data.Sites) > 0 {
 		controllers.RunCheck()

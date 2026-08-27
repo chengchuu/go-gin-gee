@@ -28,9 +28,8 @@ func (r *Alias2dataRepository) Get(alias string) (*models.Alias2data, error) {
 	where := models.Alias2data{}
 	where.Alias = alias
 	_, err := First(&where, &alias2data, []string{})
-	// log.Println("Get notFound", notFound)
 	if err != nil {
-		logger.Error("get err: %v", err)
+		logger.Info("alias is not found: %s", alias)
 		return nil, err
 	}
 	return &alias2data, err

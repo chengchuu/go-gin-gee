@@ -23,6 +23,16 @@ go run ./scripts/check-web-links \
 Windows 10 PowerShell:
 
 ```powershell
+$PathC = "C:\Directory\Path"
+$TargetTypeC = "Directory"
+$TargetTypeC = "File"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC `
+  -Replace " =-"
+```
+
+```powershell
 $PathB = "C:\Directory\Path"
 $TargetTypeB = "File"
 $TargetTypeB = "Directory"

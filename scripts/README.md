@@ -14,8 +14,8 @@
 
 ```bash
 go run ./scripts/check-web-links \
-  -url="https://blog.mazey.net/" \
-  -reportPath="log/MAZEY_LINKS_02.log"
+  -url="https://x.mazey.net/" \
+  -reportPath="log/MAZEY_LINKS_0X.log"
 ```
 
 ## Filename Batch Rename Helpers

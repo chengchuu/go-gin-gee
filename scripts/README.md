@@ -1,5 +1,6 @@
 # Scripts
 
+- [Hanle Nginx Log](#hanle-nginx-log)
 - [Check Blog](#check-blog)
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
 - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
@@ -9,6 +10,27 @@
 - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
 - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
 - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+
+## Hanle Nginx Log
+
+VSCode Regex:
+
+```regex
+^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
+```
+
+dedupe-decode:
+
+```bash
+go run scripts/dedupe-decode/main.go -in scripts/dedupe-decode/nginx_asset_access-01.secret.log -out scripts/dedupe-decode/out.nginx_asset_access.secret.log
+```
+
+batch-copy-files:
+
+```bash
+# Windows GitBash
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
+```
 
 ## Check Blog
 

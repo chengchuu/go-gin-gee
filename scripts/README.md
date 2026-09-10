@@ -1,6 +1,7 @@
 # Scripts
 
 - [Hanle Nginx Log](#hanle-nginx-log)
+- [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
 - [Check Blog](#check-blog)
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
 - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
@@ -30,6 +31,18 @@ batch-copy-files:
 ```bash
 # Windows GitBash
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
+```
+
+## Extract Missing Files from Nginx Errors
+
+Extract unique filesystem paths from exact `open() ... failed (2: No such file or directory)` errors:
+
+```bash
+go run ./scripts/extract-nginx-missing-files -in nginx-error.log -out missing-files.log
+```
+
+```bash
+cat nginx-error.log | go run ./scripts/extract-nginx-missing-files
 ```
 
 ## Check Blog

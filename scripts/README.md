@@ -45,6 +45,16 @@ go run ./scripts/extract-nginx-missing-files -in nginx-error.log -out missing-fi
 cat nginx-error.log | go run ./scripts/extract-nginx-missing-files
 ```
 
+Naturally sort paths and include entries from an inclusive local timestamp through the command start time:
+
+```bash
+go run ./scripts/extract-nginx-missing-files \
+  -in nginx-error.log \
+  -out missing-files.log \
+  -sort \
+  -since="2026/09/09 09:00:00"
+```
+
 ## Check Blog
 
 ```bash

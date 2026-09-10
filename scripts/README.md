@@ -23,7 +23,7 @@ VSCode Regex:
 dedupe-decode:
 
 ```bash
-go run scripts/dedupe-decode/main.go -in scripts/dedupe-decode/nginx_asset_access-01.secret.log -out scripts/dedupe-decode/out.nginx_asset_access.secret.log
+go run scripts/dedupe-decode/main.go -in log/in-asset.log -out log/out-asset.log
 ```
 
 batch-copy-files:

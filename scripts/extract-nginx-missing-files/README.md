@@ -16,8 +16,9 @@ Use `-since` to include entries from an inclusive local timestamp through the ti
 
 ```bash
 go run ./scripts/extract-nginx-missing-files \
-  -in nginx-error.log \
-  -out missing-files.log
+  -in ./log/nginx_error.log \
+  -out ./log/missing-files.log \
+  -sort
 ```
 
 ## Use a Pipeline

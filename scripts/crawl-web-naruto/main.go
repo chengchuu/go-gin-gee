@@ -25,12 +25,6 @@ func main() {
 	logger.Printf("Extra URLs: %s", *extraURLs)
 	logger.Printf("Find All URLs: %v", *isFoundURLs)
 
-	// Article navigation and related articles
-	ignoreTitles := []string{
-		"文章导航",
-		"相关文章",
-		"条评论",
-	}
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
 	// Failed URLs
@@ -45,17 +39,6 @@ func main() {
 	c := colly.NewCollector(
 		colly.AllowedDomains(*allowedDomain), // Limit to the allowed domain
 	)
-
-	// Find each `<h2>` tag and print its content
-	c.OnHTML("h2", func(e *colly.HTMLElement) {
-		thatTitle := e.Text
-		// Ignore specific titles
-		for _, title := range ignoreTitles {
-			if strings.Contains(thatTitle, title) {
-				return
-			}
-		}
-	})
 
 	// Find <b>Warning</b> and Panic
 	c.OnHTML("b", func(e *colly.HTMLElement) {

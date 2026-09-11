@@ -25,8 +25,16 @@ Gee is a project that provides several services for everyday work. The project i
 
 1\. Change Git name and email for different projects.
 
+macOS Bash or zsh:
+
 ```bash
-go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="YOUR_NAME" -useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+```
+
+Windows 10 Git Bash:
+
+```bash
+bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)
@@ -454,12 +462,6 @@ Serve:
 
 ```bash
 go run cmd/api/main.go --config-path="data/config.dev.json"
-```
-
-Restart:
-
-```bash
-go run scripts/restart/main.go
 ```
 
 Visit: <http://127.0.0.1:3000/api/ping>.

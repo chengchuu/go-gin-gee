@@ -1,8 +1,11 @@
 # PowerShell
-# Convert leading YY-MMDD date strings in file names to YYYYMMDD.
+# Convert leading YY-MMDD or YY_MMDD date strings in file or directory names to YYYYMMDD.
 #
 # Example:
 # 26-0802-project-topic.md -> 20260802-project-topic.md
+# 25-0330_Video.md -> 20250330_Video.md
+# 25-0714 -> 20250714
+# 25_0714.md -> 20250714.md
 #
 # Windows GitBash
 # powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
@@ -20,6 +23,9 @@ param(
 
   [int]$Century = 2000,
 
+  [ValidateSet("File", "Directory")]
+  [string]$TargetType = "File",
+
   [switch]$Recurse
 )
 
@@ -35,14 +41,14 @@ function Convert-LeadingDateString {
     [int]$Century
   )
 
-  $match = [regex]::Match($Name, '^(\d{2})-(\d{2})(\d{2})(-.+)$')
+  $match = [regex]::Match($Name, '^(?<year>\d{2})[-_](?<month>\d{2})(?<day>\d{2})(?<rest>(?:[-_].+|\..+)?)$')
   if (!$match.Success) {
     return $Name
   }
 
-  $year = $Century + [int]$match.Groups[1].Value
-  $month = [int]$match.Groups[2].Value
-  $day = [int]$match.Groups[3].Value
+  $year = $Century + [int]$match.Groups["year"].Value
+  $month = [int]$match.Groups["month"].Value
+  $day = [int]$match.Groups["day"].Value
 
   try {
     $null = [datetime]::new($year, $month, $day)
@@ -51,7 +57,7 @@ function Convert-LeadingDateString {
     return $Name
   }
 
-  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups[2].Value, $match.Groups[3].Value, $match.Groups[4].Value
+  return "{0:D4}{1}{2}{3}" -f $year, $match.Groups["month"].Value, $match.Groups["day"].Value, $match.Groups["rest"].Value
 }
 
 function New-TemporaryFileName {
@@ -109,20 +115,27 @@ if (!(Test-Path -LiteralPath $Path -PathType Container)) {
 }
 
 $root = (Resolve-Path -LiteralPath $Path).Path
-$files = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
-  Sort-Object FullName
+if ($TargetType -eq "File") {
+  $items = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
+    Sort-Object FullName
+} else {
+  $items = Get-ChildItem -LiteralPath $root -Directory -Recurse:$Recurse |
+    Sort-Object FullName -Descending
+}
 
 $renamePlan = @()
-foreach ($file in $files) {
-  $newName = Convert-LeadingDateString -Name $file.Name -Century $Century
-  if ($newName -ceq $file.Name) {
+foreach ($item in $items) {
+  $newName = Convert-LeadingDateString -Name $item.Name -Century $Century
+  if ($newName -ceq $item.Name) {
     continue
   }
 
-  $targetPath = Join-Path $file.DirectoryName $newName
+  $parentPath = if ($TargetType -eq "File") { $item.DirectoryName } else { $item.Parent.FullName }
+  $targetPath = Join-Path $parentPath $newName
   $renamePlan += [pscustomobject]@{
-    File       = $file
-    TempName   = New-TemporaryFileName -Directory $file.DirectoryName
+    Item       = $item
+    ParentPath = $parentPath
+    TempName   = New-TemporaryFileName -Directory $parentPath
     NewName    = $newName
     TargetPath = $targetPath
   }
@@ -134,7 +147,7 @@ if ($renamePlan.Count -eq 0) {
 }
 
 $collisions = $renamePlan |
-  Group-Object { "{0}`0{1}" -f $_.File.DirectoryName, $_.NewName.ToUpperInvariant() } |
+  Group-Object { "{0}`0{1}" -f $_.ParentPath, $_.NewName.ToUpperInvariant() } |
   Where-Object { $_.Count -gt 1 }
 
 if ($collisions.Count -gt 0) {
@@ -142,7 +155,7 @@ if ($collisions.Count -gt 0) {
   foreach ($collision in $collisions) {
     Write-Error ("Target collision: {0}" -f $collision.Group[0].TargetPath)
     foreach ($item in $collision.Group) {
-      Write-Error ("  Source: {0}" -f $item.File.FullName)
+      Write-Error ("  Source: {0}" -f $item.Item.FullName)
     }
   }
   exit 1
@@ -150,27 +163,42 @@ if ($collisions.Count -gt 0) {
 
 foreach ($item in $renamePlan) {
   $existingTarget = Get-Item -LiteralPath $item.TargetPath -ErrorAction SilentlyContinue
-  if ($null -ne $existingTarget -and !(Test-SameFilesystemPath -Left $existingTarget.FullName -Right $item.File.FullName)) {
+  if ($null -ne $existingTarget -and !(Test-SameFilesystemPath -Left $existingTarget.FullName -Right $item.Item.FullName)) {
     Write-Error ("Target already exists, skipping all renames: {0}" -f $item.TargetPath)
     exit 1
   }
 }
 
-foreach ($item in $renamePlan) {
-  if ($PSCmdlet.ShouldProcess($item.File.FullName, "Rename to temporary name $($item.TempName)")) {
-    Rename-Item -LiteralPath $item.File.FullName -NewName $item.TempName
+if ($TargetType -eq "File") {
+  foreach ($item in $renamePlan) {
+    if ($PSCmdlet.ShouldProcess($item.Item.FullName, "Rename to temporary name $($item.TempName)")) {
+      Rename-Item -LiteralPath $item.Item.FullName -NewName $item.TempName
+    }
   }
-}
 
-foreach ($item in $renamePlan) {
-  $tempPath = Join-Path $item.File.DirectoryName $item.TempName
-  if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
-    Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+  foreach ($item in $renamePlan) {
+    $tempPath = Join-Path $item.ParentPath $item.TempName
+    if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
+      Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+      Write-Host ("Renamed: {0} -> {1}" -f $item.Item.Name, $item.NewName)
+    }
+  }
+} else {
+  foreach ($item in $renamePlan) {
+    if ($PSCmdlet.ShouldProcess($item.Item.FullName, "Rename to temporary name $($item.TempName)")) {
+      Rename-Item -LiteralPath $item.Item.FullName -NewName $item.TempName
+    }
+
+    $tempPath = Join-Path $item.ParentPath $item.TempName
+    if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
+      Rename-Item -LiteralPath $tempPath -NewName $item.NewName
+      Write-Host ("Renamed: {0} -> {1}" -f $item.Item.Name, $item.NewName)
+    }
   }
 }
 
 if ($WhatIfPreference) {
-  Write-Host ("Preview Complete! Would rename {0} file(s)." -f $renamePlan.Count) -ForegroundColor Yellow
+  Write-Host ("Preview Complete! Would rename {0} {1}(s)." -f $renamePlan.Count, $TargetType.ToLowerInvariant()) -ForegroundColor Yellow
 } else {
-  Write-Host ("Task Complete! Renamed {0} file(s)." -f $renamePlan.Count) -ForegroundColor Green
+  Write-Host ("Task Complete! Renamed {0} {1}(s)." -f $renamePlan.Count, $TargetType.ToLowerInvariant()) -ForegroundColor Green
 }

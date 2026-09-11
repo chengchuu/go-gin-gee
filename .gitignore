@@ -54,3 +54,4 @@ selenium-debug.log*
 *.temp.sh
 *.secret.txt
 *.temp.txt
+*.secret.log

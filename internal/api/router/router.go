@@ -14,15 +14,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Setup() *gin.Engine {
+func Setup(accessLog io.Writer) *gin.Engine {
 	app := gin.New()
 
 	// Get Config
 	conf := config.GetConfig()
-	// Logging to a file.
-	if err := os.MkdirAll("./log", 0755); err != nil {
-		logger.Println("mkdir err:", err)
-	}
 	// log/records
 	agentRecordsPath := conf.Data.AgentRecordsPath
 	if agentRecordsPath != "" {
@@ -30,13 +26,8 @@ func Setup() *gin.Engine {
 			logger.Println("mkdir err:", err)
 		}
 	}
-	// log/api.log
-	f, err := os.Create("./log/api.log")
-	if err != nil {
-		logger.Println("create err:", err)
-	}
 	gin.DisableConsoleColor()
-	gin.DefaultWriter = io.MultiWriter(f)
+	gin.DefaultWriter = accessLog
 
 	// Middlewares
 	app.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {

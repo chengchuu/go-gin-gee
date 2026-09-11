@@ -72,6 +72,25 @@ Use this file as a quick orientation guide before making changes.
 - Process timezone is set to `UTC` in `internal/api/api.go`.
 - If `config.Data.Sites` is populated, a scheduled health check is started before the HTTP server begins serving traffic.
 
+### Access-log lifecycle
+
+`internal/api.Run()` opens `./log/api.log` with create/write/append flags before scheduled health
+checks or router setup. Missing directories use `0755`; new files use `0666` subject to umask.
+Existing entries and permissions are preserved. Directory/open failures stop startup. The API
+passes the writer to `router.Setup`, restores the previous Gin writer and closes the file when
+the lifecycle returns, and returns errors to `cmd/api` for nonzero process exit. No new graceful
+shutdown behavior is provided; process termination releases descriptors through the OS.
+
+The file retains the existing Gin request format. Application stdout/stderr and recovery output
+are unchanged. `log/robot.html` keeps its existing replacement behavior. Webmazey also builds this
+application; its mounts and deployment policy are not changed by the logging fix.
+
+The separate server repository's `websg` Compose configuration mounts `/web/log-webgee:/web/log`
+on `go-gin-gee`, not Nginx `webgee`. Activation requires a verified append-safe API image, writable
+host storage for its runtime identity, approved retention, and separately authorized API-only
+recreation. The pinned production image is not updated automatically. A bind mount does not
+recover old container-local logs, and Docker log limits do not bound `api.log`.
+
 ## Request Flow
 
 For most API endpoints, the flow is:

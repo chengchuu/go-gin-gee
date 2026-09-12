@@ -8,8 +8,12 @@ import (
 
 type UserRole struct {
 	models.Model
-	UserID   uint64 `gorm:"column:user_id;unique_index:user_role;not null;" json:"user_id"`
-	RoleName string `gorm:"column:role_name;not null;" json:"role_name"`
+	UserID   uint64 `gorm:"column:user_id;not null;unique_index:uk_user_roles_user_id" json:"user_id"`
+	RoleName string `gorm:"column:role_name;size:50;not null;default:''" json:"role_name"`
+}
+
+func (UserRole) TableName() string {
+	return "gee_user_role"
 }
 
 func (m *UserRole) BeforeCreate() error {

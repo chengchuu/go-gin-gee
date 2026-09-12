@@ -13,7 +13,7 @@ RUN go mod download && \
     go build -o ./dist/api ./cmd/api/main.go
 
 # STAGE: Base
-FROM debian:bookworm-slim as base-builder
+FROM debian:bookworm-slim AS base-builder
 ENV TZ=Asia/Shanghai
 WORKDIR /web
 # Dependencies

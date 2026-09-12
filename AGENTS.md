@@ -106,21 +106,6 @@ Flow:
 - Protected endpoints use `AuthRequired()` middleware to validate the token.
 - User create and update operations hash plaintext passwords before persistence.
 
-### Tasks
-
-- Routes:
-  - `/api/tasks`
-  - `/api/tasks/:id`
-- Main files:
-  - `internal/api/controllers/tasks-controller.go`
-  - `internal/pkg/persistence/tasks-repository.go`
-  - `internal/pkg/models/tasks/task.go`
-
-Flow:
-
-- Standard CRUD through controller -> repository -> Gorm.
-- Task queries preload related `User` records.
-
 ### Alias-to-data storage
 
 - Routes:
@@ -154,18 +139,21 @@ Flow:
 3. MD5 is used to deduplicate existing links.
 4. A DB row is created to obtain an auto-increment ID.
 5. The numeric ID is converted into a short key.
-6. Final tiny link is persisted and returned.
-7. `/t/:key` resolves the key and redirects to the original URL.
+6. The short key is persisted.
+7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
+8. `/t/:key` resolves the key and redirects to the original URL.
 
 Special behavior:
 
 - Supports configured `SpecialLinks` from config.
 - Supports one-time links by checking and incrementing `VisitCount`.
+- `tiny_link` is an API response value, not persisted model state.
 
 ### Site health checks
 
 - Route:
   - `/api/gee/check`
+  - `/api/gee/webhook-message`
 - Main files:
   - `internal/api/controllers/schedules-controller.go`
   - `internal/pkg/persistence/robot-repository.go`
@@ -175,7 +163,8 @@ Flow:
 1. Site list is read from config.
 2. Each site is checked via HTTP using `resty`.
 3. An HTML report is written to `log/robot.html`.
-4. A Markdown summary may be sent to a WeCom robot.
+4. A summary message may be sent to a Discord webhook when `WEBHOOK_ID` and `WEBHOOK_TOKEN` are configured.
+5. `/api/gee/webhook-message` reuses the Discord sender and is disabled unless `Data.EnableWebhookAPI` is `on` with a matching `X-Webhook-API-Key`.
 
 ### Agent/server utilities
 
@@ -213,7 +202,6 @@ Flow:
 - Auto-migrations run for:
   - `users.User`
   - `users.UserRole`
-  - `tasks.Task`
   - `alias2data.Alias2data`
   - `tiny.Tiny`
 
@@ -236,7 +224,10 @@ Important config fields:
 - `Server.Mode`
 - `Database.*`
 - `Data.EnableCORS`
-- `Data.WeComRobotCheck`
+- `Data.WebhookID`
+- `Data.WebhookToken`
+- `Data.EnableWebhookAPI`
+- `Data.WebhookAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`

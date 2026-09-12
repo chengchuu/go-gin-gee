@@ -183,7 +183,12 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 	if len(displayedSuccessNames) > displayedPassedSitesLimit {
 		displayedSuccessNames = displayedSuccessNames[:displayedPassedSitesLimit]
 	}
-	mdStr := "Health Check Result:\n"
+	mdStr := fmt.Sprintf(
+		"Robot Check Result:\nAll: %d | Passed: %d | Failed: %d\n",
+		len(*healthySites)+len(*failSites),
+		len(*healthySites),
+		len(*failSites),
+	)
 	lo.ForEach(displayedSuccessNames, func(name string, _ int) {
 		mdStr += fmt.Sprintf("%s OK\n", name)
 	})
@@ -200,13 +205,7 @@ func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) 
 			siteLink,
 		)
 	})
-	mdStr += fmt.Sprintf(
-		"All: %d | Passed: %d | Failed: %d",
-		len(*healthySites)+len(*failSites),
-		len(*healthySites),
-		len(*failSites),
-	)
-	return mdStr
+	return strings.TrimSuffix(mdStr, "\n")
 }
 
 func getDiscordWebhookConfig() (string, string, error) {

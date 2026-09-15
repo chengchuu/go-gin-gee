@@ -1,4 +1,3 @@
-<!-- omit from toc -->
 # go-gin-gee
 
 Gee is a project that provides several services for everyday work. The project is based on Gin [1], and follows the ProjectLayout [3] structure. In addition, some daily scripts in the folder `scripts`, which can be used by the command `run` directly.
@@ -8,8 +7,9 @@ Gee is a project that provides several services for everyday work. The project i
 
 - [Script Examples](#script-examples)
 - [API Examples](#api-examples)
+  - [Key-Value Store](#key-value-store)
 - [Build](#build)
-- [Deploy](#deploy)
+- [Deployment](#deployment)
   - [Supervisor](#supervisor)
 - [Docker](#docker)
   - [Quick Start](#quick-start)
@@ -74,6 +74,113 @@ More in folder [`scripts`](./scripts/README.md).
 ## API Examples
 
 The base URL for this API is an environment variate `${BASE_URL}`, such as `https://example.com/path`.
+
+### Key-Value Store
+
+The key-value API exposes exactly three JSON endpoints:
+
+| Method | Path | Authorization | Behavior |
+| :-- | :-- | :-- | :-- |
+| POST | `/api/gee/kv/get` | Required only for private entries | Read an entry using a key from the JSON body |
+| POST | `/api/gee/kv/set` | `X-API-Key` required | Create or replace an entry (upsert) |
+| POST | `/api/gee/kv/increment` | `X-API-Key` required | Atomically increment a numeric counter |
+
+Configure accepted keys in `Data.KVAPIKeys`. Keys must match `^[a-z0-9][a-z0-9._:-]{0,127}$`; they are never read from paths, query strings, or headers. Entry visibility is `public` or `private` and defaults to `private`. An unauthorized read of a private entry returns the same `404` response as an unknown key.
+
+All responses contain exactly `code`, `message`, and `data`. Application codes complement, rather than replace, meaningful HTTP statuses:
+
+| Code | Message | HTTP status |
+| --: | :-- | --: |
+| 0 | success | 200 or 201 |
+| 40001 | invalid request | 400 |
+| 40002 | invalid key | 400 |
+| 40003 | invalid value | 400 |
+| 40101 | API key required | 401 |
+| 40301 | access denied | 403 |
+| 40401 | key not found | 404 |
+| 40901 | incompatible value type | 409 |
+| 50001 | internal server error | 500 |
+
+Get a public value:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/get' \
+  --header 'Content-Type: application/json' \
+  --data '{"key":"site.title"}'
+```
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "site.title",
+    "value": "Gee Service",
+    "content_type": "text/plain",
+    "visibility": "public",
+    "created_at": "2026-07-26T03:00:00Z",
+    "updated_at": "2026-07-26T03:00:00Z"
+  }
+}
+```
+
+Create or replace a value:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/set' \
+  --header 'Content-Type: application/json' \
+  --header "X-API-Key: ${GEE_KV_API_KEY}" \
+  --data '{"key":"site.title","value":"Gee Service","content_type":"text/plain","visibility":"private"}'
+```
+
+Creation returns HTTP `201`; replacement returns HTTP `200`. The response data includes `created: true` or `created: false`.
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "site.title",
+    "value": "Gee Service",
+    "content_type": "text/plain",
+    "visibility": "private",
+    "created": true
+  }
+}
+```
+
+Increment a counter:
+
+```bash
+curl --request POST '${BASE_URL}/api/gee/kv/increment' \
+  --header 'Content-Type: application/json' \
+  --header "X-API-Key: ${GEE_KV_API_KEY}" \
+  --data '{"key":"page.views","delta":1}'
+```
+
+An omitted `delta` defaults to `1`; explicit zero, positive, and negative deltas are supported. Missing counters start at zero, and increments use database-side arithmetic. A key already used for a non-counter entry returns HTTP `409`.
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": {
+    "key": "page.views",
+    "value": 101,
+    "delta": 1
+  }
+}
+```
+
+Errors contain no internal details and normally use `data: null`:
+
+```json
+{
+  "code": 40401,
+  "message": "key not found",
+  "data": null
+}
+```
 
 <!-- omit from toc -->
 ### Generate Short Link
@@ -154,12 +261,26 @@ Windows:
 GOOS=windows GOARCH=amd64 go build -o dist/api-windows-amd64 cmd/api/main.go
 ```
 
-## Deploy
+## Deployment
 
-Environment Variates:
+Environment Variables:
 
-- `${WECOM_ROBOT_CHECK}`: WeCom Robot Key.
+- `${WEBHOOK_ID}`: Discord Webhook ID.
+- `${WEBHOOK_TOKEN}`: Discord Webhook Token.
 - `${BASE_URL}`: The Base URL for this Service.
+
+Config-file only private webhook API fields:
+
+- `Data.EnableWebhookAPI`: Set to `on` to enable `POST /api/gee/webhook-message`.
+- `Data.WebhookAPIKeys`: API keys accepted by the private webhook API via `X-Webhook-API-Key`.
+
+Key-value API configuration:
+
+- `Data.KVAPIKeys`: API keys accepted by key-value write operations and private reads via `X-API-Key`.
+
+API-key checks apply only where handlers explicitly implement them. The webhook endpoint uses its webhook-specific header and key list; the key-value endpoints use `X-API-Key` and `Data.KVAPIKeys`.
+
+Upgrading does not automatically drop legacy user tables. After backing up the database and verifying the deployment, operators may optionally remove obsolete tables such as `gee_user` and `gee_user_role` manually.
 
 ### Supervisor
 
@@ -169,7 +290,7 @@ directory=/web/go-gin-gee
 command=/web/go-gin-gee/dist/api-linux-amd64 --config-path="/web/go-gin-gee/data/config.json"
 autostart=true
 autorestart=true
-environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="https://example.com/path"
+environment=WEBHOOK_ID="WEBHOOK_ID",WEBHOOK_TOKEN="WEBHOOK_TOKEN",BASE_URL="https://example.com/path"
 ```
 
 ## Docker
@@ -177,9 +298,10 @@ environment=WECOM_ROBOT_CHECK="b2lsjd46-7146-4nv2-8767-86cb0cncjdbe",BASE_URL="h
 ### Quick Start
 
 ```bash
-GEE_TAG="go-gin-gee:v$(date +"%Y%m%d%H%M%S")" && \
+GEE_VERSION="v$(date +"%Y%m%d%H%M%S")" && \
+GEE_TAG="go-gin-gee:${GEE_VERSION}" && \
 docker build -t "${GEE_TAG}" . && \
-docker run --name "go-gin-gee" -p 3000:3000 "${GEE_TAG}"
+docker run --name "go-gin-gee-${GEE_VERSION}" -p 3000:3000 "${GEE_TAG}"
 ```
 
 ### Build Image
@@ -201,11 +323,12 @@ Environment variables:
 
 Usage:
 
-`${RUN_FLAG}` is optional, default is `-r`("RUN"). `${WECOM_ROBOT_CHECK}` is optional. If you don't want to send the message to WeCom Robot, just remove it. `${BASE_URL}` is required. It's the Base URL for this Service.
+`${RUN_FLAG}` is optional, default is `-r`("RUN"). `${WEBHOOK_ID}` and `${WEBHOOK_TOKEN}` are optional. If you don't want to send the message to Discord, just remove them. `${BASE_URL}` is required. It's the Base URL for this Service.
 
 ```bash
 bash ./scripts/docker-build.sh ${RUN_FLAG} \
-  "WECOM_ROBOT_CHECK=${WECOM_ROBOT_CHECK}" \
+  "WEBHOOK_ID=${WEBHOOK_ID}" \
+  "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
 ```
 
@@ -221,7 +344,8 @@ Example 2: Build and Run
 
 ```bash
 bash ./scripts/docker-build.sh -r \
-  "WECOM_ROBOT_CHECK=b2lsjd46-7146-4nv2-8767-86cb0cncjdbe" \
+  "WEBHOOK_ID=WEBHOOK_ID" \
+  "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"
 ```
 
@@ -249,7 +373,8 @@ Usage:
 
 ```bash
 bash ./scripts/docker-run.sh "${DOCKER_HUB_REPOSITORY_TAGNAME}" \
-  "WECOM_ROBOT_CHECK=${WECOM_ROBOT_CHECK}" \
+  "WEBHOOK_ID=${WEBHOOK_ID}" \
+  "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
 ```
 
@@ -257,7 +382,8 @@ Example:
 
 ```bash
 bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api" \
-  "WECOM_ROBOT_CHECK=b2lsjd46-7146-4nv2-8767-86cb0cncjdbe" \
+  "WEBHOOK_ID=WEBHOOK_ID" \
+  "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"
 ```
 
@@ -272,7 +398,7 @@ go install github.com/swaggo/swag/cmd/swag@v1.8.12
 Generate:
 
 ```bash
-swag init --dir cmd/api --parseDependency --output docs
+swag init --dir cmd/api,internal/api/controllers --parseDependency --output docs
 ```
 
 Make sure your GO Path is on the PATH environment variable `export PATH=$(go env GOPATH)/bin:$PATH` if the following error occurs `command not found: swag`.

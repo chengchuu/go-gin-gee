@@ -106,21 +106,6 @@ Flow:
 - Protected endpoints use `AuthRequired()` middleware to validate the token.
 - User create and update operations hash plaintext passwords before persistence.
 
-### Tasks
-
-- Routes:
-  - `/api/tasks`
-  - `/api/tasks/:id`
-- Main files:
-  - `internal/api/controllers/tasks-controller.go`
-  - `internal/pkg/persistence/tasks-repository.go`
-  - `internal/pkg/models/tasks/task.go`
-
-Flow:
-
-- Standard CRUD through controller -> repository -> Gorm.
-- Task queries preload related `User` records.
-
 ### Alias-to-data storage
 
 - Routes:
@@ -213,7 +198,6 @@ Flow:
 - Auto-migrations run for:
   - `users.User`
   - `users.UserRole`
-  - `tasks.Task`
   - `alias2data.Alias2data`
   - `tiny.Tiny`
 

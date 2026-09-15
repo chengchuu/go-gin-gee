@@ -75,13 +75,6 @@ func Setup() *gin.Engine {
 	app.POST("/api/users", controllers.CreateUser)
 	app.PUT("/api/users/:id", controllers.UpdateUser)
 	app.DELETE("/api/users/:id", controllers.DeleteUser)
-	// ================== Tasks Routes
-	app.GET("/api/tasks/:id", controllers.GetTaskById)
-	app.GET("/api/tasks", controllers.GetTasks)
-	app.POST("/api/tasks", controllers.CreateTask)
-	app.PUT("/api/tasks/:id", controllers.UpdateTask)
-	app.DELETE("/api/tasks/:id", controllers.DeleteTask)
-
 	// Static - begin
 	templatePath := "data/index.tmpl"
 	if _, err := os.Stat(templatePath); err != nil {

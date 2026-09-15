@@ -7,7 +7,6 @@ import (
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/alias2data"
-	"github.com/chengchuu/go-gin-gee/internal/pkg/models/tasks"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/users"
 	"github.com/jinzhu/gorm"
@@ -74,7 +73,6 @@ func SetupDB() {
 func migration() {
 	DB.AutoMigrate(&users.User{})
 	DB.AutoMigrate(&users.UserRole{})
-	DB.AutoMigrate(&tasks.Task{})
 	DB.AutoMigrate(&alias2data.Alias2data{})
 	DB.AutoMigrate(&tiny.Tiny{})
 }

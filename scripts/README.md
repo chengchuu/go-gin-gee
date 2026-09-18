@@ -59,8 +59,8 @@ go run ./scripts/extract-nginx-missing-files \
 
 ```bash
 go run ./scripts/check-web-links \
-  -url="https://x.mazey.net/" \
-  -reportPath="log/MAZEY_LINKS_0X.log"
+  -url="https://blog.mazey.net/" \
+  -reportPath="log/MAZEY_LINKS_09.log"
 ```
 
 ## Filename Batch Rename Helpers

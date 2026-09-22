@@ -13,12 +13,15 @@
   },
   "Server": {
     "Port": "3000",
-    "Secret": "frijan27th2023",
     "_Mode": "#release | debug",
     "Mode": "debug"
   },
   "Data": {
     "EnableCORS": "on",
+    "WEBHOOK_ID": "",
+    "WEBHOOK_TOKEN": "",
+    "EnableWebhookAPI": "off",
+    "WebhookAPIKeys": [],
     "Sites": [],
     "SpecialLinks": []
   }

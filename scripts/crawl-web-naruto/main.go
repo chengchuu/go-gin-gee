@@ -55,7 +55,6 @@ func main() {
 				return
 			}
 		}
-		// logger.Println("Title found:", thatTitle)
 	})
 
 	// Find <b>Warning</b> and Panic
@@ -106,8 +105,6 @@ func main() {
 			}
 		}
 		// blog - end
-		// logger.Println("Next page found:", baseURL)
-		// logger.Println("Running ...")
 		fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
@@ -124,10 +121,6 @@ func main() {
 	if *firstURL != "" {
 		visitedURLs[*firstURL] = true
 		c.Visit(*firstURL)
-		// err := c.Visit(*firstURL)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
 	}
 
 	// Visit extra URLs
@@ -141,10 +134,6 @@ func main() {
 			fmt.Print(".")
 			visitedURLs[url] = true
 			c.Visit(url)
-			// err := c.Visit(url)
-			// if err != nil {
-			// 	logger.Printf("Error visiting extra URL %s: %v", url, err)
-			// }
 		}
 	}
 

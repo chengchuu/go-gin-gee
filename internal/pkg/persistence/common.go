@@ -2,6 +2,7 @@ package persistence
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
@@ -106,7 +107,14 @@ func FirstByID(out interface{}, id string) (notFound bool, err error) {
 	if err = checkDBDriver(); err != nil {
 		return
 	}
-	err = db.GetDB().First(out, id).Error
+
+	parsedID, parseErr := strconv.ParseUint(id, 10, 64)
+	if parseErr != nil {
+		err = errors.New("invalid id: " + parseErr.Error())
+		return
+	}
+
+	err = db.GetDB().First(out, parsedID).Error
 	if err != nil {
 		notFound = gorm.IsRecordNotFoundError(err)
 	}

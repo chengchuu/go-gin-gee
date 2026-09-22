@@ -12,11 +12,15 @@
   },
   "Server": {
     "Port": "3000",
-    "Secret": "wednov23rd2022",
     "Mode": "release"
   },
   "Data": {
     "EnableCORS": "on",
+    "WEBHOOK_ID": "",
+    "WEBHOOK_TOKEN": "",
+    "EnableWebhookAPI": "off",
+    "WebhookAPIKeys": [],
+    "KVAPIKeys": [],
     "Sites": [],
     "SpecialLinks": []
   }

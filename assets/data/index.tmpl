@@ -11,7 +11,7 @@
   <style>@media(prefers-color-scheme: dark){.base p{color:#b8c0cc}}</style>
 </head>
 <body>
-  <main class="base base-info" role="main" aria-labelledby="title"{{ if .content }} aria-describedby="desc"{{ end }}>
+  <main class="base base-{{ if .classname }}{{ .classname }}{{ else }}info{{ end }}" role="main" aria-labelledby="title"{{ if .content }} aria-describedby="desc"{{ end }}>
     <h1 id="title">{{ .title }}</h1>
     {{ if .content }}<p id="desc">{{ .content }}</p>{{ end }}
   </main>

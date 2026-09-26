@@ -26,17 +26,21 @@ func renderTinyError(c *gin.Context, err error) {
 		errStr = "404 Link Not Found"
 	}
 	content := "This short link could not be opened. Check the link or contact the person who shared it."
+	classname := "error"
 	switch errStr {
 	case "404 Link Not Found":
 		content = "This short link could not be found."
+		classname = "warn"
 	case "404 Link Not Available":
 		content = "This short link could not be opened."
 	case "404 Link Expired":
 		content = "This one-time link has already been used."
+		classname = "warn"
 	}
 	c.HTML(http.StatusNotFound, "index.tmpl", gin.H{
-		"title":   errStr,
-		"content": content,
+		"title":     errStr,
+		"content":   content,
+		"classname": classname,
 	})
 }
 

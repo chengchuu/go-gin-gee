@@ -14,16 +14,30 @@ func RedirectTiny(c *gin.Context) {
 	per := persistence.GetTinyRepository()
 	TinyKey := c.Param("key")
 	if data, err := per.QueryOriLinkByTinyKey(TinyKey); err != nil {
-		errStr := err.Error()
-		if errStr == "" {
-			errStr = "404 Link Not Found"
-		}
-		c.HTML(http.StatusNotFound, "index.tmpl", gin.H{
-			"title": errStr,
-		})
+		renderTinyError(c, err)
 	} else {
 		c.Redirect(http.StatusFound, data)
 	}
+}
+
+func renderTinyError(c *gin.Context, err error) {
+	errStr := err.Error()
+	if errStr == "" {
+		errStr = "404 Link Not Found"
+	}
+	content := "This short link could not be opened. Check the link or contact the person who shared it."
+	switch errStr {
+	case "404 Link Not Found":
+		content = "This short link could not be found."
+	case "404 Link Not Available":
+		content = "This short link could not be opened."
+	case "404 Link Expired":
+		content = "This one-time link has already been used."
+	}
+	c.HTML(http.StatusNotFound, "index.tmpl", gin.H{
+		"title":   errStr,
+		"content": content,
+	})
 }
 
 func GetTiny(c *gin.Context) {

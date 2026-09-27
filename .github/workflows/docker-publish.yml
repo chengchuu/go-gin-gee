@@ -14,6 +14,12 @@ jobs:
   test:
     name: Run Go tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.25.13', '1.26.8']
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -21,15 +27,71 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version-file: go.mod
+          go-version: ${{ matrix.go }}
 
       - name: Run tests
         run: go test ./...
 
+      - name: Build all packages
+        run: go build ./...
+
+      - name: Run race tests
+        run: go test -race ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Verify module consistency
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+
+      - name: Check whitespace
+        run: git diff --check
+
+  database:
+    name: Database regressions (${{ matrix.engine }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        engine: [postgres, mysql]
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_PASSWORD: fixture_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+      mysql:
+        image: mysql:8.4.6
+        env:
+          MYSQL_ROOT_PASSWORD: fixture_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -pfixture_password"
+          --health-interval 10s --health-timeout 5s --health-retries 20
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '1'
+      GEE_TEST_DB_ENGINE: ${{ matrix.engine }}
+      GEE_TEST_DB_PORT: ${{ matrix.engine == 'postgres' && '5432' || '3306' }}
+      GEE_TEST_DB_PASSWORD: fixture_password
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.13'
+      - name: Test persistence and HTTP database contracts
+        run: go test -race -v ./internal/pkg/persistence ./internal/api/controllers
+
   docker:
     name: Build Docker image (publish on push)
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, database]
     permissions:
       contents: read
     steps:

@@ -9,7 +9,8 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/kv"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var (
@@ -44,7 +45,7 @@ func (repository *KVRepository) Get(key string) (*kv.Entry, error) {
 
 	var entry kv.Entry
 	err := db.GetDB().Where(map[string]interface{}{"key": key}).First(&entry).Error
-	if gorm.IsRecordNotFoundError(err) {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, ErrKVNotFound
 	}
 	if err != nil {
@@ -88,14 +89,14 @@ func (repository *KVRepository) set(entry *kv.Entry) (created bool, retry bool, 
 		tx.Rollback()
 		return false, false, ErrKVIncompatible
 	}
-	if !gorm.IsRecordNotFoundError(err) {
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		tx.Rollback()
 		return false, false, err
 	}
 
 	var existing kv.Entry
 	err = tx.Where(map[string]interface{}{"key": entry.Key}).First(&existing).Error
-	created = gorm.IsRecordNotFoundError(err)
+	created = errors.Is(err, gorm.ErrRecordNotFound)
 	if err != nil && !created {
 		tx.Rollback()
 		return false, false, err
@@ -138,19 +139,13 @@ func (repository *KVRepository) Increment(key string, delta int64) (int64, error
 	keyLock.Lock()
 	defer keyLock.Unlock()
 
-	for attempt := 0; attempt < 2; attempt++ {
-		value, retry, err := repository.increment(key, delta)
-		if !retry {
-			return value, err
-		}
-	}
-	return 0, ErrKVConcurrentWrite
+	return repository.increment(key, delta)
 }
 
-func (repository *KVRepository) increment(key string, delta int64) (value int64, retry bool, err error) {
+func (repository *KVRepository) increment(key string, delta int64) (value int64, err error) {
 	tx := db.GetDB().Begin()
 	if tx.Error != nil {
-		return 0, false, tx.Error
+		return 0, tx.Error
 	}
 	defer func() {
 		if recoverValue := recover(); recoverValue != nil {
@@ -163,47 +158,42 @@ func (repository *KVRepository) increment(key string, delta int64) (value int64,
 	err = tx.Select("id").Where(map[string]interface{}{"key": key}).First(&entry).Error
 	if err == nil {
 		tx.Rollback()
-		return 0, false, ErrKVIncompatible
+		return 0, ErrKVIncompatible
 	}
-	if !gorm.IsRecordNotFoundError(err) {
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		tx.Rollback()
-		return 0, false, err
+		return 0, err
 	}
 
-	updates := map[string]interface{}{
-		"value":      gorm.Expr("value + ?", delta),
-		"updated_at": time.Now().UTC(),
-	}
-	result := tx.Model(&kv.Counter{}).Where(map[string]interface{}{"key": key}).Updates(updates)
-	if result.Error != nil {
+	// Upsert directly: updating a missing row before inserting takes MySQL gap
+	// locks that can deadlock concurrent creation of otherwise unrelated keys.
+	counter := kv.Counter{Key: key, Value: delta, Visibility: "private"}
+	err = tx.Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "key"}},
+		DoUpdates: clause.Assignments(map[string]interface{}{
+			"value":      gorm.Expr("? + ?", clause.Column{Table: clause.CurrentTable, Name: "value"}, delta),
+			"updated_at": time.Now().UTC(),
+		}),
+	}).Create(&counter).Error
+	if err != nil {
 		tx.Rollback()
-		return 0, false, result.Error
-	}
-	if result.RowsAffected == 0 {
-		counter := kv.Counter{Key: key, Value: delta, Visibility: "private"}
-		if err = tx.Create(&counter).Error; err != nil {
-			tx.Rollback()
-			if exists, lookupErr := kvKeyExists(db.GetDB(), key); lookupErr == nil && exists {
-				// Another process created this key after our update.
-				return 0, true, nil
-			}
-			return 0, false, err
-		}
+		return 0, err
 	}
 
-	var counter kv.Counter
+	// Read by key rather than the insert result's engine-specific generated ID.
+	counter = kv.Counter{}
 	if err = tx.Where(map[string]interface{}{"key": key}).First(&counter).Error; err != nil {
 		tx.Rollback()
-		return 0, false, err
+		return 0, err
 	}
 	if err = tx.Commit().Error; err != nil {
-		return 0, false, err
+		return 0, err
 	}
-	return counter.Value, false, nil
+	return counter.Value, nil
 }
 
 func kvKeyExists(database *gorm.DB, key string) (bool, error) {
-	var count int
+	var count int64
 	if err := database.Model(&kv.Entry{}).Where(map[string]interface{}{"key": key}).Count(&count).Error; err != nil {
 		return false, err
 	}

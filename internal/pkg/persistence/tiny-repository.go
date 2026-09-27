@@ -134,7 +134,7 @@ func (r *TinyRepository) RecordVisitCountByTinyKey(TinyKey string) (bool, error)
 		return false, err
 	}
 	tiny.VisitCount = tiny.VisitCount + 1
-	err = Updates(&where, &tiny)
+	err = Updates(&tiny, &tiny)
 	if err != nil {
 		return false, err
 	}

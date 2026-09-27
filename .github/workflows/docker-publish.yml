@@ -1,11 +1,9 @@
 name: Test and Publish Docker Image
 
 on:
-  # Test
   pull_request:
     branches:
       - main
-  # Publish
   push:
     branches:
       - release/v1

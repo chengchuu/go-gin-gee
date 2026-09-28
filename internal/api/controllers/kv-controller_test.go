@@ -12,9 +12,9 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/kv"
+	"github.com/chengchuu/go-gin-gee/internal/testutil"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/gorm"
 )
 
 const kvTestAPIKey = "gee_kv_test"
@@ -211,7 +211,7 @@ func TestIncrementKVConcurrentRequestsDoNotLoseUpdates(t *testing.T) {
 }
 
 func TestIncrementKVConcurrentDistinctCounters(t *testing.T) {
-	app, _ := newKVTestApp(t)
+	app, database := newKVTestApp(t)
 	const requests = 40
 
 	var waitGroup sync.WaitGroup
@@ -231,6 +231,18 @@ func TestIncrementKVConcurrentDistinctCounters(t *testing.T) {
 	close(errorsChannel)
 	for err := range errorsChannel {
 		t.Error(err)
+	}
+	var counters []kv.Counter
+	if err := database.Find(&counters).Error; err != nil {
+		t.Fatal(err)
+	}
+	if len(counters) != requests {
+		t.Fatalf("stored counters = %d, want %d", len(counters), requests)
+	}
+	for _, counter := range counters {
+		if counter.Value != 1 {
+			t.Errorf("counter %q = %d, want 1", counter.Key, counter.Value)
+		}
 	}
 }
 
@@ -269,7 +281,7 @@ func TestSetKVConcurrentRequestsPreserveUpsertSemantics(t *testing.T) {
 		t.Fatalf("created responses = %d, want exactly 1", createdCount)
 	}
 
-	var entryCount int
+	var entryCount int64
 	if err := database.Model(&kv.Entry{}).Where(map[string]interface{}{"key": "concurrent.setting"}).Count(&entryCount).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -320,8 +332,8 @@ func TestSetAndIncrementCannotClaimTheSameKey(t *testing.T) {
 			t.Fatalf("key %q responses: success=%d conflict=%d, want 1 each", key, successCount, conflictCount)
 		}
 
-		var entryCount int
-		var counterCount int
+		var entryCount int64
+		var counterCount int64
 		if err := database.Model(&kv.Entry{}).Where(map[string]interface{}{"key": key}).Count(&entryCount).Error; err != nil {
 			t.Fatal(err)
 		}
@@ -336,7 +348,7 @@ func TestSetAndIncrementCannotClaimTheSameKey(t *testing.T) {
 
 func TestKVDoesNotExposeInternalDatabaseErrors(t *testing.T) {
 	app, database := newKVTestApp(t)
-	if err := database.Close(); err != nil {
+	if err := closeTestDatabase(database); err != nil {
 		t.Fatal(err)
 	}
 	response := performKVRequest(app, "/api/gee/kv/get", `{"key":"site.title"}`, "")
@@ -352,14 +364,8 @@ func TestKVDoesNotExposeInternalDatabaseErrors(t *testing.T) {
 func newKVTestApp(t *testing.T) (*gin.Engine, *gorm.DB) {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
-	databaseName := strings.NewReplacer("/", "-", " ", "-").Replace(t.Name())
-	database, err := gorm.Open("sqlite3", "file:"+databaseName+"?mode=memory&cache=shared&_busy_timeout=5000")
-	if err != nil {
-		t.Fatal(err)
-	}
-	database.LogMode(false)
-	database.DB().SetMaxOpenConns(8)
-	if err = database.AutoMigrate(&kv.Entry{}, &kv.Counter{}).Error; err != nil {
+	database, engine := testutil.OpenDatabase(t)
+	if err := database.AutoMigrate(&kv.Entry{}, &kv.Counter{}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -367,13 +373,13 @@ func newKVTestApp(t *testing.T) (*gin.Engine, *gorm.DB) {
 	oldConfig := config.Config
 	db.DB = database
 	config.Config = &config.Configuration{
-		Database: config.DatabaseConfiguration{Driver: "sqlite"},
+		Database: config.DatabaseConfiguration{Driver: engine},
 		Data:     config.DataConfiguration{KVAPIKeys: []string{kvTestAPIKey}},
 	}
 	t.Cleanup(func() {
 		db.DB = oldDB
 		config.Config = oldConfig
-		_ = database.Close()
+		_ = closeTestDatabase(database)
 	})
 
 	app := gin.New()
@@ -435,4 +441,12 @@ func assertKVEnvelope(t *testing.T, response *httptest.ResponseRecorder, wantSta
 		t.Fatalf("failure data = %#v, want nil", payload["data"])
 	}
 	return payload
+}
+
+func closeTestDatabase(database *gorm.DB) error {
+	pool, err := database.DB()
+	if err != nil {
+		return err
+	}
+	return pool.Close()
 }

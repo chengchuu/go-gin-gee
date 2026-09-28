@@ -400,7 +400,7 @@ bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api
 Download [swag](https://github.com/swaggo/swag):
 
 ```bash
-go install github.com/swaggo/swag/cmd/swag@v1.8.12
+go install github.com/swaggo/swag/cmd/swag@v1.16.6
 ```
 
 Generate:
@@ -416,6 +416,11 @@ Run and visit: <http://localhost:3000/docs/index.html>
 ## Contributing
 
 ### Local Development Setup
+
+Use Go 1.25 or later and a C compiler for SQLite's CGO driver. The selected
+Go 1.25 validation toolchain is 1.25.13. See the
+[dependency maintenance guide](docs/DEPENDENCY_MAINTENANCE.md) for upgrade and
+validation requirements.
 
 ```bash
 git clone https://github.com/chengchuu/go-gin-gee.git

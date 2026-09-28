@@ -4,23 +4,23 @@ import (
 	"errors"
 	"net/http"
 
-	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
+	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
 	"github.com/gin-gonic/gin"
 )
 
-func RedirectTiny(c *gin.Context) {
-	per := persistence.GetTinyRepository()
-	TinyKey := c.Param("key")
-	if data, err := per.QueryOriLinkByTinyKey(TinyKey); err != nil {
-		renderTinyError(c, err)
+func RedirectLink(c *gin.Context) {
+	per := persistence.GetLinkRepository()
+	linkKey := c.Param("link_key")
+	if data, err := per.QueryOriLinkByLinkKey(linkKey); err != nil {
+		renderLinkError(c, err)
 	} else {
 		c.Redirect(http.StatusFound, data)
 	}
 }
 
-func renderTinyError(c *gin.Context, err error) {
+func renderLinkError(c *gin.Context, err error) {
 	errStr := err.Error()
 	if errStr == "" {
 		errStr = "404 Link Not Found"
@@ -44,36 +44,37 @@ func renderTinyError(c *gin.Context, err error) {
 	})
 }
 
-func GetTiny(c *gin.Context) {
-	per := persistence.GetTinyRepository()
-	TinyKey := c.Query("tiny_key")
-	if data, err := per.QueryOriLinkByTinyKey(TinyKey); err != nil {
+func GetLink(c *gin.Context) {
+	per := persistence.GetLinkRepository()
+	linkKey := c.Query("link_key")
+	if data, err := per.QueryOriLinkByLinkKey(linkKey); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("data not found"))
 	} else {
 		c.JSON(http.StatusOK, gin.H{"ori_link": data})
 	}
 }
 
-func CreateTiny(c *gin.Context) {
+func CreateLink(c *gin.Context) {
 	type addParams struct {
-		models.Tiny
+		models.Link
 		BaseUrl string `json:"base_url" form:"base_url"`
 	}
-	var tiny addParams
-	var TinyLink string
+	var record addParams
+	var generatedLink string
 	var baseUrl string
 	var oneTime bool
 	var err error
-	s := persistence.GetTinyRepository()
-	_ = c.BindJSON(&tiny)
-	baseUrl = tiny.BaseUrl
-	oneTime = tiny.OneTime
-	if TinyLink, err = s.SaveOriLink(tiny.OriLink, baseUrl, oneTime); err != nil {
+	s := persistence.GetLinkRepository()
+	_ = c.BindJSON(&record)
+	baseUrl = record.BaseUrl
+	oneTime = record.OneTime
+	if generatedLink, err = s.SaveOriLink(record.OriLink, baseUrl, oneTime); err != nil {
 		http_err.NewError(c, http.StatusBadRequest, err)
 	} else {
 		c.JSON(http.StatusCreated, gin.H{
-			"tiny_link": TinyLink,
-			"data":      TinyLink,
+			// Deprecated: use data. tiny_link remains an identical response alias.
+			"tiny_link": generatedLink,
+			"data":      generatedLink,
 			"errors":    []string{},
 		})
 	}

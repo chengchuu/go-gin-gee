@@ -41,7 +41,12 @@ created=$(request --header 'Content-Type: application/json' \
   http://127.0.0.1:3000/api/gee/generate-short-link)
 key=$(python3 -c '
 import json, sys
-link = json.load(sys.stdin)["tiny_link"]
+payload = json.load(sys.stdin)
+link = payload["data"]
+if "link" in payload:
+    sys.exit("response contains removed link field")
+if payload["tiny_link"] != link:
+    sys.exit("deprecated tiny_link alias differs from data")
 prefix = "http://localhost:3000/t/"
 if not link.startswith(prefix) or not link[len(prefix):]:
     sys.exit("unexpected short-link response")
@@ -52,7 +57,7 @@ test -n "$before"
 
 docker restart "$container" >/dev/null
 check_health
-request --get --data-urlencode "tiny_key=$key" \
+request --get --data-urlencode "link_key=$key" \
   http://127.0.0.1:3000/api/gee/query-short-link |
   python3 -c 'import json, sys; sys.exit(json.load(sys.stdin)["ori_link"] != "https://example.invalid/container-smoke")'
 after=$(docker exec "$container" cat /web/log/api.log)

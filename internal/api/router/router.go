@@ -87,8 +87,8 @@ func registerRoutes(app *gin.Engine) {
 	{
 		gee.GET("/check", controllers.CheckSitesHealth)
 		gee.POST("/webhook-message", controllers.SendDiscordMessage)
-		gee.GET("/query-short-link", controllers.GetTiny)
-		gee.POST("/generate-short-link", controllers.CreateTiny)
+		gee.GET("/query-short-link", controllers.GetLink)
+		gee.POST("/generate-short-link", controllers.CreateLink)
 		gee.GET("/get-tag-name", controllers.GetTag)
 	}
 	// Gee - end
@@ -102,9 +102,9 @@ func registerRoutes(app *gin.Engine) {
 	}
 	// Key-value - end
 
-	// Tiny - begin
-	app.GET("/t/:key", controllers.RedirectTiny)
-	// Tiny - end
+	// Link - begin
+	app.GET("/t/:link_key", controllers.RedirectLink)
+	// Link - end
 
 	// Server API - begin
 	server := app.Group("/server")

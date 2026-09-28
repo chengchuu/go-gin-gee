@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"flag"
 
+	modelsLink "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	modelsS "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
-	modelsT "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -47,7 +47,7 @@ type DataConfiguration struct {
 	BaseURL          string
 	AgentRecordsPath string
 	Sites            []modelsS.WebSite
-	SpecialLinks     []modelsT.SpecialLink
+	SpecialLinks     []modelsLink.SpecialLink
 }
 
 // SetupDB initialize configuration

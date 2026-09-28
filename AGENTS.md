@@ -128,11 +128,11 @@ Flow:
 - Routes:
   - `/api/gee/generate-short-link`
   - `/api/gee/query-short-link`
-  - `/t/:key`
+  - `/t/:link_key`
 - Main files:
-  - `internal/api/controllers/tiny-controller.go`
-  - `internal/pkg/persistence/tiny-repository.go`
-  - `internal/pkg/models/tiny/tiny.go`
+  - `internal/api/controllers/link-controller.go`
+  - `internal/pkg/persistence/link-repository.go`
+  - `internal/pkg/models/link/link.go`
 
 Flow:
 
@@ -142,14 +142,17 @@ Flow:
 4. A DB row is created to obtain an auto-increment ID.
 5. The numeric ID is converted into a short key.
 6. The short key is persisted.
-7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
-8. `/t/:key` resolves the key and redirects to the original URL.
+7. The final `data` response value is computed at runtime from the base URL and short key.
+8. `/t/:link_key` resolves the key and redirects to the original URL.
 
 Special behavior:
 
 - Supports configured `SpecialLinks` from config.
 - Supports one-time links by checking and incrementing `VisitCount`.
-- `tiny_link` is an API response value, not persisted model state.
+- Lookup reads only the `link_key` query parameter. The model field `LinkKey` uses `link_key` for its database column, JSON tag, and form tag.
+- `data` contains the generated URL, not persisted model state. `tiny_link` is a deprecated, identical response alias; callers should use `data`. The response preserves `errors` and does not include a `link` field.
+- `LinkRepository` is accessed through `GetLinkRepository()` and logs with `[Link]`.
+- The `link.Link` model uses `gee_link`, with indexes `uk_link_ori_md5` and `idx_link_key`.
 
 ### Site health checks
 
@@ -210,7 +213,7 @@ Flow:
 - Auto-migrations run for:
   - `kv.Entry`
   - `kv.Counter`
-  - `tiny.Tiny`
+  - `link.Link`
 
 Legacy user tables are not dropped automatically. Operators may remove them manually only after backing up the database and verifying a deployment without the users module.
 

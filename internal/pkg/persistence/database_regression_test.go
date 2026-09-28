@@ -7,7 +7,7 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/kv"
-	"github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
+	modelsLink "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	"github.com/chengchuu/go-gin-gee/internal/testutil"
 	"github.com/chengchuu/go-gin-gee/pkg/helpers"
 	"gorm.io/gorm"
@@ -18,7 +18,7 @@ import (
 func newPersistenceDatabase(t *testing.T) *gorm.DB {
 	t.Helper()
 	database, engine := testutil.OpenDatabase(t)
-	if err := database.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &tiny.Tiny{}); err != nil {
+	if err := database.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &modelsLink.Link{}); err != nil {
 		_ = closeTestDatabase(database)
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestPersistenceMigrationPreservesRowsAndUniqueKeys(t *testing.T) {
 		t.Fatal(err)
 	}
 	for i := 0; i < 2; i++ {
-		if err := database.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &tiny.Tiny{}); err != nil {
+		if err := database.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &modelsLink.Link{}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -107,9 +107,9 @@ func TestPersistenceRollbackAndZeroValueUpdates(t *testing.T) {
 	}
 }
 
-func TestTinyPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
+func TestLinkPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	database := newPersistenceDatabase(t)
-	repository := &TinyRepository{}
+	repository := &LinkRepository{}
 	link, err := repository.SaveOriLink("https://target.test/page", "", true)
 	if err != nil {
 		t.Fatal(err)
@@ -118,18 +118,18 @@ func TestTinyPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	if err != nil || duplicate != link {
 		t.Fatalf("deduplication: link=%q err=%v", duplicate, err)
 	}
-	var stored tiny.Tiny
+	var stored modelsLink.Link
 	if err := database.First(&stored).Error; err != nil {
 		t.Fatal(err)
 	}
-	if stored.ID == 0 || stored.TinyKey == "" || !stored.OneTime || stored.VisitCount != 0 || stored.CreatedAt.IsZero() {
+	if stored.ID == 0 || stored.LinkKey == "" || !stored.OneTime || stored.VisitCount != 0 || stored.CreatedAt.IsZero() {
 		t.Fatalf("incorrect persisted short link: %#v", stored)
 	}
-	other := tiny.Tiny{OriMd5: "other", OriLink: "https://other.test", TinyKey: "other"}
+	other := modelsLink.Link{OriMd5: "other", OriLink: "https://other.test", LinkKey: "other"}
 	if err := database.Create(&other).Error; err != nil {
 		t.Fatal(err)
 	}
-	if _, err := repository.RecordVisitCountByTinyKey(stored.TinyKey); err != nil {
+	if _, err := repository.RecordVisitCountByLinkKey(stored.LinkKey); err != nil {
 		t.Fatal(err)
 	}
 	if err := database.First(&other, other.ID).Error; err != nil {
@@ -144,14 +144,14 @@ func TestTinyPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	if stored.VisitCount != 1 {
 		t.Fatalf("visit count = %d, want 1", stored.VisitCount)
 	}
-	if _, err := repository.QueryOriLinkByTinyKey(stored.TinyKey); err == nil || err.Error() != "404 Link Expired" {
+	if _, err := repository.QueryOriLinkByLinkKey(stored.LinkKey); err == nil || err.Error() != "404 Link Expired" {
 		t.Fatalf("one-time expiration: %v", err)
 	}
-	config.Config.Data.SpecialLinks = []tiny.SpecialLink{{Key: stored.TinyKey, Link: "https://special.test"}}
-	if resolved, err := repository.QueryOriLinkByTinyKey(stored.TinyKey); err != nil || resolved != "https://special.test" {
+	config.Config.Data.SpecialLinks = []modelsLink.SpecialLink{{Key: stored.LinkKey, Link: "https://special.test"}}
+	if resolved, err := repository.QueryOriLinkByLinkKey(stored.LinkKey); err != nil || resolved != "https://special.test" {
 		t.Fatalf("special-link precedence: link=%q err=%v", resolved, err)
 	}
-	if err := database.Create(&tiny.Tiny{OriMd5: stored.OriMd5, OriLink: "duplicate"}).Error; err == nil {
+	if err := database.Create(&modelsLink.Link{OriMd5: stored.OriMd5, OriLink: "duplicate"}).Error; err == nil {
 		t.Fatal("duplicate short-link hash was accepted")
 	}
 }
@@ -164,7 +164,7 @@ func closeTestDatabase(database *gorm.DB) error {
 	return pool.Close()
 }
 
-func TestTinyBaseURLHashCompatibility(t *testing.T) {
+func TestLinkBaseURLHashCompatibility(t *testing.T) {
 	for _, test := range []struct{ original, hashed string }{
 		{"https://target.test/page", "https://target.test/page#?base_url=https://short.test"},
 		{"https://target.test/page?x=1#/view?mode=full", "https://target.test/page?x=1#/view?mode=full&base_url=https://short.test"},
@@ -172,7 +172,7 @@ func TestTinyBaseURLHashCompatibility(t *testing.T) {
 	} {
 		t.Run(test.original, func(t *testing.T) {
 			newPersistenceDatabase(t)
-			repository := &TinyRepository{}
+			repository := &LinkRepository{}
 			link, err := repository.SaveOriLink(test.original, "https://short.test", false)
 			if err != nil {
 				t.Fatal(err)

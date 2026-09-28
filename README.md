@@ -219,9 +219,13 @@ curl --location --request POST '${BASE_URL}/api/gee/generate-short-link' \
 
 Returns:
 
-| Params    | Type     | Description | Required |
-| :-------- | :--------| :---------- | :------- |
-| tiny_link | string   | Short Link  | Yes      |
+| Params    | Type   | Description                         | Required |
+| :-------- | :----- | :---------------------------------- | :------- |
+| data      | string | Generated short-link URL            | Yes      |
+| tiny_link | string | Deprecated alias of `data`           | Yes      |
+| errors    | array  | Empty array on success              | Yes      |
+
+Use `data` for the generated URL. `tiny_link` is deprecated and contains the identical value.
 
 Example:
 
@@ -229,7 +233,9 @@ Success: Status Code 201
 
 ```json
 {
-  "tiny_link": "${BASE_URL}/t/b"
+  "tiny_link": "${BASE_URL}/t/b",
+  "data": "${BASE_URL}/t/b",
+  "errors": []
 }
 ```
 
@@ -240,6 +246,10 @@ Failure: Status Code 400
   "code": 400
 }
 ```
+
+Look up the original URL with `GET /api/gee/query-short-link?link_key=b`.
+The query accepts only `link_key`, not `tiny_key`, and returns `{"ori_link":"<original URL>"}`.
+Open `/t/b` to redirect to that URL; generated short-link paths are unchanged.
 
 ## Build
 

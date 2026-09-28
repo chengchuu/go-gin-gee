@@ -7,7 +7,7 @@ import (
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/kv"
-	"github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -60,7 +60,7 @@ func SetupDB() error {
 	pool.SetMaxIdleConns(configuration.Database.MaxIdleConns)
 	pool.SetMaxOpenConns(configuration.Database.MaxOpenConns)
 	pool.SetConnMaxLifetime(time.Duration(configuration.Database.MaxLifetime) * time.Second)
-	if err := db.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &tiny.Tiny{}); err != nil {
+	if err := db.AutoMigrate(&kv.Entry{}, &kv.Counter{}, &link.Link{}); err != nil {
 		_ = pool.Close()
 		return fmt.Errorf("migrate database: %w", err)
 	}

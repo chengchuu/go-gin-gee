@@ -27,7 +27,7 @@ Implementation of [the approved plan](DEPENDENCY_UPGRADE_PLAN.md) is in progress
 - Gin v1.12.0 and the selected Swagger modules passed the full Go 1.25.13 suite. Regeneration with swag v1.16.6 left `swagger.json` and `swagger.yaml` unchanged; only generated Go metadata changed. The README generator pin is aligned.
 - Viper v1.21.0 and pflag v1.0.10 passed the full suite. New configuration tests passed before and after upgrading, covering explicit flags, file settings, environment overrides, collections, and missing-file defaults.
 - The scheduler migrated directly to `github.com/go-co-op/gocron/v2 v2.22.0` (Go 1.22). The full suite passed, including a fake-clock regression for the daily 10:00 Shanghai schedule in winter and summer.
-- The six requested networking, crawling, HTTP-client, and shared-helper upgrades are installed; see the validation checkpoint below. Other utility upgrades, final security acceptance, and ARM64 container validation remain unfinished.
+- The six requested networking, crawling, HTTP-client, and shared-helper upgrades are installed; see the validation checkpoint below. The four remaining utility upgrades have also passed their per-stage checks; final validation is recorded separately below.
 - `DEPENDENCY_MAINTENANCE.md` documents the repeatable process; the README links to it and states Go/CGO prerequisites.
 
 ## Six-dependency validation checkpoint
@@ -95,13 +95,71 @@ The final-source Linux amd64 image built successfully as `gee-validation:amd64` 
 
 The ARM64 build downloaded its dependencies and prepared runtime assets, but the emulated API compilation produced no further output for more than four hours. The build was canceled; no final ARM64 image or runtime smoke result exists. The cause is unconfirmed, so this is not evidence of an application compilation error. Further VM-wide process inspection was blocked by approval review because it would expose a broader process surface. Retry on a native ARM64 builder or after updating the emulation environment; neither requires weakening application tests. No image was published, and no validation containers remain.
 
+## Four utility upgrade checkpoint
+
+The four utility upgrades were applied independently with Go 1.25.13 and
+`GOTOOLCHAIN=local`. Exact upstream module sources were downloaded and reviewed
+before selection. No publication, deployment, or shared-database access is part
+of this work.
+
+- Stage 1: `github.com/samber/lo v1.33.0` to `v1.53.0` passed baseline and
+  post-upgrade regressions for tag selection, ordered file exclusion, and health
+  report content. Full tests, race tests, builds, vet, `go mod tidy -diff`, and
+  whitespace checks passed. Upstream retains the used selection and iteration
+  semantics; its internal constraints replace the now-unused `golang.org/x/exp`
+  requirement. No application code adaptation was needed.
+- Stage 2: `github.com/takuoki/clmconv v1.1.0` to `v1.2.0` passed golden
+  one-based lowercase mappings around `z`, `zz`, and `zzz` on both versions.
+  Upstream rewrites the conversion algorithm; the tested mappings and existing
+  short-link persistence tests remain unchanged. Full tests, race tests, builds,
+  vet, module consistency, and whitespace checks passed. No transitive changes
+  or application adaptations were needed.
+- Stage 3: `github.com/szyhf/go-excel v1.5.3` to `v1.6.1` passed generated,
+  temporary workbook fixtures on both versions. Tests cover headers, URL values,
+  omitted cells, aggregate output, missing sheets/files, and invalid archives.
+  Full tests, race tests, builds, vet, module consistency, and whitespace checks
+  passed. Upstream adds reader capabilities and absolute worksheet relationship
+  handling; the exercised existing behavior is preserved. No transitive changes
+  or application adaptations were needed.
+- Stage 4: `github.com/bitfield/script v0.20.2` to `v0.25.1` passed baseline and
+  upgraded tests for file selection, Markdown conversion, replacement and append
+  output, and repository discovery with a stub Git executable. No real Git pull
+  runs in these tests. Full tests, race tests, builds, vet, module consistency,
+  and whitespace checks passed. Required graph changes replace
+  `bitbucket.org/creachadair/shell` with `mvdan.cc/sh/v3 v3.7.0` and update
+  `gojq` to `v0.12.13` and `timefmt-go` to `v0.1.5`. No application adaptation
+  was needed. The module declares Go 1.25.0.
+  The script module's development toolchain directive does not change this
+  project's toolchain pin; all stage checks passed on Go 1.25.13.
+
+No public API, CLI, or schema changes were needed. The affected utility commands
+cross-built successfully for Windows amd64 with CGO disabled. The batch Git test
+covers the Unix branch; native Windows PowerShell execution is not verified.
+The status record separates completed stage checks from the final database, security, and
+container validation. To roll back a stage, restore that dependency's previous
+version, tidy the module graph, and rerun the same checks; no schema rollback is
+required for these four upgrades.
+
+Final race-enabled persistence/controller suites passed with uncached runs on
+SQLite, MySQL 5.5.62, MySQL 8.4.6, and PostgreSQL 17.6. Server fixtures used
+loopback-only ports, temporary storage, and randomly named test databases. All
+three server containers and their disposable storage were removed afterward.
+
+The final `govulncheck v1.4.0` scan on Go 1.25.13 reported zero reachable
+vulnerabilities. It also reported one finding in imported packages and five in
+required modules without detected calls to the vulnerable symbols, matching
+the earlier checkpoint's counts. This is not a vulnerability-free graph claim.
+
+The final AMD64 image built as `gee-four-upgrades:amd64` (image ID
+`b975b9404e98`). Its no-network smoke test passed health, Swagger, SQLite-backed
+short-link persistence across restart, and append-safe access logging. The smoke
+container and its disposable storage were removed. The local image was retained;
+no image was published. Native ARM64 CI has not been executed for this working
+tree; its existing non-publishing workflow remains the ARM64 validation path.
+
 ## Remaining stage gates
 
-1. Complete baseline validation, upstream review, and the database test matrix.
-2. Align the module, CI, and container toolchain with Go 1.25 minimum support.
-3. Migrate GORM and validate fresh and existing schemas on all three engines.
-4. Upgrade and validate the remaining dependency groups independently.
-5. Add missing CI gates and reusable maintenance documentation.
-6. Audit every completion criterion in the plan against actual results.
+1. Execute the native ARM64 workflow and verify hosted CI results for the final revision.
+2. Audit the original broader plan's remaining dependency deferrals and completion criteria separately; this checkpoint covers only the four approved utility upgrades.
 
 No publishing, deployment, or shared-database migration has been performed.

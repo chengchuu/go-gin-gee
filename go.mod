@@ -5,7 +5,7 @@ go 1.25.0
 toolchain go1.25.13
 
 require (
-	github.com/bitfield/script v0.20.2
+	github.com/bitfield/script v0.25.1
 	github.com/chengchuu/asiatz v1.2.0
 	github.com/chengchuu/gurl v1.2.0
 	github.com/gin-gonic/gin v1.12.0
@@ -13,11 +13,11 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/jonboulle/clockwork v0.5.0
-	github.com/samber/lo v1.33.0
+	github.com/samber/lo v1.53.0
 	github.com/spf13/viper v1.21.0
 	github.com/swaggo/swag v1.16.6
-	github.com/szyhf/go-excel v1.5.3
-	github.com/takuoki/clmconv v1.1.0
+	github.com/szyhf/go-excel v1.6.1
+	github.com/takuoki/clmconv v1.2.0
 	github.com/tdewolff/parse/v2 v2.8.16
 	golang.org/x/net v0.58.0
 	golang.org/x/sys v0.47.0
@@ -28,7 +28,6 @@ require (
 )
 
 require (
-	bitbucket.org/creachadair/shell v0.0.7 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
@@ -55,8 +54,8 @@ require (
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/itchyny/gojq v0.12.7 // indirect
-	github.com/itchyny/timefmt-go v0.1.3 // indirect
+	github.com/itchyny/gojq v0.12.13 // indirect
+	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.10.0 // indirect
@@ -84,11 +83,11 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.22.0 // indirect
-	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/mod v0.38.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/tools v0.48.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
+	mvdan.cc/sh/v3 v3.7.0 // indirect
 )
 
 require (

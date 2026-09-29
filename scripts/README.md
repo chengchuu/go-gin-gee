@@ -115,13 +115,13 @@ pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-replace-filename-
 macOS Bash or zsh:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Windows 10 Git Bash:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)

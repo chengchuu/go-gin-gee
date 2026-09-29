@@ -25,12 +25,6 @@ func main() {
 	logger.Printf("Extra URLs: %s", *extraURLs)
 	logger.Printf("Find All URLs: %v", *isFoundURLs)
 
-	// Article navigation and related articles
-	ignoreTitles := []string{
-		"文章导航",
-		"相关文章",
-		"条评论",
-	}
 	// Visited URLs
 	visitedURLs := make(map[string]bool)
 	// Failed URLs
@@ -45,18 +39,6 @@ func main() {
 	c := colly.NewCollector(
 		colly.AllowedDomains(*allowedDomain), // Limit to the allowed domain
 	)
-
-	// Find each `<h2>` tag and print its content
-	c.OnHTML("h2", func(e *colly.HTMLElement) {
-		thatTitle := e.Text
-		// Ignore specific titles
-		for _, title := range ignoreTitles {
-			if strings.Contains(thatTitle, title) {
-				return
-			}
-		}
-		// logger.Println("Title found:", thatTitle)
-	})
 
 	// Find <b>Warning</b> and Panic
 	c.OnHTML("b", func(e *colly.HTMLElement) {
@@ -106,8 +88,6 @@ func main() {
 			}
 		}
 		// blog - end
-		// logger.Println("Next page found:", baseURL)
-		// logger.Println("Running ...")
 		fmt.Print(".")
 		visitedURLs[baseURL] = true
 		c.Visit(e.Request.AbsoluteURL(baseURL))
@@ -124,10 +104,6 @@ func main() {
 	if *firstURL != "" {
 		visitedURLs[*firstURL] = true
 		c.Visit(*firstURL)
-		// err := c.Visit(*firstURL)
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
 	}
 
 	// Visit extra URLs
@@ -141,10 +117,6 @@ func main() {
 			fmt.Print(".")
 			visitedURLs[url] = true
 			c.Visit(url)
-			// err := c.Visit(url)
-			// if err != nil {
-			// 	logger.Printf("Error visiting extra URL %s: %v", url, err)
-			// }
 		}
 	}
 

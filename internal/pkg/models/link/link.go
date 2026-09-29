@@ -10,16 +10,32 @@ import (
 
 type Link struct {
 	models.Model
-	OriLink    string `gorm:"column:ori_link;type:text;not null" json:"ori_link" form:"ori_link"`
-	OriMd5     string `gorm:"column:ori_md5;size:32;not null;uniqueIndex:uk_link_ori_md5" json:"ori_md5" form:"ori_md5"`
-	LinkKey    string `gorm:"column:link_key;size:32;not null;index:idx_link_key" json:"link_key" form:"link_key"`
-	OneTime    bool   `gorm:"column:one_time;not null;default:false" json:"one_time" form:"one_time"`
-	VisitCount int    `gorm:"column:visit_count;type:int;not null;default:0" json:"visit_count" form:"visit_count"`
+	OriginalURL string `gorm:"column:original_url;type:text;not null"`
+	DedupHash   string `gorm:"column:dedup_hash;size:64;not null;uniqueIndex:uk_link_dedup_hash"`
+	// NULL is allowed only while the creation transaction allocates the numeric ID.
+	LinkKey        string `gorm:"column:link_key;size:32;default:null;uniqueIndex:uk_link_key"`
+	DirectRedirect bool   `gorm:"column:direct_redirect;not null;default:false"`
+	OneTime        bool   `gorm:"column:one_time;not null;default:false"`
+	VisitCount     int    `gorm:"column:visit_count;type:int;not null;default:0"`
 }
 
 type SpecialLink struct {
 	Key  string `json:"key"`
 	Link string `json:"link"`
+}
+
+// CreateRequest contains only caller-controlled creation fields.
+type CreateRequest struct {
+	CommonAPIKey string `json:"common_api_key"`
+	OriginalURL  string `json:"ori_link" binding:"required"`
+	BaseURL      string `json:"base_url"`
+	OneTime      bool   `json:"one_time"`
+}
+
+// Resolution is shared by persisted links and trusted configuration links.
+type Resolution struct {
+	OriginalURL    string
+	DirectRedirect bool
 }
 
 func (Link) TableName() string {

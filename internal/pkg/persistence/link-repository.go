@@ -1,179 +1,140 @@
 package persistence
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
-	"github.com/chengchuu/go-gin-gee/pkg/helpers"
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
-	"github.com/chengchuu/gurl"
 	"github.com/takuoki/clmconv"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type LinkRepository struct{}
 
-var linkRepository *LinkRepository
+var linkRepository = &LinkRepository{}
 
 const cusConPrefix = "[Link]"
 
-func GetLinkRepository() *LinkRepository {
-	if linkRepository == nil {
-		linkRepository = &LinkRepository{}
+func GetLinkRepository() *LinkRepository { return linkRepository }
+
+// The field names and order are part of the deduplication format. URLs remain exact.
+func linkFingerprint(originalURL, baseURL string, oneTime, directRedirect bool) (string, error) {
+	identity := struct {
+		OriginalURL    string `json:"original_url"`
+		BaseURL        string `json:"base_url"`
+		OneTime        bool   `json:"one_time"`
+		DirectRedirect bool   `json:"direct_redirect"`
+	}{originalURL, baseURL, oneTime, directRedirect}
+	encoded, err := json.Marshal(identity)
+	if err != nil {
+		return "", err
 	}
-	return linkRepository
+	hash := sha256.Sum256(encoded)
+	return hex.EncodeToString(hash[:]), nil
 }
 
-func (r *LinkRepository) SaveOriLink(OriLink string, addBaseUrl string, oneTime bool) (string, error) {
-	var err error
-	var record models.Link
-	var linkForEncode string
-	baseUrl := config.GetConfig().Data.BaseURL
-	if addBaseUrl != "" {
-		baseUrl = addBaseUrl
-		linkForEncode, err = gurl.SetHashParam(OriLink, "base_url", addBaseUrl)
-		if err != nil {
-			return "", err
-		}
-	} else {
-		linkForEncode = OriLink
+func (r *LinkRepository) SaveOriLink(originalURL, addBaseUrl string, oneTime, directRedirect bool) (string, error) {
+	if err := checkDBDriver(); err != nil {
+		return "", err
 	}
-	if baseUrl == "" {
+	baseURL := config.GetConfig().Data.BaseURL
+	if addBaseUrl != "" {
+		baseURL = addBaseUrl
+	}
+	if baseURL == "" {
 		return "", errors.New("BASE_URL is required")
 	}
-	OriMd5 := helpers.ConvertStringToMD5Hash(linkForEncode)
-	data, err := r.QueryOriLinkByOriMd5(OriMd5)
+	hash, err := linkFingerprint(originalURL, baseURL, oneTime, directRedirect)
 	if err != nil {
 		return "", err
-	}
-	if data != nil {
-		return r.BuildLink(baseUrl, data.LinkKey), nil
-	}
-	record.OriLink = OriLink
-	record.OriMd5 = OriMd5
-	err = Create(&record)
-	if err != nil {
-		return "", err
-	}
-	linkID := record.ID
-	// https://github.com/takuoki/clmconv
-	converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
-	linkKey := converter.Itoa(int(linkID))
-	// Compare
-	specialLinks := config.GetConfig().Data.SpecialLinks
-	if len(specialLinks) > 0 {
-		for _, v := range specialLinks {
-			if v.Key == linkKey {
-				logger.Printf("%s Key(%s) is already in use", cusConPrefix, linkKey)
-				record.OriLink = v.Link
-				record.OriMd5 = helpers.ConvertStringToMD5Hash(v.Link)
-				record.LinkKey = linkKey
-				err = Save(&record)
-				if err != nil {
-					return "", err
-				}
-				return r.SaveOriLink(OriLink, addBaseUrl, oneTime)
-			}
-		}
-	}
-	_, err = r.SaveLinkKey(linkID, linkKey, oneTime)
-	if err != nil {
-		return "", err
-	}
-	record.LinkKey = linkKey
-	return r.BuildLink(baseUrl, record.LinkKey), err
-}
-
-func (r *LinkRepository) BuildLink(baseUrl string, linkKey string) string {
-	return fmt.Sprintf("%s/t/%s", baseUrl, linkKey)
-}
-
-func (r *LinkRepository) QueryOriLinkByLinkKey(linkKey string) (string, error) {
-	if linkKey == "" {
-		return "", errors.New("404 Link Not Found")
 	}
 	var record models.Link
-	var err error
-	specialLinks := config.GetConfig().Data.SpecialLinks
-	if len(specialLinks) > 0 {
-		for _, v := range specialLinks {
-			if v.Key == linkKey {
-				logger.Printf("%s Key(%s) is found in special links(%s)", cusConPrefix, linkKey, v.Link)
-				return v.Link, err
-			}
+	err = db.GetDB().Transaction(func(tx *gorm.DB) error {
+		candidate := models.Link{OriginalURL: originalURL, DedupHash: hash, OneTime: oneTime, DirectRedirect: directRedirect}
+		// Insert first: the unique constraint serializes concurrent identical requests.
+		if err := tx.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "dedup_hash"}}, DoNothing: true}).Create(&candidate).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("dedup_hash = ?", hash).First(&record).Error; err != nil {
+			return err
+		}
+		if record.LinkKey != "" {
+			return nil
+		}
+		converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
+		key := converter.Itoa(int(record.ID))
+		// Generated keys contain no underscores. Suffixes avoid manually reserved keys
+		// without creating dummy database records or changing the numeric ID.
+		reserved := make(map[string]bool)
+		for _, special := range config.GetConfig().Data.SpecialLinks {
+			reserved[special.Key] = true
+		}
+		for reserved[key] {
+			key += "_"
+		}
+		if len(key) > 32 {
+			return errors.New("unable to allocate short-link key")
+		}
+		if err := tx.Model(&record).Update("link_key", key).Error; err != nil {
+			return err
+		}
+		record.LinkKey = key
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return r.BuildLink(baseURL, record.LinkKey), nil
+}
+
+func (r *LinkRepository) BuildLink(baseURL, linkKey string) string {
+	return fmt.Sprintf("%s/t/%s", baseURL, linkKey)
+}
+
+func (r *LinkRepository) ResolveLink(linkKey string) (models.Resolution, error) {
+	if linkKey == "" {
+		return models.Resolution{}, errors.New("404 Link Not Found")
+	}
+	for _, special := range config.GetConfig().Data.SpecialLinks {
+		if special.Key == linkKey {
+			return models.Resolution{OriginalURL: special.Link, DirectRedirect: true}, nil
 		}
 	}
-	where := models.Link{}
-	where.LinkKey = linkKey
-	notFound, err := First(&where, &record, []string{})
-	logger.Printf("%s Is this key NotFound in DB: %t", cusConPrefix, notFound)
+	var record models.Link
+	notFound, err := First(&models.Link{LinkKey: linkKey}, &record, nil)
 	if notFound {
-		err = nil
-		return "", errors.New("404 Link Not Found")
+		return models.Resolution{}, errors.New("404 Link Not Found")
 	}
 	if err != nil {
-		logger.Error("error: %v", err)
-		return "", errors.New("404 Link Not Available")
+		return models.Resolution{}, errors.New("404 Link Not Available")
 	}
 	if record.OneTime && record.VisitCount > 0 {
-		return "", errors.New("404 Link Expired")
+		return models.Resolution{}, errors.New("404 Link Expired")
 	}
 	go r.RecordVisitCountByLinkKey(linkKey)
-	return record.OriLink, err
+	return models.Resolution{OriginalURL: record.OriginalURL, DirectRedirect: record.DirectRedirect}, nil
 }
 
 func (r *LinkRepository) RecordVisitCountByLinkKey(linkKey string) (bool, error) {
 	var record models.Link
-	var err error
-	where := models.Link{}
-	where.LinkKey = linkKey
-	notFound, err := First(&where, &record, []string{})
+	notFound, err := First(&models.Link{LinkKey: linkKey}, &record, nil)
 	if notFound {
-		err = nil
 		return false, errors.New("link not found")
 	}
 	if err != nil {
 		return false, err
 	}
-	record.VisitCount = record.VisitCount + 1
-	err = Updates(&record, &record)
-	if err != nil {
+	record.VisitCount++
+	if err := Updates(&record, &record); err != nil {
 		return false, err
 	}
 	logger.Printf("%s Current Count: %d", cusConPrefix, record.VisitCount)
-	return true, err
-}
-
-func (r *LinkRepository) QueryOriLinkByOriMd5(OriMd5 string) (*models.Link, error) {
-	var record models.Link
-	if OriMd5 == "" {
-		return nil, errors.New("OriMd5 is required")
-	}
-	where := models.Link{}
-	where.OriMd5 = OriMd5
-	notFound, err := First(&where, &record, []string{})
-	logger.Printf("Check if the link is NotFound in DB: %t", notFound)
-	if notFound {
-		err = nil
-		return nil, nil
-	}
-	if err != nil {
-		return nil, err
-	}
-	return &record, err
-}
-
-func (r *LinkRepository) SaveLinkKey(linkID uint64, linkKey string, oneTime bool) (bool, error) {
-	var record models.Link
-	var err error
-	where := models.Link{}
-	where.ID = linkID
-	record.LinkKey = linkKey
-	record.OneTime = oneTime
-	err = Updates(&where, &record)
-	if err != nil {
-		return false, err
-	}
-	return true, err
+	return true, nil
 }

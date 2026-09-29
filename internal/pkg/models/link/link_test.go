@@ -6,53 +6,37 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm/schema"
 )
 
-func TestLinkKeyMapping(t *testing.T) {
-	model := Link{LinkKey: "abc"}
-	encoded, err := json.Marshal(model)
+func TestLinkPersistenceAndRequestBoundaries(t *testing.T) {
+	parsed, err := schema.Parse(&Link{}, &sync.Map{}, schema.NamingStrategy{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	var fields map[string]interface{}
-	if err := json.Unmarshal(encoded, &fields); err != nil {
+	for _, name := range []string{"uk_link_key", "uk_link_dedup_hash"} {
+		index := parsed.LookIndex(name)
+		if index == nil || index.Class != "UNIQUE" || len(index.Fields) != 1 {
+			t.Fatalf("invalid index %s: %#v", name, index)
+		}
+	}
+	if field := parsed.LookUpField("DedupHash"); field.Size != 64 || !field.NotNull {
+		t.Fatalf("fingerprint column: %#v", field)
+	}
+	if field := parsed.LookUpField("DirectRedirect"); !field.NotNull || field.DefaultValue != "false" {
+		t.Fatalf("policy column: %#v", field)
+	}
+	if parsed.LookUpField("CommonAPIKey") != nil {
+		t.Fatal("request secret must not be persisted")
+	}
+	var request CreateRequest
+	if err := json.Unmarshal([]byte(`{"ori_link":"https://example.test","base_url":"https://short.test","one_time":true,"common_api_key":"secret","direct_redirect":true,"link_key":"forged","visit_count":99}`), &request); err != nil {
 		t.Fatal(err)
 	}
-	if fields["link_key"] != "abc" {
-		t.Fatalf("JSON = %s", encoded)
+	if request.OriginalURL != "https://example.test" || request.BaseURL != "https://short.test" || !request.OneTime || request.CommonAPIKey != "secret" {
+		t.Fatalf("request: %#v", request)
 	}
-	if _, exists := fields["tiny_key"]; exists {
-		t.Fatal("old JSON key exposed")
-	}
-	var decoded Link
-	if err := json.Unmarshal([]byte(`{"link_key":"json-key"}`), &decoded); err != nil {
-		t.Fatal(err)
-	}
-	if decoded.LinkKey != "json-key" {
-		t.Fatalf("decoded = %#v", decoded)
-	}
-	var form Link
-	if err := binding.MapFormWithTag(&form, map[string][]string{"link_key": {"form-key"}, "tiny_key": {"old-key"}}, "form"); err != nil {
-		t.Fatal(err)
-	}
-	if form.LinkKey != "form-key" {
-		t.Fatalf("form = %#v", form)
-	}
-	if _, exists := reflect.TypeOf(model).FieldByName("TinyKey"); exists {
-		t.Fatal("obsolete Go field exists")
-	}
-	parsed, err := schema.Parse(&model, &sync.Map{}, schema.NamingStrategy{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	field := parsed.LookUpField("LinkKey")
-	if field.DBName != "link_key" || field.Size != 32 || !field.NotNull {
-		t.Fatalf("field = %#v", field)
-	}
-	index := parsed.LookIndex("idx_link_key")
-	if index == nil || len(index.Fields) != 1 || index.Fields[0].DBName != "link_key" {
-		t.Fatalf("index = %#v", index)
+	if reflect.TypeOf(request).NumField() != 4 {
+		t.Fatal("creation request must contain only caller-controlled fields")
 	}
 }

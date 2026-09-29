@@ -39,15 +39,17 @@ type DatabaseConfiguration struct {
 type DataConfiguration struct {
 	EnableCORS string
 	// mapstructure maps config-file keys such as Data.WEBHOOK_ID into these Go fields.
-	WebhookID        string `mapstructure:"WEBHOOK_ID"`
-	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
-	EnableWebhookAPI string
-	WebhookAPIKeys   []string
-	KVAPIKeys        []string
-	BaseURL          string
-	AgentRecordsPath string
-	Sites            []modelsS.WebSite
-	SpecialLinks     []modelsLink.SpecialLink
+	WebhookID           string `mapstructure:"WEBHOOK_ID"`
+	WebhookToken        string `mapstructure:"WEBHOOK_TOKEN"`
+	EnableWebhookAPI    string
+	WebhookAPIKeys      []string
+	CommonAPIKeys       []string
+	LinkRedirectPageURL string
+	KVAPIKeys           []string
+	BaseURL             string
+	AgentRecordsPath    string
+	Sites               []modelsS.WebSite
+	SpecialLinks        []modelsLink.SpecialLink
 }
 
 // SetupDB initialize configuration

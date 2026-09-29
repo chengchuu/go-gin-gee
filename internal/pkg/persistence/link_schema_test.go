@@ -21,7 +21,7 @@ func TestLinkSchemaAndRepeatedMigration(t *testing.T) {
 	if database.Migrator().HasTable("gee_tiny") {
 		t.Fatal("obsolete link table was created")
 	}
-	link := models.Link{OriLink: "https://example.test/retained", OriMd5: "retained-hash", LinkKey: "retained-key", OneTime: true, VisitCount: 7}
+	link := models.Link{OriginalURL: "https://example.test/retained", DedupHash: "retained-hash", LinkKey: "retained-key", DirectRedirect: true, OneTime: true, VisitCount: 7}
 	if err := database.Create(&link).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestLinkSchemaAndRepeatedMigration(t *testing.T) {
 			t.Fatal(err)
 		}
 		assertColumns()
-		for _, name := range []string{"uk_link_ori_md5", "idx_link_key"} {
+		for _, name := range []string{"uk_link_dedup_hash", "uk_link_key"} {
 			if !database.Migrator().HasIndex("gee_link", name) {
 				t.Errorf("missing index %s", name)
 			}
@@ -43,15 +43,22 @@ func TestLinkSchemaAndRepeatedMigration(t *testing.T) {
 		if err := database.Table("gee_link").First(&stored, link.ID).Error; err != nil {
 			t.Fatal(err)
 		}
-		if stored.ID != link.ID || stored.OriLink != link.OriLink || stored.OriMd5 != link.OriMd5 || stored.LinkKey != link.LinkKey || !stored.OneTime || stored.VisitCount != link.VisitCount || !stored.CreatedAt.Equal(link.CreatedAt) || !stored.UpdatedAt.Equal(link.UpdatedAt) {
+		if !stored.DirectRedirect {
+			t.Fatal("migration lost redirect policy")
+		}
+		if stored.ID != link.ID || stored.OriginalURL != link.OriginalURL || stored.DedupHash != link.DedupHash || stored.LinkKey != link.LinkKey || !stored.OneTime || stored.VisitCount != link.VisitCount || !stored.CreatedAt.Equal(link.CreatedAt) || !stored.UpdatedAt.Equal(link.UpdatedAt) {
 			t.Fatalf("migration changed link: %#v", stored)
 		}
 	}
-	duplicate := models.Link{OriLink: "https://example.test/duplicate", OriMd5: link.OriMd5, LinkKey: "duplicate"}
+	duplicate := models.Link{OriginalURL: "https://example.test/duplicate", DedupHash: link.DedupHash, LinkKey: "duplicate"}
 	if err := database.Create(&duplicate).Error; err == nil {
 		t.Fatal("duplicate link hash was accepted")
 	}
-	next := models.Link{OriLink: "https://example.test/next", OriMd5: "next-hash", LinkKey: "next-key"}
+	duplicateKey := models.Link{OriginalURL: "https://example.test/other", DedupHash: "other-hash", LinkKey: link.LinkKey}
+	if err := database.Create(&duplicateKey).Error; err == nil {
+		t.Fatal("duplicate short key was accepted")
+	}
+	next := models.Link{OriginalURL: "https://example.test/next", DedupHash: "next-hash", LinkKey: "next-key"}
 	if err := database.Create(&next).Error; err != nil {
 		t.Fatal(err)
 	}

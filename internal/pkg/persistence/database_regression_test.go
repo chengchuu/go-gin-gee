@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
@@ -9,7 +8,6 @@ import (
 	"github.com/chengchuu/go-gin-gee/internal/pkg/models/kv"
 	modelsLink "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	"github.com/chengchuu/go-gin-gee/internal/testutil"
-	"github.com/chengchuu/go-gin-gee/pkg/helpers"
 	"gorm.io/gorm"
 )
 
@@ -110,11 +108,11 @@ func TestPersistenceRollbackAndZeroValueUpdates(t *testing.T) {
 func TestLinkPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	database := newPersistenceDatabase(t)
 	repository := &LinkRepository{}
-	link, err := repository.SaveOriLink("https://target.test/page", "", true)
+	link, err := repository.SaveOriLink("https://target.test/page", "", true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	duplicate, err := repository.SaveOriLink("https://target.test/page", "", true)
+	duplicate, err := repository.SaveOriLink("https://target.test/page", "", true, false)
 	if err != nil || duplicate != link {
 		t.Fatalf("deduplication: link=%q err=%v", duplicate, err)
 	}
@@ -125,7 +123,7 @@ func TestLinkPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	if stored.ID == 0 || stored.LinkKey == "" || !stored.OneTime || stored.VisitCount != 0 || stored.CreatedAt.IsZero() {
 		t.Fatalf("incorrect persisted short link: %#v", stored)
 	}
-	other := modelsLink.Link{OriMd5: "other", OriLink: "https://other.test", LinkKey: "other"}
+	other := modelsLink.Link{DedupHash: "other", OriginalURL: "https://other.test", LinkKey: "other"}
 	if err := database.Create(&other).Error; err != nil {
 		t.Fatal(err)
 	}
@@ -144,14 +142,14 @@ func TestLinkPersistenceDeduplicationVisitsAndSpecialLinks(t *testing.T) {
 	if stored.VisitCount != 1 {
 		t.Fatalf("visit count = %d, want 1", stored.VisitCount)
 	}
-	if _, err := repository.QueryOriLinkByLinkKey(stored.LinkKey); err == nil || err.Error() != "404 Link Expired" {
+	if _, err := repository.ResolveLink(stored.LinkKey); err == nil || err.Error() != "404 Link Expired" {
 		t.Fatalf("one-time expiration: %v", err)
 	}
 	config.Config.Data.SpecialLinks = []modelsLink.SpecialLink{{Key: stored.LinkKey, Link: "https://special.test"}}
-	if resolved, err := repository.QueryOriLinkByLinkKey(stored.LinkKey); err != nil || resolved != "https://special.test" {
-		t.Fatalf("special-link precedence: link=%q err=%v", resolved, err)
+	if resolved, err := repository.ResolveLink(stored.LinkKey); err != nil || resolved.OriginalURL != "https://special.test" || !resolved.DirectRedirect {
+		t.Fatalf("special-link precedence: link=%#v err=%v", resolved, err)
 	}
-	if err := database.Create(&modelsLink.Link{OriMd5: stored.OriMd5, OriLink: "duplicate"}).Error; err == nil {
+	if err := database.Create(&modelsLink.Link{DedupHash: stored.DedupHash, OriginalURL: "duplicate"}).Error; err == nil {
 		t.Fatal("duplicate short-link hash was accepted")
 	}
 }
@@ -162,32 +160,4 @@ func closeTestDatabase(database *gorm.DB) error {
 		return err
 	}
 	return pool.Close()
-}
-
-func TestLinkBaseURLHashCompatibility(t *testing.T) {
-	for _, test := range []struct{ original, hashed string }{
-		{"https://target.test/page", "https://target.test/page#?base_url=https://short.test"},
-		{"https://target.test/page?x=1#/view?mode=full", "https://target.test/page?x=1#/view?mode=full&base_url=https://short.test"},
-		{"https://target.test/page#?base_url=https://old.test", "https://target.test/page#?base_url=https://short.test"},
-	} {
-		t.Run(test.original, func(t *testing.T) {
-			newPersistenceDatabase(t)
-			repository := &LinkRepository{}
-			link, err := repository.SaveOriLink(test.original, "https://short.test", false)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !strings.HasPrefix(link, "https://short.test/t/") {
-				t.Fatalf("base URL override lost: %q", link)
-			}
-			stored, err := repository.QueryOriLinkByOriMd5(helpers.ConvertStringToMD5Hash(test.hashed))
-			if err != nil || stored == nil || stored.OriLink != test.original {
-				t.Fatalf("persisted hash or original URL changed: stored=%#v err=%v", stored, err)
-			}
-			again, err := repository.SaveOriLink(test.original, "https://short.test", false)
-			if err != nil || again != link {
-				t.Fatalf("deduplication changed: link=%q err=%v", again, err)
-			}
-		})
-	}
 }

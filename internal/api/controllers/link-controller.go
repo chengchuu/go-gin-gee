@@ -3,7 +3,10 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"net/url"
 
+	"github.com/chengchuu/go-gin-gee/internal/api/auth"
+	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
@@ -11,13 +14,39 @@ import (
 )
 
 func RedirectLink(c *gin.Context) {
+	c.Header("Cache-Control", "no-store")
 	per := persistence.GetLinkRepository()
 	linkKey := c.Param("link_key")
-	if data, err := per.QueryOriLinkByLinkKey(linkKey); err != nil {
+	if data, err := per.ResolveLink(linkKey); err != nil {
 		renderLinkError(c, err)
 	} else {
-		c.Redirect(http.StatusFound, data)
+		destination := data.OriginalURL
+		if !data.DirectRedirect {
+			settings := config.GetConfig().Data
+			warningURL, err := linkWarningURL(destination, settings.LinkRedirectPageURL)
+			if err != nil {
+				c.String(http.StatusServiceUnavailable, "Link warning service is unavailable.")
+				return
+			}
+			destination = warningURL
+		}
+		c.Redirect(http.StatusFound, destination)
 	}
+}
+
+// The warning service is configured by the application, never by request headers.
+func linkWarningURL(destination, configuredURL string) (string, error) {
+	warning, err := url.Parse(configuredURL)
+	if err != nil || (warning.Scheme != "https" && warning.Scheme != "http") || warning.Hostname() == "" || warning.User != nil || warning.Fragment != "" {
+		return "", errors.New("invalid warning URL")
+	}
+	query, err := url.ParseQuery(warning.RawQuery)
+	if err != nil {
+		return "", errors.New("invalid warning URL query")
+	}
+	query.Set("url", destination)
+	warning.RawQuery = query.Encode()
+	return warning.String(), nil
 }
 
 func renderLinkError(c *gin.Context, err error) {
@@ -47,29 +76,23 @@ func renderLinkError(c *gin.Context, err error) {
 func GetLink(c *gin.Context) {
 	per := persistence.GetLinkRepository()
 	linkKey := c.Query("link_key")
-	if data, err := per.QueryOriLinkByLinkKey(linkKey); err != nil {
+	if data, err := per.ResolveLink(linkKey); err != nil {
 		http_err.NewError(c, http.StatusNotFound, errors.New("data not found"))
 	} else {
-		c.JSON(http.StatusOK, gin.H{"ori_link": data})
+		c.JSON(http.StatusOK, gin.H{"ori_link": data.OriginalURL})
 	}
 }
 
 func CreateLink(c *gin.Context) {
-	type addParams struct {
-		models.Link
-		BaseUrl string `json:"base_url" form:"base_url"`
-	}
-	var record addParams
-	var generatedLink string
-	var baseUrl string
-	var oneTime bool
-	var err error
+	var record models.CreateRequest
 	s := persistence.GetLinkRepository()
-	_ = c.BindJSON(&record)
-	baseUrl = record.BaseUrl
-	oneTime = record.OneTime
-	if generatedLink, err = s.SaveOriLink(record.OriLink, baseUrl, oneTime); err != nil {
-		http_err.NewError(c, http.StatusBadRequest, err)
+	if err := c.ShouldBindJSON(&record); err != nil {
+		http_err.NewError(c, http.StatusBadRequest, errors.New("invalid link request"))
+		return
+	}
+	direct := auth.ValidAPIKey(record.CommonAPIKey, config.GetConfig().Data.CommonAPIKeys)
+	if generatedLink, err := s.SaveOriLink(record.OriginalURL, record.BaseURL, record.OneTime, direct); err != nil {
+		http_err.NewError(c, http.StatusBadRequest, errors.New("unable to create short link"))
 	} else {
 		c.JSON(http.StatusCreated, gin.H{
 			// Deprecated: use data. tiny_link remains an identical response alias.

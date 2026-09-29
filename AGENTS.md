@@ -137,22 +137,25 @@ Flow:
 Flow:
 
 1. Incoming original URL is accepted by the controller.
-2. Repository optionally folds `base_url` into the hash input.
-3. MD5 is used to deduplicate existing links.
-4. A DB row is created to obtain an auto-increment ID.
+2. The controller validates the JSON `common_api_key` field against `Data.CommonAPIKeys` and derives the permanent `DirectRedirect` policy. Missing or invalid keys require a warning.
+3. SHA-256 of a fixed JSON structure deduplicates the exact original URL, effective base URL, one-time setting, and redirect policy. Keep public `base_url` overrides.
+4. A DB row is created to obtain an auto-increment ID inside a transaction.
 5. The numeric ID is converted into a short key.
-6. The short key is persisted.
+6. The short key is persisted before commit; underscore suffixes avoid keys reserved by `SpecialLinks`.
 7. The final `data` response value is computed at runtime from the base URL and short key.
-8. `/t/:link_key` resolves the key and redirects to the original URL.
+8. `/t/:link_key` resolves the stored policy and redirects directly or through the Go-configured warning page. Resolution consumes one-time visits before the warning page is shown.
 
 Special behavior:
 
-- Supports configured `SpecialLinks` from config.
+- Configured `SpecialLinks` are manually trusted, always redirect directly, and retain precedence.
 - Supports one-time links by checking and incrementing `VisitCount`.
-- Lookup reads only the `link_key` query parameter. The model field `LinkKey` uses `link_key` for its database column, JSON tag, and form tag.
+- Lookup reads only the `link_key` query parameter. Creation binds `link.CreateRequest`, not the persistence entity; clients cannot set policy, keys, or visit counts.
 - `data` contains the generated URL, not persisted model state. `tiny_link` is a deprecated, identical response alias; callers should use `data`. The response preserves `errors` and does not include a `link` field.
 - `LinkRepository` is accessed through `GetLinkRepository()` and logs with `[Link]`.
-- The `link.Link` model uses `gee_link`, with indexes `uk_link_ori_md5` and `idx_link_key`.
+- The `link.Link` model uses `gee_link`, with unique indexes `uk_link_dedup_hash` and `uk_link_key`. This is a new-database schema, not a migration from the old MD5 model. Never reset a user's database as validation.
+- `ResolveLink` returns a destination and policy. `Data.LinkRedirectPageURL` is the sole warning URL source; request headers are ignored. Missing/invalid configuration fails closed with 503. Preserve `Cache-Control: no-store` on redirect responses.
+- `EnableCORS` is independent of warning configuration. Webmazey sets it to `off`, with Nginx owning API CORS and Go handling OPTIONS. Standalone Go can enable its own CORS middleware.
+- Common keys authorize creation only. Removing a key does not revoke existing direct links. No key is persisted, logged, returned, or included in a fingerprint or generated URL. Keep secrets out of public frontend bundles and request-body logs.
 
 ### Site health checks
 
@@ -174,6 +177,7 @@ Flow:
 ### API-key access control
 
 - The private webhook API uses config-file-based keys from `Data.WebhookAPIKeys`.
+- Common feature keys use the separate `Data.CommonAPIKeys` list and the JSON `common_api_key` field. Currently only short-link creation uses them; they do not authorize Webhook or KV operations.
 - `POST /api/gee/webhook-message` validates the `X-Webhook-API-Key` header in `internal/api/controllers/webhook-controller.go`.
 - Other routes are not protected by this API-key check unless their handlers explicitly implement it.
 
@@ -239,6 +243,8 @@ Important config fields:
 - `Data.WebhookToken`
 - `Data.EnableWebhookAPI`
 - `Data.WebhookAPIKeys`
+- `Data.CommonAPIKeys`
+- `Data.LinkRedirectPageURL`
 - `Data.KVAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`

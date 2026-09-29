@@ -11,6 +11,7 @@ const (
 	CodeAccessDenied          = 40301
 	CodeKeyNotFound           = 40401
 	CodeIncompatibleValueType = 40901
+	CodeAPIRetired            = 41001
 	CodeInternalServerError   = 50001
 )
 

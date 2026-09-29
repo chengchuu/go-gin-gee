@@ -89,7 +89,7 @@ func registerRoutes(app *gin.Engine) {
 		gee.POST("/webhook-message", controllers.SendDiscordMessage)
 		gee.GET("/query-short-link", controllers.GetLink)
 		gee.POST("/generate-short-link", controllers.CreateLink)
-		gee.GET("/get-tag-name", controllers.GetTag)
+		gee.GET("/get-tag-name", controllers.RetiredAPI)
 	}
 	// Gee - end
 

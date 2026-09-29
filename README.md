@@ -297,6 +297,23 @@ existing Nginx configuration owns CORS. JSON requests still require cross-origin
 preflight support for `Content-Type`; no Nginx policy change is required by this field.
 Standalone Go can set `Data.EnableCORS` to `on`. Neither setting changes the warning URL.
 
+<!-- omit from toc -->
+### Retired APIs
+
+`GET /api/gee/get-tag-name` is retired. The route remains available only to return HTTP **410 Gone** with `Cache-Control: no-store`:
+
+```json
+{
+  "code": 41001,
+  "message": "This API has been retired.",
+  "data": null
+}
+```
+
+The endpoint no longer calls Docker Hub or returns `tagName`. Clients should stop using it.
+
+To retire another API, register its existing HTTP method and path directly with `controllers.RetiredAPI` and remove its unused implementation. The shared handler uses the existing response envelope and `CodeAPIRetired`; unknown routes retain their normal behavior.
+
 ## Build
 
 Default:

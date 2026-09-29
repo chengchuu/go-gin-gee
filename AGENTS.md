@@ -195,17 +195,12 @@ Flow:
 - `/server/mock` echoes a provided mock response structure.
 - `/server/agent/record` decodes URL-encoded JSON and writes a pretty-printed file into the configured agent records directory.
 
-### Docker tag lookup
+### Retired APIs
 
-- Route:
-  - `/api/gee/get-tag-name`
-- Main files:
-  - `internal/api/controllers/docker-controller.go`
-  - `internal/pkg/persistence/docker-repository.go`
-
-Flow:
-
-- Calls Docker Hub over HTTP and finds a tag matching a suffix filter.
+- `GET /api/gee/get-tag-name` is retired. It no longer calls Docker Hub or returns `tagName`.
+- `controllers.RetiredAPI` in `internal/api/controllers/retired-controller.go` returns HTTP 410 with `Cache-Control: no-store` and the existing `http_err.APIResponse` envelope: `code: 41001` (`CodeAPIRetired`), `message: "This API has been retired."`, and `data: null`.
+- To retire another endpoint, map its existing method and path directly to `controllers.RetiredAPI` in the router and remove its unused implementation. The shared handler terminates the handler chain and needs no database or outbound HTTP requests.
+- Keep retirement explicit per route; do not replace unknown-route handling with a retirement response.
 
 ## Database Notes
 

@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TestTinyErrorPage(t *testing.T) {
+func TestLinkErrorPage(t *testing.T) {
 	cases := []struct {
 		message   string
 		title     string
@@ -28,7 +28,7 @@ func TestTinyErrorPage(t *testing.T) {
 		t.Run(tc.title, func(t *testing.T) {
 			app := gin.New()
 			app.LoadHTMLFiles("../../../assets/data/index.tmpl")
-			app.GET("/", func(c *gin.Context) { renderTinyError(c, errors.New(tc.message)) })
+			app.GET("/", func(c *gin.Context) { renderLinkError(c, errors.New(tc.message)) })
 			w := httptest.NewRecorder()
 			app.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/", nil))
 			if w.Code != http.StatusNotFound {
@@ -48,7 +48,7 @@ func TestTinyErrorPage(t *testing.T) {
 	}
 }
 
-func TestTinyTemplateClassname(t *testing.T) {
+func TestLinkTemplateClassname(t *testing.T) {
 	for _, tc := range []struct {
 		name string
 		data gin.H
@@ -72,7 +72,7 @@ func TestTinyTemplateClassname(t *testing.T) {
 	}
 }
 
-func TestTinyTemplateOptionalContent(t *testing.T) {
+func TestLinkTemplateOptionalContent(t *testing.T) {
 	for _, content := range []string{"", "<script>alert(1)</script>"} {
 		t.Run(content, func(t *testing.T) {
 			app := gin.New()

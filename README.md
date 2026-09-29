@@ -28,13 +28,13 @@ Gee is a project that provides several services for everyday work. The project i
 macOS Bash or zsh:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Windows 10 Git Bash:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="YOUR_NAME" --useremail="YOUR_NAME@email.com"
+bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)
@@ -203,9 +203,12 @@ Method: POST
 
 Params:
 
-| Params    | Type     | Description   | Required |
-| :-------- | :------- | :------------ | :------- |
-| ori_link  | string   | Original Link | Yes      |
+| Params   | Type    | Description                                      | Required |
+|:---------|:--------|:-------------------------------------------------|:---------|
+| ori_link | string  | Exact original destination                       | Yes      |
+| base_url | string  | Short-link base URL; defaults to `Data.BaseURL`   | No       |
+| one_time | boolean | Consume the link at resolution; defaults to false | No       |
+| common_api_key | string | Creation credential for a permanent direct link | No       |
 
 Example:
 
@@ -219,9 +222,13 @@ curl --location --request POST '${BASE_URL}/api/gee/generate-short-link' \
 
 Returns:
 
-| Params    | Type     | Description | Required |
-| :-------- | :--------| :---------- | :------- |
-| tiny_link | string   | Short Link  | Yes      |
+| Params    | Type   | Description                         | Required |
+| :-------- | :----- | :---------------------------------- | :------- |
+| data      | string | Generated short-link URL            | Yes      |
+| tiny_link | string | Deprecated alias of `data`           | Yes      |
+| errors    | array  | Empty array on success              | Yes      |
+
+Use `data` for the generated URL. `tiny_link` is deprecated and contains the identical value.
 
 Example:
 
@@ -229,7 +236,9 @@ Success: Status Code 201
 
 ```json
 {
-  "tiny_link": "${BASE_URL}/t/b"
+  "tiny_link": "${BASE_URL}/t/b",
+  "data": "${BASE_URL}/t/b",
+  "errors": []
 }
 ```
 
@@ -240,6 +249,70 @@ Failure: Status Code 400
   "code": 400
 }
 ```
+
+Look up the original URL with `GET /api/gee/query-short-link?link_key=b`.
+The query accepts only `link_key`, not `tiny_key`, and returns `{"ori_link":"<original URL>"}`.
+Open `/t/b` to resolve the link. Creation requests with a valid JSON `common_api_key`
+from `Data.CommonAPIKeys` create permanent direct links usable by anyone. Missing,
+empty, and invalid keys create links that first open the Redirect warning page.
+The server derives this policy; a body field such as `direct_redirect` cannot override it. Opening headers and later API-key removal
+do not change an existing link's policy. Manually configured `SpecialLinks` are
+trusted and always redirect directly, taking precedence over database records.
+
+The database deduplicates a fixed JSON representation of the exact original URL,
+effective base URL, `one_time`, and the authorized redirect policy using SHA-256.
+Different policies receive different short keys. An omitted override and an explicit
+override equal to `Data.BaseURL` reuse the same record. Reuse never resets visits;
+regenerating a consumed one-time link returns the expired link. URLs are not normalized.
+
+One-time consumption happens at resolution, including before the warning page is
+shown. It retains asynchronous visit counting and does not guarantee exclusion of
+simultaneous visits. The query API also resolves links and remains public; the
+warning is not destination access control.
+
+Go reads the warning URL only from `Data.LinkRedirectPageURL`, configured as
+`https://i.mazey.net/pages/redirect/` in the maintained examples and Webmazey
+application configuration. Incoming warning-URL headers are ignored. Go encodes the
+complete destination as the `url` query parameter, preserving other configured query
+parameters. Missing or invalid configuration returns 503 for warning-required links,
+never a direct fallback. Direct links and trusted `SpecialLinks` do not need warning
+configuration. Redirect responses use `Cache-Control: no-store`.
+Deploy the warning page and its external assets before enabling the backend behavior;
+publishing is a separate operation.
+
+This link schema targets a new database; no legacy link-data migration is provided.
+The model stores `original_url`, `dedup_hash`, and `direct_redirect`, with unique
+fingerprint and short-key indexes. Creation allocates the numeric ID and final key
+inside one transaction. A generated key reserved by `SpecialLinks` receives underscore
+suffixes. No incomplete link or reservation-only row is committed.
+
+`Data.CommonAPIKeys` defaults to an empty list and is independent of Webhook and KV
+keys. Send the optional `common_api_key` string in the creation JSON body.
+The `X-Common-API-Key` header does not authorize direct links.
+Keys are never persisted, logged, returned, or included in the fingerprint.
+Keep keys in trusted clients, not public frontend bundles or generated URLs, and
+avoid request-body logging in callers and infrastructure.
+For Webmazey, keep `Data.EnableCORS` set to `off`: Go handles OPTIONS, while the
+existing Nginx configuration owns CORS. JSON requests still require cross-origin
+preflight support for `Content-Type`; no Nginx policy change is required by this field.
+Standalone Go can set `Data.EnableCORS` to `on`. Neither setting changes the warning URL.
+
+<!-- omit from toc -->
+### Retired APIs
+
+`GET /api/gee/get-tag-name` is retired. The route remains available only to return HTTP **410 Gone** with `Cache-Control: no-store`:
+
+```json
+{
+  "code": 41001,
+  "message": "This API has been retired.",
+  "data": null
+}
+```
+
+The endpoint no longer calls Docker Hub or returns `tagName`. Clients should stop using it.
+
+To retire another API, register its existing HTTP method and path directly with `controllers.RetiredAPI` and remove its unused implementation. The shared handler uses the existing response envelope and `CodeAPIRetired`; unknown routes retain their normal behavior.
 
 ## Build
 
@@ -285,6 +358,10 @@ Config-file only private webhook API fields:
 Key-value API configuration:
 
 - `Data.KVAPIKeys`: API keys accepted by key-value write operations and private reads via `X-API-Key`.
+
+Common feature configuration:
+
+- `Data.CommonAPIKeys`: Config-file API keys accepted through the JSON `common_api_key` field when creating direct short links. Defaults to `[]`; future features must opt in explicitly.
 
 API-key checks apply only where handlers explicitly implement them. The webhook endpoint uses its webhook-specific header and key list; the key-value endpoints use `X-API-Key` and `Data.KVAPIKeys`.
 

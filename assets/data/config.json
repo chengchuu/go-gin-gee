@@ -20,6 +20,8 @@
     "WEBHOOK_TOKEN": "",
     "EnableWebhookAPI": "off",
     "WebhookAPIKeys": [],
+    "CommonAPIKeys": [],
+    "LinkRedirectPageURL": "https://i.mazey.net/pages/redirect/",
     "KVAPIKeys": [],
     "Sites": [],
     "SpecialLinks": []

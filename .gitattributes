@@ -1,2 +1,5 @@
+assets/** linguist-detectable=false
+log/** linguist-detectable=false
+scripts/** linguist-detectable=false
 *.sh text eol=lf
 *.bash text eol=lf

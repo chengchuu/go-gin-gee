@@ -1,39 +1,37 @@
-# Output folders
 node_modules/
 test/unit/coverage
 test/e2e/reports
-/dist/
-/log/
-/data/
-
-# Cache folders
-.sass-cache/
-.gocache/
+dist/
+log/*.log
+log/*.err
+log/*.txt
+log/*.json
+log/*.html
+data/*.json
+data/*.yml
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/*.tmpl
+data/*.md
+data/*.js
 undefined/
 temp/
-
-# Editor directories and files
+.sass-cache/
+.gocache/
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-
-# System files
 .DS_Store
-
-# Local env files
 .env.local
 .env.*.local
-
-# Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 selenium-debug.log*
-
-# Unique
-/main
 *.prd.json
 *.secret/
 *.temp/
@@ -51,3 +49,5 @@ selenium-debug.log*
 *.temp.sh
 *.secret.txt
 *.temp.txt
+*.secret.log
+/main

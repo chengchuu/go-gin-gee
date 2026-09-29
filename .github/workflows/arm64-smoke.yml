@@ -1,0 +1,48 @@
+name: Native ARM64 image smoke test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [release/v1]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Verify native ARM64 runner
+        run: test "$(uname -m)" = aarch64
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build local ARM64 image without publishing
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/arm64
+          load: true
+          push: false
+          tags: gee-arm64-smoke:ci
+
+      - name: Verify image architecture
+        run: test "$(docker image inspect --format '{{.Architecture}}' gee-arm64-smoke:ci)" = arm64
+
+      - name: Test startup and persistence across restart
+        timeout-minutes: 5
+        run: bash scripts/docker-smoke-test.sh gee-arm64-smoke:ci
+
+      - name: Remove local smoke image
+        if: always()
+        run: |
+          if docker image inspect gee-arm64-smoke:ci >/dev/null 2>&1; then
+            docker image rm gee-arm64-smoke:ci
+          fi

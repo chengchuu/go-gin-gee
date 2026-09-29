@@ -24,7 +24,8 @@ func NoRouteHandler() gin.HandlerFunc {
 			c.JSON(http.StatusNotFound, gin.H{"message": "api not found"})
 		} else {
 			c.HTML(http.StatusNotFound, "index.tmpl", gin.H{
-				"title": "404 Page Not Found",
+				"title":     "404 Page Not Found",
+				"classname": "warn",
 			})
 		}
 	}

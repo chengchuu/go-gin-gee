@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -11,44 +10,64 @@ import (
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/persistence"
 	http_err "github.com/chengchuu/go-gin-gee/pkg/http-err"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/go-co-op/gocron"
+	"github.com/go-co-op/gocron/v2"
 )
 
 func CheckSitesHealth(c *gin.Context) {
 	per := persistence.GetRobotRepository()
 	webSites, err := getWebSites()
 	if err != nil {
-		log.Println("error:", err)
+		logger.Warn("check: %s", err)
 		http_err.NewError(c, http.StatusInternalServerError, err)
 		return
 	}
-	markdown, err := per.ClearCheckResult(webSites)
+	message, err := per.ClearCheckResult(webSites)
 	if err != nil {
-		log.Println("error:", err)
+		logger.Error("check: %s", err)
 		http_err.NewError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, gin.H{"data": *markdown})
+		c.JSON(http.StatusOK, gin.H{"data": message})
 	}
 }
 
 func RunCheck() {
 	per := persistence.GetRobotRepository()
-	// https://github.com/go-co-op/gocron
-	// https://pkg.go.dev/time#Location
-	UTC, _ := time.LoadLocation("UTC")
-	ss := gocron.NewScheduler(UTC)
-	everyDayAtStr, _ := asiatz.ShanghaiToUTC("10:00")
+	ss, err := gocron.NewScheduler(gocron.WithLocation(time.UTC))
+	if err != nil {
+		logger.Error("create health-check scheduler: %v", err)
+		return
+	}
 	everyDayAtFn := func() {
 		sites, err := getWebSites()
 		if err != nil {
-			log.Println("error:", err)
+			logger.Warn("check: %s", err)
 		} else {
 			per.ClearCheckResult(sites)
 		}
 	}
-	ss.Every(1).Day().At(everyDayAtStr).Do(everyDayAtFn)
-	ss.StartAsync()
+	if _, err := addHealthCheckJob(ss, everyDayAtFn); err != nil {
+		_ = ss.Shutdown()
+		logger.Error("schedule health check: %v", err)
+		return
+	}
+	ss.Start()
+}
+
+func addHealthCheckJob(scheduler gocron.Scheduler, task func()) (gocron.Job, error) {
+	everyDayAtStr, err := asiatz.ShanghaiToUTC("10:00")
+	if err != nil {
+		return nil, err
+	}
+	at, err := time.Parse("15:04", everyDayAtStr)
+	if err != nil {
+		return nil, err
+	}
+	return scheduler.NewJob(
+		gocron.DailyJob(1, gocron.NewAtTimes(gocron.NewAtTime(uint(at.Hour()), uint(at.Minute()), 0))),
+		gocron.NewTask(task),
+	)
 }
 
 func getWebSites() (*[]models.WebSite, error) {

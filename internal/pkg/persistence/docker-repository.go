@@ -2,9 +2,10 @@ package persistence
 
 import (
 	"fmt"
-	"log"
+	"strings"
 
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/docker"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/go-resty/resty/v2"
 	"github.com/samber/lo"
 )
@@ -35,14 +36,14 @@ func (r *DockerRepository) GetTagName(namespace string, repository string, inclu
 		return tagName, err
 	}
 	res, ok := lo.Find(dockerV2Tags.Results, func(v models.DockerV2TagsResult) bool {
-		return lo.Substring(v.Name, -3, 3) == includedStr
+		return strings.Contains(v.Name, includedStr)
 	})
 	if !ok {
 		return tagName, err
 	}
 	tagName = res.Name
-	log.Println("findNames:", res)
-	log.Println("findNames ok:", ok)
-	log.Println("findNames name:", res.Name)
+	logger.Println("findNames:", res)
+	logger.Println("findNames ok:", ok)
+	logger.Println("findNames name:", res.Name)
 	return tagName, err
 }

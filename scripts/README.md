@@ -1,9 +1,9 @@
 # Scripts
 
-- [Hanle Nginx Log](#hanle-nginx-log)
-- [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
-- [Check Blog](#check-blog)
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
+- [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
+- [Hanle Nginx Log](#hanle-nginx-log)
+- [Check Blog](#check-blog)
 - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
 - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
 - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
@@ -12,69 +12,18 @@
 - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
 - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
 
-## Hanle Nginx Log
-
-VSCode Regex:
-
-```regex
-^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
-```
-
-dedupe-decode:
-
-```bash
-go run scripts/dedupe-decode/main.go -in log/in-asset.log -out log/out-asset.log
-```
-
-batch-copy-files:
-
-```bash
-# Windows GitBash
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
-```
-
-## Extract Missing Files from Nginx Errors
-
-Extract unique filesystem paths from exact `open() ... failed (2: No such file or directory)` errors:
-
-```bash
-go run ./scripts/extract-nginx-missing-files -in nginx-error.log -out missing-files.log
-```
-
-```bash
-cat nginx-error.log | go run ./scripts/extract-nginx-missing-files
-```
-
-Naturally sort paths and include entries from an inclusive local timestamp through the command start time:
-
-```bash
-go run ./scripts/extract-nginx-missing-files \
-  -in nginx-error.log \
-  -out missing-files.log \
-  -sort \
-  -since="2026/09/09 09:00:00"
-```
-
-## Check Blog
-
-```bash
-go run ./scripts/check-web-links \
-  -url="https://blog.mazey.net/" \
-  -reportPath="log/MAZEY_LINKS_09.log"
-```
-
 ## Filename Batch Rename Helpers
 
 Windows 10 PowerShell:
 
 ```powershell
-$PathC = "C:\Directory\Path"
+$PathC = "E:\Web\list\Note\Dudu\00000000_MUSICS"
 $TargetTypeC = "Directory"
 $TargetTypeC = "File"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC -Mode Upper
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC `
-  -Replace " =-"
+  -Replace " =-" -Replace "S-=S_" -Replace "-V=_V" -Replace "-202=_202"
 ```
 
 ```powershell
@@ -108,6 +57,57 @@ macOS:
 ```bash
 pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-convert-filename-case.ps1" -Path "/Users/Path" -Recurse
 pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-replace-filename-text.ps1" -Path "/Users/Path" -Replace "-=_" -Recurse
+```
+
+## Extract Missing Files from Nginx Errors
+
+Extract unique filesystem paths from exact `open() ... failed (2: No such file or directory)` errors:
+
+```bash
+go run ./scripts/extract-nginx-missing-files -in nginx-error.log -out missing-files.log
+```
+
+```bash
+cat nginx-error.log | go run ./scripts/extract-nginx-missing-files
+```
+
+Naturally sort paths and include entries from an inclusive local timestamp through the command start time:
+
+```bash
+go run ./scripts/extract-nginx-missing-files \
+  -in nginx-error.log \
+  -out missing-files.log \
+  -sort \
+  -since="2026/09/09 09:00:00"
+```
+
+## Hanle Nginx Log
+
+VSCode Regex:
+
+```regex
+^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
+```
+
+dedupe-decode:
+
+```bash
+go run scripts/dedupe-decode/main.go -in log/in-asset.log -out log/out-asset.log
+```
+
+batch-copy-files:
+
+```bash
+# Windows GitBash
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
+```
+
+## Check Blog
+
+```bash
+go run ./scripts/check-web-links \
+  -url="https://blog.mazey.net/" \
+  -reportPath="log/MAZEY_LINKS_09.log"
 ```
 
 ## Change Git Name and Email for Different Projects

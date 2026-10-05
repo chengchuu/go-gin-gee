@@ -34,7 +34,7 @@ func TestRegisterRoutesIncludesOnlyCurrentRoutes(t *testing.T) {
 		"GET /api/gee/query-short-link",
 		"POST /api/gee/generate-short-link",
 		"GET /api/gee/get-tag-name",
-		"GET /t/:key",
+		"GET /t/:link_key",
 		"POST /server/mock",
 		"GET /server/agent/record",
 	}

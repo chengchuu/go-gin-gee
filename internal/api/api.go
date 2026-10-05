@@ -15,10 +15,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setConfiguration() {
+func setConfiguration() error {
 	config.Setup()
-	db.SetupDB()
+	if err := db.SetupDB(); err != nil {
+		return err
+	}
 	gin.SetMode(config.GetConfig().Server.Mode)
+	return nil
 }
 
 func Run() error {
@@ -26,7 +29,9 @@ func Run() error {
 	// Set the timezone to UTC
 	// https://www.zeitverschiebung.net/en/timezone/asia--shanghai
 	os.Setenv("TZ", "UTC")
-	setConfiguration()
+	if err := setConfiguration(); err != nil {
+		return err
+	}
 	conf := config.GetConfig()
 	return withAccessLog("./log", func(accessLog io.Writer) error {
 		// Run before the API starts, after the required access log is open.

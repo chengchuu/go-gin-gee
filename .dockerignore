@@ -53,8 +53,6 @@ node_modules/
 undefined/
 
 # Repo-specific local files
-# *.secret.json
-# *.prd.json
 *.secret/
 *.temp/
 *.secret.conf

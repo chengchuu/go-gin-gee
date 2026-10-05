@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"flag"
 
+	modelsLink "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	modelsS "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
-	modelsT "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -39,15 +39,17 @@ type DatabaseConfiguration struct {
 type DataConfiguration struct {
 	EnableCORS string
 	// mapstructure maps config-file keys such as Data.WEBHOOK_ID into these Go fields.
-	WebhookID        string `mapstructure:"WEBHOOK_ID"`
-	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
-	EnableWebhookAPI string
-	WebhookAPIKeys   []string
-	KVAPIKeys        []string
-	BaseURL          string
-	AgentRecordsPath string
-	Sites            []modelsS.WebSite
-	SpecialLinks     []modelsT.SpecialLink
+	WebhookID           string `mapstructure:"WEBHOOK_ID"`
+	WebhookToken        string `mapstructure:"WEBHOOK_TOKEN"`
+	EnableWebhookAPI    string
+	WebhookAPIKeys      []string
+	CommonAPIKeys       []string
+	LinkRedirectPageURL string
+	KVAPIKeys           []string
+	BaseURL             string
+	AgentRecordsPath    string
+	Sites               []modelsS.WebSite
+	SpecialLinks        []modelsLink.SpecialLink
 }
 
 // SetupDB initialize configuration

@@ -38,7 +38,7 @@ jobs:
 
       - name: Test startup and persistence across restart
         timeout-minutes: 5
-        run: bash scripts/docker-smoke-test.sh gee-arm64-smoke:ci
+        run: bash scripts/bash/test/docker-smoke-test.sh gee-arm64-smoke:ci
 
       - name: Remove local smoke image
         if: always()

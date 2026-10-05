@@ -1,7 +1,7 @@
 # PowerShell
-# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Web\web\go-gin-gee\scripts\batch-copy-files.ps1"
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Web\web\go-gin-gee\scripts\powershell\batch-copy-files.ps1"
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-copy-files.ps1"
 # VSCode REGEXP: ^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8

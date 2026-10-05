@@ -1,5 +1,9 @@
 # Scripts
 
+Bash utilities are in `scripts/bash/`, with their tests in `scripts/bash/test/`.
+PowerShell utilities are in `scripts/powershell/`, with their regression tests in
+`scripts/powershell/test/`. Run the examples below from the repository root.
+
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
 - [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
 - [Hanle Nginx Log](#hanle-nginx-log)
@@ -21,8 +25,8 @@ $PathC = "E:\Web\list\Note\Dudu\00000000_MUSICS"
 $TargetTypeC = "Directory"
 $TargetTypeC = "File"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC -Mode Upper
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC -Mode Upper
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC `
   -Replace " =-" -Replace "S-=S_" -Replace "-V=_V" -Replace "-202=_202"
 ```
 
@@ -31,32 +35,32 @@ $PathB = "C:\Directory\Path"
 $TargetTypeB = "File"
 $TargetTypeB = "Directory"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB `
   -Replace "_=-" `
   -Replace " ="
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "__=_"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "PLACEHOLDER="
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "__=_"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "PLACEHOLDER="
 
 $EnDashRuleB = '_{0}_=_' -f [char]0x2013
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace $EnDashRuleB
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace $EnDashRuleB
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
 ```
 
 ```powershell
 $PathA = "C:\Directory\Path"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-convert-filename-case.ps1" -Path $PathA -Mode Lower -Recurse
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-replace-filename-text.ps1" -Path $PathA -Replace "_=-" -Replace " =-" -Recurse
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\batch-format-date-filenames.ps1" -Path $PathA -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathA -Mode Lower -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathA -Replace "_=-" -Replace " =-" -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathA -Recurse
 ```
 
 macOS:
 
 ```bash
-pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-convert-filename-case.ps1" -Path "/Users/Path" -Recurse
-pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/batch-replace-filename-text.ps1" -Path "/Users/Path" -Replace "-=_" -Recurse
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/powershell/batch-convert-filename-case.ps1" -Path "/Users/Path" -Recurse
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/powershell/batch-replace-filename-text.ps1" -Path "/Users/Path" -Replace "-=_" -Recurse
 ```
 
 ## Extract Missing Files from Nginx Errors
@@ -99,7 +103,7 @@ batch-copy-files:
 
 ```bash
 # Windows GitBash
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-copy-files.ps1"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-copy-files.ps1"
 ```
 
 ## Check Blog
@@ -115,13 +119,13 @@ go run ./scripts/check-web-links \
 macOS Bash or zsh:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
+bash scripts/bash/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Windows 10 Git Bash:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
+bash scripts/bash/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)

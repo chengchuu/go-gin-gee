@@ -28,13 +28,13 @@ Gee is a project that provides several services for everyday work. The project i
 macOS Bash or zsh:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
+bash scripts/bash/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Windows 10 Git Bash:
 
 ```bash
-bash scripts/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
+bash scripts/bash/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)
@@ -391,7 +391,7 @@ docker run --name "go-gin-gee-${GEE_VERSION}" -p 3000:3000 "${GEE_TAG}"
 
 ### Build Image
 
-Run `bash ./scripts/docker-build.sh -h` to see the help message.
+Run `bash ./scripts/bash/docker-build.sh -h` to see the help message.
 
 ```text
 Usage: docker-build.sh [OPTIONS] [ENV_VARS...]
@@ -411,7 +411,7 @@ Usage:
 `${RUN_FLAG}` is optional, default is `-r`("RUN"). `${WEBHOOK_ID}` and `${WEBHOOK_TOKEN}` are optional. If you don't want to send the message to Discord, just remove them. `${BASE_URL}` is required. It's the Base URL for this Service.
 
 ```bash
-bash ./scripts/docker-build.sh ${RUN_FLAG} \
+bash ./scripts/bash/docker-build.sh ${RUN_FLAG} \
   "WEBHOOK_ID=${WEBHOOK_ID}" \
   "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
@@ -422,13 +422,13 @@ Examples:
 Example 1: Build and Push
 
 ```bash
-bash ./scripts/docker-build.sh -b
+bash ./scripts/bash/docker-build.sh -b
 ```
 
 Example 2: Build and Run
 
 ```bash
-bash ./scripts/docker-build.sh -r \
+bash ./scripts/bash/docker-build.sh -r \
   "WEBHOOK_ID=WEBHOOK_ID" \
   "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"
@@ -436,7 +436,7 @@ bash ./scripts/docker-build.sh -r \
 
 ### Run Container
 
-Run `bash ./scripts/docker-run.sh -h` to see the help message.
+Run `bash ./scripts/bash/docker-run.sh -h` to see the help message.
 
 ```text
 Usage: docker-run.sh [OPTIONS] IMAGE_TAG [ENV_VARS...]
@@ -457,7 +457,7 @@ Find the latest image tag name: [Tags](https://hub.docker.com/repository/docker/
 Usage:
 
 ```bash
-bash ./scripts/docker-run.sh "${DOCKER_HUB_REPOSITORY_TAGNAME}" \
+bash ./scripts/bash/docker-run.sh "${DOCKER_HUB_REPOSITORY_TAGNAME}" \
   "WEBHOOK_ID=${WEBHOOK_ID}" \
   "WEBHOOK_TOKEN=${WEBHOOK_TOKEN}" \
   "BASE_URL=${BASE_URL}"
@@ -466,7 +466,7 @@ bash ./scripts/docker-run.sh "${DOCKER_HUB_REPOSITORY_TAGNAME}" \
 Example:
 
 ```bash
-bash ./scripts/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api" \
+bash ./scripts/bash/docker-run.sh "docker.io/mazeyqian/go-gin-gee:v20230615221222-api" \
   "WEBHOOK_ID=WEBHOOK_ID" \
   "WEBHOOK_TOKEN=WEBHOOK_TOKEN" \
   "BASE_URL=https://example.com/path"

@@ -8,13 +8,13 @@
 # 25_0714.md -> 20250714.md
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-format-date-filenames.ps1" -Path "E:\NOTES"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-format-date-filenames.ps1" -Path "E:\NOTES"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files"
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/powershell/batch-format-date-filenames.ps1" -Path "/path/to/files"
 #
 # Preview only
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-format-date-filenames.ps1" -Path "/path/to/files" -WhatIf
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/powershell/batch-format-date-filenames.ps1" -Path "/path/to/files" -WhatIf
 
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(

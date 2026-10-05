@@ -18,6 +18,34 @@ PowerShell utilities are in `scripts/powershell/`, with their regression tests i
 
 ## Filename Batch Rename Helpers
 
+### Pad Numeric Filename Prefixes
+
+Use `batch-pad-filenames.ps1` to left-pad ASCII digits before the first literal,
+case-sensitive separator. For example, `1S_A.mp3` becomes `001S_A.mp3` with
+`-Separator S -Length 3`. Non-numeric prefixes are skipped. Longer prefixes,
+extensions, and the remaining filename are preserved. Only files are renamed.
+
+Windows PowerShell preview:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-pad-filenames.ps1" -Path "E:\Music" -Separator S -Length 3 -Recurse -WhatIf
+```
+
+macOS preview:
+
+```bash
+pwsh -NoProfile -File "./scripts/powershell/batch-pad-filenames.ps1" -Path "/path/to/music" -Separator S -Length 3 -Recurse -WhatIf
+```
+
+Remove `-WhatIf` to rename files. `-PadChar` defaults to `0` and accepts one
+filename-safe character. Omit `-Recurse` to process immediate files only.
+Before any rename, the script checks the entire batch for duplicate targets
+(case-insensitively) and existing targets. A conflict reports the paths and exits
+with status `1`, including during previews. Runtime failures also exit with `1`;
+renames completed before a runtime failure are not rolled back.
+
+### Other Filename Helpers
+
 Windows 10 PowerShell:
 
 ```powershell

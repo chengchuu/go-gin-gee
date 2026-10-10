@@ -20,6 +20,8 @@ type LinkRepository struct{}
 
 var linkRepository = &LinkRepository{}
 
+var ErrBaseURLRequired = errors.New("BASE_URL is required")
+
 const cusConPrefix = "[Link]"
 
 func GetLinkRepository() *LinkRepository { return linkRepository }
@@ -49,7 +51,7 @@ func (r *LinkRepository) SaveOriLink(originalURL, addBaseUrl string, oneTime, di
 		baseURL = addBaseUrl
 	}
 	if baseURL == "" {
-		return "", errors.New("BASE_URL is required")
+		return "", ErrBaseURLRequired
 	}
 	hash, err := linkFingerprint(originalURL, baseURL, oneTime, directRedirect)
 	if err != nil {
@@ -57,36 +59,44 @@ func (r *LinkRepository) SaveOriLink(originalURL, addBaseUrl string, oneTime, di
 	}
 	var record models.Link
 	err = db.GetDB().Transaction(func(tx *gorm.DB) error {
-		candidate := models.Link{OriginalURL: originalURL, DedupHash: hash, OneTime: oneTime, DirectRedirect: directRedirect}
-		// Insert first: the unique constraint serializes concurrent identical requests.
-		if err := tx.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "dedup_hash"}}, DoNothing: true}).Create(&candidate).Error; err != nil {
-			return err
-		}
-		if err := tx.Where("dedup_hash = ?", hash).First(&record).Error; err != nil {
-			return err
-		}
-		if record.LinkKey != "" {
+		converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
+		for {
+			candidate := models.Link{OriginalURL: originalURL, DedupHash: hash, OneTime: oneTime, DirectRedirect: directRedirect}
+			// Insert first so concurrent identical requests serialize on the unique hash.
+			insert := tx.Clauses(clause.OnConflict{Columns: []clause.Column{{Name: "dedup_hash"}}, DoNothing: true}).Create(&candidate)
+			if insert.Error != nil {
+				return insert.Error
+			}
+			record = models.Link{}
+			if err := tx.Where("dedup_hash = ?", hash).First(&record).Error; err != nil {
+				return err
+			}
+			if record.LinkKey != "" {
+				return nil
+			}
+			if record.ID != candidate.ID || insert.RowsAffected != 1 {
+				return errors.New("existing link has no allocated key")
+			}
+			key := converter.Itoa(int(record.ID))
+			if destination, reserved := specialLinkDestination(key); reserved {
+				// Free the request fingerprint before retrying with the next ID.
+				if err := tx.Model(&record).Updates(map[string]interface{}{
+					"original_url":    destination,
+					"dedup_hash":      "fixed:" + key,
+					"link_key":        key,
+					"direct_redirect": true,
+					"one_time":        false,
+				}).Error; err != nil {
+					return err
+				}
+				continue
+			}
+			if err := tx.Model(&record).Update("link_key", key).Error; err != nil {
+				return err
+			}
+			record.LinkKey = key
 			return nil
 		}
-		converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
-		key := converter.Itoa(int(record.ID))
-		// Generated keys contain no underscores. Suffixes avoid manually reserved keys
-		// without creating dummy database records or changing the numeric ID.
-		reserved := make(map[string]bool)
-		for _, special := range config.GetConfig().Data.SpecialLinks {
-			reserved[special.Key] = true
-		}
-		for reserved[key] {
-			key += "_"
-		}
-		if len(key) > 32 {
-			return errors.New("unable to allocate short-link key")
-		}
-		if err := tx.Model(&record).Update("link_key", key).Error; err != nil {
-			return err
-		}
-		record.LinkKey = key
-		return nil
 	})
 	if err != nil {
 		return "", err
@@ -98,14 +108,21 @@ func (r *LinkRepository) BuildLink(baseURL, linkKey string) string {
 	return fmt.Sprintf("%s/t/%s", baseURL, linkKey)
 }
 
+func specialLinkDestination(key string) (string, bool) {
+	for _, special := range config.GetConfig().Data.SpecialLinks {
+		if special.Key == key {
+			return special.Link, true
+		}
+	}
+	return "", false
+}
+
 func (r *LinkRepository) ResolveLink(linkKey string) (models.Resolution, error) {
 	if linkKey == "" {
 		return models.Resolution{}, errors.New("404 Link Not Found")
 	}
-	for _, special := range config.GetConfig().Data.SpecialLinks {
-		if special.Key == linkKey {
-			return models.Resolution{OriginalURL: special.Link, DirectRedirect: true}, nil
-		}
+	if destination, found := specialLinkDestination(linkKey); found {
+		return models.Resolution{OriginalURL: destination, DirectRedirect: true}, nil
 	}
 	var record models.Link
 	notFound, err := First(&models.Link{LinkKey: linkKey}, &record, nil)

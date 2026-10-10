@@ -15,6 +15,7 @@ data/*.db-wal
 data/*.db-shm
 data/*.tmpl
 data/*.md
+data/*.js
 undefined/
 temp/
 .sass-cache/

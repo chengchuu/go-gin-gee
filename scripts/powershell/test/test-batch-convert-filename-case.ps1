@@ -2,10 +2,10 @@
 # Regression checks for batch-convert-filename-case.ps1.
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\test\test-batch-convert-filename-case.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\test\test-batch-convert-filename-case.ps1"
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -File "scripts/test/test-batch-convert-filename-case.ps1"
+# pwsh -NoProfile -File "scripts/powershell/test/test-batch-convert-filename-case.ps1"
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8

@@ -92,7 +92,11 @@ func CreateLink(c *gin.Context) {
 	}
 	direct := auth.ValidAPIKey(record.CommonAPIKey, config.GetConfig().Data.CommonAPIKeys)
 	if generatedLink, err := s.SaveOriLink(record.OriginalURL, record.BaseURL, record.OneTime, direct); err != nil {
-		http_err.NewError(c, http.StatusBadRequest, errors.New("unable to create short link"))
+		message := "unable to create short link"
+		if errors.Is(err, persistence.ErrBaseURLRequired) {
+			message = "BASE_URL is required. Configure Data.BaseURL or provide base_url in the request."
+		}
+		http_err.NewError(c, http.StatusBadRequest, errors.New(message))
 	} else {
 		c.JSON(http.StatusCreated, gin.H{
 			// Deprecated: use data. tiny_link remains an identical response alias.

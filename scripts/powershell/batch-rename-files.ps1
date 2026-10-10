@@ -1,5 +1,5 @@
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-rename-files.ps1"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-rename-files.ps1"
 $path   = "E:\VIDEO"
 $prefix = "VID"
 $start  = 1

@@ -25,7 +25,7 @@ RUN apt-get update && \
 COPY --from=go-builder /gee/dist/api /web/api
 COPY --from=go-builder /gee/data /web/data
 # Entrypoint Script
-COPY ./scripts/docker-entrypoint.sh /web/docker-entrypoint.sh
+COPY ./scripts/bash/docker-entrypoint.sh /web/docker-entrypoint.sh
 RUN chmod +x /web/api && \
     dos2unix /web/docker-entrypoint.sh && \
     chmod +x /web/docker-entrypoint.sh

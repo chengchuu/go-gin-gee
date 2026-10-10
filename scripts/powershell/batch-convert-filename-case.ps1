@@ -1,36 +1,62 @@
 # PowerShell
-# Replace literal text combinations in file or directory names for a target path.
-#
-# Example:
-# my_file_name.md -> my-file-name.md
-# -Replace="_=-"
-# -Replace="*=-" -Replace="abc=xyz"
+# Convert English characters in file or directory names to uppercase or lowercase for a target path.
 #
 # Windows GitBash
-# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\batch-replace-filename-text.ps1" -Path "E:\NOTES" -Replace="_=-"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-convert-filename-case.ps1" -Path "E:\VIDEO"
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower -FileType Video
+# powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-convert-filename-case.ps1" -Path "E:\VIDEO" -Mode Lower -IncludeExtension
 #
 # PowerShell 7/macOS/Linux
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-replace-filename-text.ps1" -Path "/path/to/files" -Replace="_=-"
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/powershell/batch-convert-filename-case.ps1" -Path "/path/to/files"
 #
 # Preview only
-# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/batch-replace-filename-text.ps1" -Path "/path/to/files" -Replace="_=-" -WhatIf
+# pwsh -NoProfile -ExecutionPolicy Bypass -File "scripts/powershell/batch-convert-filename-case.ps1" -Path "/path/to/files" -WhatIf
 
-[CmdletBinding(SupportsShouldProcess = $true, PositionalBinding = $false)]
+[CmdletBinding(SupportsShouldProcess = $true)]
 param(
   [Parameter(Mandatory = $true)]
   [string]$Path,
 
+  [ValidateSet("Upper", "Lower")]
+  [string]$Mode = "Upper",
+
   [ValidateSet("File", "Directory")]
   [string]$TargetType = "File",
 
-  [switch]$Recurse,
+  [ValidateSet("All", "Video", "Image")]
+  [string]$FileType = "All",
 
-  [Parameter(ValueFromRemainingArguments = $true)]
-  [string[]]$RemainingArguments
+  [switch]$IncludeExtension,
+
+  [switch]$Recurse
 )
 
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+function Convert-EnglishCase {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Value,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("Upper", "Lower")]
+    [string]$Mode
+  )
+
+  if ($Mode -eq "Upper") {
+    return [regex]::Replace($Value, '[a-z]', {
+      param($match)
+      return $match.Value.ToUpperInvariant()
+    })
+  }
+
+  return [regex]::Replace($Value, '[A-Z]', {
+    param($match)
+    return $match.Value.ToLowerInvariant()
+  })
+}
 
 function New-TemporaryFileName {
   param(
@@ -39,79 +65,48 @@ function New-TemporaryFileName {
   )
 
   do {
-    $name = "__tmp_replace_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
+    $name = "__tmp_uppercase_{0}.tmp" -f ([guid]::NewGuid().ToString('N'))
     $fullPath = Join-Path $Directory $name
   } while (Test-Path -LiteralPath $fullPath)
 
   return $name
 }
 
-function Convert-ReplacementTextToRule {
+function Get-PresetExtensions {
   param(
     [Parameter(Mandatory = $true)]
-    [string]$Value
+    [ValidateSet("All", "Video", "Image")]
+    [string]$FileType
   )
 
-  $separatorIndex = $Value.IndexOf("=")
-  if ($separatorIndex -lt 1) {
-    throw "Invalid replacement value '$Value'. Expected format: from=to"
+  if ($FileType -eq "Video") {
+    return @("mp4", "mov", "mkv", "avi", "wmv", "flv", "webm", "m4v", "mpeg", "mpg", "3gp", "ts", "m2ts", "mts", "ogv")
   }
 
-  return [pscustomobject]@{
-    From = $Value.Substring(0, $separatorIndex)
-    To   = $Value.Substring($separatorIndex + 1)
+  if ($FileType -eq "Image") {
+    return @("jpg", "jpeg", "png", "gif", "webp", "bmp", "tif", "tiff", "heic", "heif", "svg", "avif")
   }
+
+  return @()
 }
 
-function Get-ReplacementRules {
-  param(
-    [string[]]$Arguments
-  )
-
-  $rules = @()
-  for ($i = 0; $i -lt $Arguments.Count; $i++) {
-    $argument = $Arguments[$i]
-
-    if ($argument -match '^-Replace[:=](.*)$') {
-      $rules += Convert-ReplacementTextToRule -Value $Matches[1]
-      continue
-    }
-
-    if ($argument -ieq "-Replace") {
-      if ($i + 1 -ge $Arguments.Count) {
-        throw "Missing replacement value after -Replace. Expected format: -Replace=""from=to"""
-      }
-
-      $rules += Convert-ReplacementTextToRule -Value $Arguments[$i + 1]
-      $i++
-      continue
-    }
-
-    throw "Unknown argument: $argument"
-  }
-
-  if ($rules.Count -eq 0) {
-    throw "At least one replacement is required. Example: -Replace=""_=-"""
-  }
-
-  return $rules
-}
-
-function Convert-NameWithReplacementRules {
+function Convert-FileNameCase {
   param(
     [Parameter(Mandatory = $true)]
-    [string]$Name,
+    [System.IO.FileInfo]$Item,
 
     [Parameter(Mandatory = $true)]
-    [object[]]$Rules
+    [ValidateSet("Upper", "Lower")]
+    [string]$Mode,
+
+    [switch]$IncludeExtension
   )
 
-  $newName = $Name
-  foreach ($rule in $Rules) {
-    $newName = $newName.Replace($rule.From, $rule.To)
+  if ($IncludeExtension) {
+    return Convert-EnglishCase -Value $Item.Name -Mode $Mode
   }
 
-  return $newName
+  return ("{0}{1}" -f (Convert-EnglishCase -Value $Item.BaseName -Mode $Mode), $Item.Extension)
 }
 
 function Test-SameFilesystemPath {
@@ -154,12 +149,15 @@ if (!(Test-Path -LiteralPath $Path -PathType Container)) {
   throw "Path not found or not a directory: $Path"
 }
 
-$replacementRules = Get-ReplacementRules -Arguments $RemainingArguments
-
 $root = (Resolve-Path -LiteralPath $Path).Path
 if ($TargetType -eq "File") {
   $items = Get-ChildItem -LiteralPath $root -File -Recurse:$Recurse |
     Sort-Object FullName
+  $presetExtensions = Get-PresetExtensions -FileType $FileType
+  if ($presetExtensions.Count -gt 0) {
+    $items = $items |
+      Where-Object { $presetExtensions -contains $_.Extension.TrimStart(".").ToLowerInvariant() }
+  }
 } else {
   $items = Get-ChildItem -LiteralPath $root -Directory -Recurse:$Recurse |
     Sort-Object FullName -Descending
@@ -167,7 +165,11 @@ if ($TargetType -eq "File") {
 
 $renamePlan = @()
 foreach ($item in $items) {
-  $newName = Convert-NameWithReplacementRules -Name $item.Name -Rules $replacementRules
+  $newName = if ($TargetType -eq "File") {
+    Convert-FileNameCase -Item $item -Mode $Mode -IncludeExtension:$IncludeExtension
+  } else {
+    Convert-EnglishCase -Value $item.Name -Mode $Mode
+  }
   if ($newName -ceq $item.Name) {
     continue
   }
@@ -193,7 +195,7 @@ $collisions = $renamePlan |
   Where-Object { $_.Count -gt 1 }
 
 if ($collisions.Count -gt 0) {
-  Write-Error "Rename collision detected after applying replacements. No files were renamed."
+  Write-Error "Rename collision detected after case conversion. No files were renamed."
   foreach ($collision in $collisions) {
     Write-Error ("Target collision: {0}" -f $collision.Group[0].TargetPath)
     foreach ($item in $collision.Group) {
@@ -211,6 +213,8 @@ foreach ($item in $renamePlan) {
   }
 }
 
+# Pass 1: move every file to a temporary unique name. This makes case-only
+# renames reliable on case-insensitive filesystems.
 if ($TargetType -eq "File") {
   foreach ($item in $renamePlan) {
     if ($PSCmdlet.ShouldProcess($item.Item.FullName, "Rename to temporary name $($item.TempName)")) {
@@ -218,6 +222,7 @@ if ($TargetType -eq "File") {
     }
   }
 
+  # Pass 2: move temporary names to final names.
   foreach ($item in $renamePlan) {
     $tempPath = Join-Path $item.ParentPath $item.TempName
     if ($PSCmdlet.ShouldProcess($tempPath, "Rename to $($item.NewName)")) {
@@ -240,7 +245,7 @@ if ($TargetType -eq "File") {
 }
 
 if ($WhatIfPreference) {
-  Write-Host ("Preview Complete! Would rename {0} {1}(s)." -f $renamePlan.Count, $TargetType.ToLowerInvariant()) -ForegroundColor Yellow
+  Write-Host ("Preview Complete! Would rename {0} {1}(s) to {2}case." -f $renamePlan.Count, $TargetType.ToLowerInvariant(), $Mode.ToLowerInvariant()) -ForegroundColor Yellow
 } else {
-  Write-Host ("Task Complete! Renamed {0} {1}(s)." -f $renamePlan.Count, $TargetType.ToLowerInvariant()) -ForegroundColor Green
+  Write-Host ("Task Complete! Renamed {0} {1}(s) to {2}case." -f $renamePlan.Count, $TargetType.ToLowerInvariant(), $Mode.ToLowerInvariant()) -ForegroundColor Green
 }

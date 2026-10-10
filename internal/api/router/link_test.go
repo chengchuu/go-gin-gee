@@ -55,7 +55,7 @@ func TestLinkHTTPContract(t *testing.T) {
 			t.Fatal("response contains removed link field")
 		}
 		var stored models.Link
-		if err := database.First(&stored).Error; err != nil {
+		if err := database.Where("original_url = ?", "https://original.test/page").First(&stored).Error; err != nil {
 			t.Fatal(err)
 		}
 		if stored.LinkKey == "" || payload.Data != "https://example.test/t/"+stored.LinkKey || payload.Alias != payload.Data || payload.Errors == nil || len(payload.Errors) != 0 {
@@ -66,8 +66,7 @@ func TestLinkHTTPContract(t *testing.T) {
 		}
 		generated = payload.Data
 	}
-	// Successful lookups use a special link to avoid the asynchronous visit writer
-	// outliving the fixture. Persistence tests separately exercise stored visits.
+	// Configured aliases resolve without asynchronous database visit writes.
 	for _, tc := range []struct {
 		path     string
 		status   int
@@ -89,6 +88,9 @@ func TestLinkHTTPContract(t *testing.T) {
 			}
 			if tc.redirect && response.Header().Get("Location") != "https://destination.test/page" {
 				t.Fatalf("location = %q", response.Header().Get("Location"))
+			}
+			if tc.redirect && response.Header().Get("Cache-Control") != "no-store" {
+				t.Fatal("redirect must not be cached")
 			}
 			if tc.status == http.StatusOK {
 				var payload map[string]string

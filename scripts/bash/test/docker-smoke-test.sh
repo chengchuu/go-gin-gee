@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image=${1:?Usage: bash scripts/docker-smoke-test.sh IMAGE}
+image=${1:?Usage: bash scripts/bash/test/docker-smoke-test.sh IMAGE}
 container=
 
 cleanup() {

@@ -11,7 +11,8 @@ import (
 type Link struct {
 	models.Model
 	OriginalURL string `gorm:"column:original_url;type:text;not null"`
-	DedupHash   string `gorm:"column:dedup_hash;size:64;not null;uniqueIndex:uk_link_dedup_hash"`
+	// Generated links use SHA-256; aliases stored on collision use fixed:<key>.
+	DedupHash string `gorm:"column:dedup_hash;size:64;not null;uniqueIndex:uk_link_dedup_hash"`
 	// NULL is allowed only while the creation transaction allocates the numeric ID.
 	LinkKey        string `gorm:"column:link_key;size:32;default:null;uniqueIndex:uk_link_key"`
 	DirectRedirect bool   `gorm:"column:direct_redirect;not null;default:false"`

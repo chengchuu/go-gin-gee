@@ -1,7 +1,7 @@
 {
   "Database": {
     "_Driver": "sqlite | mysql | postgres",
-    "Driver": "",
+    "Driver": "sqlite",
     "Dbname": "data/database",
     "Username": "user",
     "Password": "password",
@@ -13,15 +13,33 @@
   },
   "Server": {
     "Port": "3000",
-    "Secret": "frijan27th2023",
     "_Mode": "#release | debug",
     "Mode": "debug"
   },
   "Data": {
+    "BaseURL": "https://chengchuu.github.io",
     "EnableCORS": "on",
     "WEBHOOK_ID": "",
     "WEBHOOK_TOKEN": "",
+    "EnableWebhookAPI": "off",
+    "WebhookAPIKeys": [],
+    "CommonAPIKeys": [],
+    "LinkRedirectPageURL": "https://i.mazey.net/pages/redirect/",
+    "KVAPIKeys": [],
     "Sites": [],
-    "SpecialLinks": []
+    "SpecialLinks": [
+      {
+        "key": "a",
+        "link": "http://blog.mazey.net/"
+      },
+      {
+        "key": "b",
+        "link": "https://blog.mazey.net/"
+      },
+      {
+        "key": "m",
+        "link": "https://i.mazey.net/mazey/docs/"
+      }
+    ]
   }
 }

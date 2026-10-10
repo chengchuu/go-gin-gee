@@ -1,18 +1,159 @@
 # Scripts
 
-- [Scripts](#scripts)
-  - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
-  - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
-  - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
-  - [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
-  - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
-  - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
-  - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+Bash utilities are in `scripts/bash/`, with their tests in `scripts/bash/test/`.
+PowerShell utilities are in `scripts/powershell/`, with their regression tests in
+`scripts/powershell/test/`. Run the examples below from the repository root.
+
+- [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
+- [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
+- [Hanle Nginx Log](#hanle-nginx-log)
+- [Check Blog](#check-blog)
+- [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
+- [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
+- [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
+- [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
+- [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
+- [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
+- [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+
+## Filename Batch Rename Helpers
+
+### Pad Numeric Filename Prefixes
+
+Use `batch-pad-filenames.ps1` to left-pad ASCII digits before the first literal,
+case-sensitive separator. For example, `1S_A.mp3` becomes `001S_A.mp3` with
+`-Separator S -Length 3`. Non-numeric prefixes are skipped. Longer prefixes,
+extensions, and the remaining filename are preserved. Only files are renamed.
+
+Windows PowerShell preview:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-pad-filenames.ps1" -Path "E:\Music" -Separator S -Length 3 -Recurse -WhatIf
+```
+
+macOS preview:
+
+```bash
+pwsh -NoProfile -File "./scripts/powershell/batch-pad-filenames.ps1" -Path "/path/to/music" -Separator S -Length 3 -Recurse -WhatIf
+```
+
+Remove `-WhatIf` to rename files. `-PadChar` defaults to `0` and accepts one
+filename-safe character. Omit `-Recurse` to process immediate files only.
+Before any rename, the script checks the entire batch for duplicate targets
+(case-insensitively) and existing targets. A conflict reports the paths and exits
+with status `1`, including during previews. Runtime failures also exit with `1`;
+renames completed before a runtime failure are not rolled back.
+
+### Other Filename Helpers
+
+Windows 10 PowerShell:
+
+```powershell
+$PathC = "E:\Web\list\Note\Dudu\00000000_MUSICS"
+$TargetTypeC = "Directory"
+$TargetTypeC = "File"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC -Mode Upper
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathC -Recurse -TargetType $TargetTypeC `
+  -Replace " =-" -Replace "S-=S_" -Replace "-V=_V" -Replace "-202=_202"
+```
+
+```powershell
+$PathB = "C:\Directory\Path"
+$TargetTypeB = "File"
+$TargetTypeB = "Directory"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB `
+  -Replace "_=-" `
+  -Replace " ="
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "__=_"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace "PLACEHOLDER="
+
+$EnDashRuleB = '_{0}_=_' -f [char]0x2013
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB -Replace $EnDashRuleB
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
+```
+
+```powershell
+$PathA = "C:\Directory\Path"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathA -Mode Lower -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathA -Replace "_=-" -Replace " =-" -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathA -Recurse
+```
+
+macOS:
+
+```bash
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/powershell/batch-convert-filename-case.ps1" -Path "/Users/Path" -Recurse
+pwsh -NoProfile -ExecutionPolicy Bypass -File "./scripts/powershell/batch-replace-filename-text.ps1" -Path "/Users/Path" -Replace "-=_" -Recurse
+```
+
+## Extract Missing Files from Nginx Errors
+
+Extract unique filesystem paths from exact `open() ... failed (2: No such file or directory)` errors:
+
+```bash
+go run ./scripts/extract-nginx-missing-files -in nginx-error.log -out missing-files.log
+```
+
+```bash
+cat nginx-error.log | go run ./scripts/extract-nginx-missing-files
+```
+
+Naturally sort paths and include entries from an inclusive local timestamp through the command start time:
+
+```bash
+go run ./scripts/extract-nginx-missing-files \
+  -in nginx-error.log \
+  -out missing-files.log \
+  -sort \
+  -since="2026/09/09 09:00:00"
+```
+
+## Hanle Nginx Log
+
+VSCode Regex:
+
+```regex
+^.*?"(?:GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH)\s+//?assets?([^"\s]+)\s+HTTP/[\d.]+" .*$
+```
+
+dedupe-decode:
+
+```bash
+go run scripts/dedupe-decode/main.go -in log/in-asset.log -out log/out-asset.log
+```
+
+batch-copy-files:
+
+```bash
+# Windows GitBash
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "scripts\powershell\batch-copy-files.ps1"
+```
+
+## Check Blog
+
+```bash
+go run ./scripts/check-web-links \
+  -url="https://blog.mazey.net/" \
+  -reportPath="log/MAZEY_LINKS_09.log"
+```
 
 ## Change Git Name and Email for Different Projects
 
+macOS Bash or zsh:
+
 ```bash
-go run scripts/change-git-user/main.go -path="/Users/X/Web" -username="YOUR_NAME" -useremail="YOUR_NAME@email.com"
+bash scripts/bash/batch-set-git-identity.sh --path="/Users/X/Web" --username="<your-name>" --useremail="<your-email>"
+```
+
+Windows 10 Git Bash:
+
+```bash
+bash scripts/bash/batch-set-git-identity.sh --path="C:/Web" --username="<your-name>" --useremail="<your-email>"
 ```
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.0.0) | [简体中文](http://blog.mazey.net/2956.html)

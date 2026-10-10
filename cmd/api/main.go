@@ -3,6 +3,7 @@ package main
 import (
 	_ "github.com/chengchuu/go-gin-gee/docs"
 	"github.com/chengchuu/go-gin-gee/internal/api"
+	"github.com/chengchuu/go-gin-gee/pkg/logger"
 )
 
 // @Golang API
@@ -18,10 +19,8 @@ import (
 
 // @BasePath /api
 
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-
 func main() {
-	api.Run()
+	if err := api.Run(); err != nil {
+		logger.Fatal("API stopped: %v", err)
+	}
 }

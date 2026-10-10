@@ -1,5 +1,5 @@
 # STAGE: Go
-FROM golang:1.23-bookworm AS go-builder
+FROM golang:1.25.13-bookworm AS go-builder
 ENV CGO_ENABLED=1 \
     GO111MODULE=on
 WORKDIR /gee
@@ -25,7 +25,7 @@ RUN apt-get update && \
 COPY --from=go-builder /gee/dist/api /web/api
 COPY --from=go-builder /gee/data /web/data
 # Entrypoint Script
-COPY ./scripts/docker-entrypoint.sh /web/docker-entrypoint.sh
+COPY ./scripts/bash/docker-entrypoint.sh /web/docker-entrypoint.sh
 RUN chmod +x /web/api && \
     dos2unix /web/docker-entrypoint.sh && \
     chmod +x /web/docker-entrypoint.sh

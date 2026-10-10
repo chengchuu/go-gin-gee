@@ -28,12 +28,12 @@ func TestBuildHealthCheckMarkdownPreservesContent(t *testing.T) {
 	}
 
 	got := buildHealthCheckMarkdown(sites, &healthySites, &failedSites)
-	want := "Health Check Result:\n" +
+	want := "Robot Check Result:\n" +
+		"All: 2 | Passed: 1 | Failed: 1\n" +
 		"Alpha OK\n" +
 		"Beta FAIL\n" +
 		"Error Code: 503\n" +
-		"Link: <https://beta.example>\n" +
-		"All: 2 | Passed: 1 | Failed: 1"
+		"Link: <https://beta.example>"
 
 	if got != want {
 		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)
@@ -51,11 +51,11 @@ func TestBuildHealthCheckMarkdownLimitsPassedSites(t *testing.T) {
 	failedSites := []SiteStatus{}
 
 	got := buildHealthCheckMarkdown(sites, &healthySites, &failedSites)
-	want := "Health Check Result:\n" +
+	want := "Robot Check Result:\n" +
+		"All: 4 | Passed: 4 | Failed: 0\n" +
 		"Alpha OK\n" +
 		"Bravo OK\n" +
-		"Charlie OK\n" +
-		"All: 4 | Passed: 4 | Failed: 0"
+		"Charlie OK"
 
 	if got != want {
 		t.Fatalf("buildHealthCheckMarkdown() = %q, want %q", got, want)
@@ -127,14 +127,14 @@ func TestClearCheckResultSkipsNotificationWhenDiscordConfigMissing(t *testing.T)
 	if err != nil {
 		t.Fatalf("ClearCheckResult() error = %v, want nil when webhook config is missing", err)
 	}
-	want := "Health Check Result:\nAlpha OK\nAll: 1 | Passed: 1 | Failed: 0"
+	want := "Robot Check Result:\nAll: 1 | Passed: 1 | Failed: 0\nAlpha OK"
 	if message.Content != want {
 		t.Fatalf("message.Content = %q, want %q", message.Content, want)
 	}
 }
 
 func TestSendDiscordWebhookSendsExpectedRequestAndAccepts204(t *testing.T) {
-	expectedContent := "Health Check Result:\nAlpha OK\nAll: 1 | Passed: 1 | Failed: 0"
+	expectedContent := "Robot Check Result:\nAll: 1 | Passed: 1 | Failed: 0\nAlpha OK"
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++
@@ -180,7 +180,7 @@ func TestSendDiscordWebhookReturnsBodyForNon2xx(t *testing.T) {
 	}))
 	defer server.Close()
 
-	err := sendDiscordWebhook(server.URL, DiscordMessage{Content: "Health Check Result:\n*Sum: 0*"})
+	err := sendDiscordWebhook(server.URL, DiscordMessage{Content: "Robot Check Result:\nAll: 0 | Passed: 0 | Failed: 0"})
 	if err == nil {
 		t.Fatal("sendDiscordWebhook() error = nil, want error")
 	}

@@ -6,7 +6,7 @@ import (
 
 	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	"github.com/chengchuu/go-gin-gee/internal/pkg/db"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // Check
@@ -116,7 +116,7 @@ func FirstByID(out interface{}, id string) (notFound bool, err error) {
 
 	err = db.GetDB().First(out, parsedID).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
 	}
 	return
 }
@@ -132,7 +132,7 @@ func First(where interface{}, out interface{}, associations []string) (notFound 
 	}
 	err = db.Where(where).First(out).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
 	}
 	return
 }
@@ -163,7 +163,7 @@ func Scan(model, where interface{}, out interface{}) (notFound bool, err error) 
 	}
 	err = db.GetDB().Model(model).Where(where).Scan(out).Error
 	if err != nil {
-		notFound = gorm.IsRecordNotFoundError(err)
+		notFound = errors.Is(err, gorm.ErrRecordNotFound)
 	}
 	return
 }

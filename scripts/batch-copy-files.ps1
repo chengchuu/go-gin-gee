@@ -10,7 +10,7 @@ $sourceRoot = "C:\Web\web\archives\asset_frozen"
 $destination = "C:\Web\web\archives\asset"
 
 # IMPORTANT: read file list with UTF-8
-$fileList = Get-Content "C:\Web\web\go-gin-gee\scripts\dedupe-decode\out1.secret.txt" -Encoding UTF8
+$fileList = Get-Content "C:\Web\web\go-gin-gee\log\out-asset.log" -Encoding UTF8
 
 foreach ($filePath in $fileList) {
     $filePath = $filePath.Trim()

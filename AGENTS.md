@@ -10,6 +10,11 @@ This repository is a Go monorepo with:
 
 Use this file as a quick orientation guide before making changes.
 
+Treat this project as a fresh design with no existing users or released versions.
+Do not add migration logic or backward-compatibility layers. Each new deployment
+starts with an entirely new SQLite database; never reset a database automatically
+or use an existing application database for validation.
+
 ## Repository Layout
 
 ### Main application
@@ -141,13 +146,16 @@ Flow:
 3. SHA-256 of a fixed JSON structure deduplicates the exact original URL, effective base URL, one-time setting, and redirect policy. Keep public `base_url` overrides.
 4. A DB row is created to obtain an auto-increment ID inside a transaction.
 5. The numeric ID is converted into a short key.
-6. The short key is persisted before commit; underscore suffixes avoid keys reserved by `SpecialLinks`.
+6. If the generated key matches `SpecialLinks`, convert the new candidate into that direct, reusable special link and retry the original request with a fresh ID in the same transaction. Use a loop without an arbitrary retry limit. No underscore suffix is added.
 7. The final `data` response value is computed at runtime from the base URL and short key.
 8. `/t/:link_key` resolves the stored policy and redirects directly or through the Go-configured warning page. Resolution consumes one-time visits before the warning page is shown.
 
 Special behavior:
 
-- Configured `SpecialLinks` are manually trusted, always redirect directly, and retain precedence.
+- Configured `SpecialLinks` resolve first, work before any database record exists, and always redirect directly. The first configured match wins. Database resolution is the fallback.
+- Fixed aliases use `fixed:<key>` in `dedup_hash`; ordinary links retain SHA-256 fingerprints. Different aliases may share a destination.
+- Special-link records are inserted only on generated-key collisions. Conversion replaces the candidate fingerprint with `fixed:<key>` and sets the configured destination, direct redirection, and `OneTime: false`. Existing deduplicated records are never converted. All inserts and updates roll back together on failure.
+- There is no startup provisioning or snapshot verification. Configuration overrides stored destinations; removing an alias can expose its previously stored destination, and adding one can shadow a generated link.
 - Supports one-time links by checking and incrementing `VisitCount`.
 - Lookup reads only the `link_key` query parameter. Creation binds `link.CreateRequest`, not the persistence entity; clients cannot set policy, keys, or visit counts.
 - `data` contains the generated URL, not persisted model state. `tiny_link` is a deprecated, identical response alias; callers should use `data`. The response preserves `errors` and does not include a `link` field.
@@ -214,7 +222,7 @@ Flow:
   - `kv.Counter`
   - `link.Link`
 
-Legacy user tables are not dropped automatically. Operators may remove them manually only after backing up the database and verifying a deployment without the users module.
+Database setup creates the fresh schema and never deletes an existing database.
 
 If no database driver is configured, repository helpers will generally fail early through `checkDBDriver()`.
 

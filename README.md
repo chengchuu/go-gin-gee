@@ -257,7 +257,9 @@ from `Data.CommonAPIKeys` create permanent direct links usable by anyone. Missin
 empty, and invalid keys create links that first open the Redirect warning page.
 The server derives this policy; a body field such as `direct_redirect` cannot override it. Opening headers and later API-key removal
 do not change an existing link's policy. Manually configured `SpecialLinks` are
-trusted and always redirect directly, taking precedence over database records.
+trusted and always redirect directly. Resolution checks configuration first, using
+the first matching key, then falls back to the database. Configured aliases work
+before their database records exist.
 
 The database deduplicates a fixed JSON representation of the exact original URL,
 effective base URL, `one_time`, and the authorized redirect policy using SHA-256.
@@ -283,8 +285,36 @@ publishing is a separate operation.
 This link schema targets a new database; no legacy link-data migration is provided.
 The model stores `original_url`, `dedup_hash`, and `direct_redirect`, with unique
 fingerprint and short-key indexes. Creation allocates the numeric ID and final key
-inside one transaction. A generated key reserved by `SpecialLinks` receives underscore
-suffixes. No incomplete link or reservation-only row is committed.
+inside one transaction. If its ID-derived key matches `SpecialLinks`, creation converts
+that new candidate into the configured direct, reusable link, then retries the original
+request with a fresh ID. A loop handles consecutive collisions without an arbitrary
+retry limit or underscore suffix. Failure rolls back all records from the request.
+For example, with `a` and `b` reserved, a fresh database stores those special links
+at IDs 1 and 2, then returns `/t/c` for the ordinary request at ID 3. Aliases such as
+`m` and `dl` consume no IDs until generation reaches them.
+
+Use `Data.SpecialLinks` for fixed department aliases such as `/t/ui`:
+
+```json
+{
+  "SpecialLinks": [
+    { "Key": "ui", "Link": "https://ui.example.com/" }
+  ]
+}
+```
+
+Keys are matched case-sensitively. Configure distinct keys and valid HTTP(S)
+destinations. There is no startup provisioning or snapshot verification.
+Special records created on collision use `fixed:<key>` as their internal identity,
+allowing multiple aliases to share a destination without ordinary URL deduplication
+merging them. Existing ordinary records are never converted during deduplication.
+
+Each new deployment uses a fresh SQLite database. Configuration is the durable source
+of fixed aliases; ordinary generated links do not survive replacement of that database.
+Configuration changes take effect after restart and override stored destinations.
+Removing an alias can reveal its previously stored destination; adding an alias can
+shadow a generated link. The application does not reset databases, migrate legacy
+link data, or synchronize stored special records with later configuration changes.
 
 `Data.CommonAPIKeys` defaults to an empty list and is independent of Webhook and KV
 keys. Send the optional `common_api_key` string in the creation JSON body.

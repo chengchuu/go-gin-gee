@@ -130,7 +130,7 @@ func Setup() {
 func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config.Server: %+v", Config.Server)
-		logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
+		// logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
 	}
 	return Config
 }

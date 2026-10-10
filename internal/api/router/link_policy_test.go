@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -16,6 +17,56 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+func TestLinkCreationBaseURLError(t *testing.T) {
+	for _, tc := range []struct {
+		name, baseURL, body, message string
+		failDB                       bool
+		status                       int
+	}{
+		{"missing", "", `{"ori_link":"https://destination.test"}`, "BASE_URL is required. Configure Data.BaseURL or provide base_url in the request.", false, http.StatusBadRequest},
+		{"override", "", `{"ori_link":"https://destination.test","base_url":"https://override.test"}`, "", false, http.StatusCreated},
+		{"database failure", "https://short.test", `{"ori_link":"https://destination.test"}`, "unable to create short link", true, http.StatusBadRequest},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			database, app := newLinkPolicyRouter(t)
+			config.Config.Data.BaseURL = tc.baseURL
+			if tc.failDB {
+				if err := database.Callback().Create().Before("gorm:create").Register("test:creation_failure", func(tx *gorm.DB) {
+					tx.AddError(errors.New("private SQL diagnostic"))
+				}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			request := httptest.NewRequest(http.MethodPost, "/api/gee/generate-short-link", strings.NewReader(tc.body))
+			request.Header.Set("Content-Type", "application/json")
+			response := httptest.NewRecorder()
+			app.ServeHTTP(response, request)
+			if response.Code != tc.status {
+				t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
+			}
+			var payload struct {
+				Code    int
+				Message string
+				Data    string
+			}
+			if err := json.Unmarshal(response.Body.Bytes(), &payload); err != nil {
+				t.Fatal(err)
+			}
+			if tc.status == http.StatusBadRequest {
+				if payload.Code != http.StatusBadRequest || payload.Message != tc.message {
+					t.Fatalf("unexpected error response: %s", response.Body.String())
+				}
+				var count int64
+				if err := database.Model(&models.Link{}).Count(&count).Error; err != nil || count != 0 {
+					t.Fatalf("failed request persisted rows: %d %v", count, err)
+				}
+			} else if !strings.HasPrefix(payload.Data, "https://override.test/t/") {
+				t.Fatalf("unexpected URL: %s", payload.Data)
+			}
+		})
+	}
+}
 
 func newLinkPolicyRouter(t *testing.T) (*gorm.DB, *gin.Engine) {
 	t.Helper()

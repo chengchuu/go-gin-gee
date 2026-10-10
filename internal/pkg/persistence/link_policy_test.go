@@ -7,9 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/chengchuu/go-gin-gee/internal/pkg/config"
 	models "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
-	"github.com/takuoki/clmconv"
 )
 
 func TestLinkFingerprintContract(t *testing.T) {
@@ -105,38 +103,5 @@ func TestLinkConcurrentCreation(t *testing.T) {
 	var record models.Link
 	if err := database.First(&record).Error; err != nil || record.LinkKey == "" {
 		t.Fatalf("incomplete creation: %#v %v", record, err)
-	}
-}
-
-func TestLinkReservedKeyAndRollback(t *testing.T) {
-	database := newPersistenceDatabase(t)
-	repository := &LinkRepository{}
-	key := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase()).Itoa(1)
-	config.Config.Data.SpecialLinks = []models.SpecialLink{{Key: key, Link: "https://trusted.test"}, {Key: key + "_", Link: "https://trusted.test/other"}}
-	generated, err := repository.SaveOriLink("https://ordinary.test", "", false, false)
-	if err != nil || !strings.HasSuffix(generated, "/"+key+"__") {
-		t.Fatalf("reserved key: %s %v", generated, err)
-	}
-	resolved, err := repository.ResolveLink(key)
-	if err != nil || resolved.OriginalURL != "https://trusted.test" || !resolved.DirectRedirect {
-		t.Fatalf("special: %#v %v", resolved, err)
-	}
-	var count int64
-	database.Model(&models.Link{}).Count(&count)
-	if count != 1 {
-		t.Fatalf("unexpected reservation records: %d", count)
-	}
-	// An allocation failure must roll back the insert, not leave a NULL key.
-	next := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase()).Itoa(2)
-	for len(next) <= 32 {
-		config.Config.Data.SpecialLinks = append(config.Config.Data.SpecialLinks, models.SpecialLink{Key: next})
-		next += "_"
-	}
-	if _, err := repository.SaveOriLink("https://rollback.test", "", false, false); err == nil {
-		t.Fatal("expected allocation failure")
-	}
-	database.Model(&models.Link{}).Count(&count)
-	if count != 1 {
-		t.Fatalf("partial creation committed: %d", count)
 	}
 }

@@ -3,6 +3,7 @@ package persistence
 import (
 	"errors"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 
@@ -69,13 +70,18 @@ func TestLinkLazySpecialCollisions(t *testing.T) {
 }
 
 func TestLinkManySpecialCollisionsConcurrent(t *testing.T) {
+	t.Run("sequential", func(t *testing.T) { testLinkManySpecialCollisions(t, 1) })
+	t.Run("concurrent", func(t *testing.T) { testLinkManySpecialCollisions(t, 8) })
+}
+
+func testLinkManySpecialCollisions(t *testing.T, workers int) {
+	t.Helper()
 	database := newPersistenceDatabase(t)
 	converter := clmconv.New(clmconv.WithStartFromOne(), clmconv.WithLowercase())
 	const reserved = 40
 	for id := 1; id <= reserved; id++ {
 		config.Config.Data.SpecialLinks = append(config.Config.Data.SpecialLinks, models.SpecialLink{Key: converter.Itoa(id), Link: "https://shared.test"})
 	}
-	const workers = 8
 	urls, errs := make([]string, workers), make([]error, workers)
 	var group sync.WaitGroup
 	for i := range urls {
@@ -86,20 +92,44 @@ func TestLinkManySpecialCollisionsConcurrent(t *testing.T) {
 		}(i)
 	}
 	group.Wait()
-	want := "https://example.test/t/" + converter.Itoa(reserved+1)
 	for i := range urls {
-		if errs[i] != nil || urls[i] != want {
+		if errs[i] != nil || urls[i] != urls[0] {
 			t.Fatalf("creation: %s %v", urls[i], errs[i])
 		}
 	}
 	rows := collisionRows(t, database)
-	if len(rows) != reserved+1 {
+	// Concurrent upserts can consume IDs without inserting rows (notably on MySQL).
+	// Exact allocation is a sequential contract, not a gapless concurrency contract.
+	if workers == 1 && (len(rows) != reserved+1 || urls[0] != "https://example.test/t/"+converter.Itoa(reserved+1)) {
 		t.Fatalf("row count: %d", len(rows))
 	}
+	wantHash, err := linkFingerprint("https://shared.test", "https://example.test", false, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ordinary := 0
+	seen := make(map[string]bool)
 	for _, row := range rows {
-		if row.LinkKey == "" {
-			t.Fatal("incomplete key committed")
+		if row.LinkKey != converter.Itoa(int(row.ID)) || seen[row.LinkKey] {
+			t.Fatalf("invalid or duplicate allocated key: %#v", row)
 		}
+		seen[row.LinkKey] = true
+		if row.OriginalURL != "https://shared.test" || !row.DirectRedirect || row.OneTime || row.VisitCount != 0 {
+			t.Fatalf("incorrect destination or policy: %#v", row)
+		}
+		if strings.HasPrefix(row.DedupHash, "fixed:") {
+			if row.ID > reserved || row.DedupHash != "fixed:"+row.LinkKey {
+				t.Fatalf("incorrect special record: %#v", row)
+			}
+		} else {
+			ordinary++
+			if row.ID <= reserved || row.DedupHash != wantHash || urls[0] != "https://example.test/t/"+row.LinkKey {
+				t.Fatalf("incorrect ordinary record: %#v", row)
+			}
+		}
+	}
+	if ordinary != 1 {
+		t.Fatalf("ordinary records = %d, want 1", ordinary)
 	}
 }
 

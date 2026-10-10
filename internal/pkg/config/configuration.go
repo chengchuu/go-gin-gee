@@ -20,9 +20,8 @@ type Configuration struct {
 }
 
 type ServerConfiguration struct {
-	Port   string
-	Secret string
-	Mode   string
+	Port string
+	Mode string
 }
 
 type DatabaseConfiguration struct {
@@ -38,9 +37,13 @@ type DatabaseConfiguration struct {
 }
 
 type DataConfiguration struct {
-	EnableCORS       string
+	EnableCORS string
+	// mapstructure maps config-file keys such as Data.WEBHOOK_ID into these Go fields.
 	WebhookID        string `mapstructure:"WEBHOOK_ID"`
 	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
+	EnableWebhookAPI string
+	WebhookAPIKeys   []string
+	KVAPIKeys        []string
 	BaseURL          string
 	AgentRecordsPath string
 	Sites            []modelsS.WebSite
@@ -114,9 +117,6 @@ func Setup() {
 	if configuration.Server.Port == "" {
 		configuration.Server.Port = "3000"
 	}
-	if configuration.Server.Secret == "" {
-		configuration.Server.Secret = "wednov23rd2022"
-	}
 	if configuration.Server.Mode == "" {
 		configuration.Server.Mode = "release"
 	}
@@ -128,6 +128,7 @@ func Setup() {
 func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config.Server: %+v", Config.Server)
+		logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
 	}
 	return Config
 }

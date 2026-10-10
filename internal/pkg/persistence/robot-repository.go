@@ -26,6 +26,10 @@ var discordWebhookBaseURL = "https://discord.com/api/webhooks"
 
 var errDiscordWebhookConfigMissing = errors.New("discord webhook id or token is empty")
 
+func IsDiscordWebhookConfigMissing(err error) bool {
+	return errors.Is(err, errDiscordWebhookConfigMissing)
+}
+
 type Sites struct {
 	List map[string]SiteStatus
 }
@@ -148,20 +152,24 @@ func (r *Sites) ClearCheckResult(WebSites *[]models.WebSite) (*DiscordMessage, e
 		Content: mdStr,
 	}
 
-	webhookID, webhookToken, err := getDiscordWebhookConfig()
-	if err != nil {
+	if err := r.SendDiscordMessage(message); err != nil {
 		if errors.Is(err, errDiscordWebhookConfigMissing) {
 			logger.Warn("discord webhook config is empty, skip sending notification")
 			return &message, nil
 		}
-		return nil, err
-	}
-	webhookURL := buildDiscordWebhookURL(webhookID, webhookToken)
-	if err := sendDiscordWebhook(webhookURL, message); err != nil {
 		logger.Error("error: %v", err)
 		return nil, err
 	}
 	return &message, nil
+}
+
+func (r *Sites) SendDiscordMessage(message DiscordMessage) error {
+	webhookID, webhookToken, err := getDiscordWebhookConfig()
+	if err != nil {
+		return err
+	}
+	webhookURL := buildDiscordWebhookURL(webhookID, webhookToken)
+	return sendDiscordWebhook(webhookURL, message)
 }
 
 func buildHealthCheckMarkdown(ss *Sites, healthySites, failSites *[]SiteStatus) string {
@@ -233,7 +241,7 @@ func sendDiscordWebhook(webhookURL string, message DiscordMessage) error {
 		SetBody(message).
 		Post(webhookURL)
 	if err != nil {
-		return err
+		return errors.New("discord webhook request failed")
 	}
 	if resp.StatusCode() < http.StatusOK || resp.StatusCode() >= http.StatusMultipleChoices {
 		return fmt.Errorf("discord webhook returned status %d: %s", resp.StatusCode(), resp.String())

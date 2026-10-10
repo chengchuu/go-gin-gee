@@ -14,12 +14,5 @@
         "version": "1.0"
     },
     "basePath": "/api",
-    "paths": {},
-    "securityDefinitions": {
-        "ApiKeyAuth": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
-    }
+    "paths": {}
 }

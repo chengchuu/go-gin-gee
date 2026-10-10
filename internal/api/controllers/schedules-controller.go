@@ -23,12 +23,12 @@ func CheckSitesHealth(c *gin.Context) {
 		http_err.NewError(c, http.StatusInternalServerError, err)
 		return
 	}
-	markdown, err := per.ClearCheckResult(webSites)
+	message, err := per.ClearCheckResult(webSites)
 	if err != nil {
 		logger.Error("check: %s", err)
 		http_err.NewError(c, http.StatusInternalServerError, err)
 	} else {
-		c.JSON(http.StatusOK, gin.H{"data": *markdown})
+		c.JSON(http.StatusOK, gin.H{"data": message})
 	}
 }
 

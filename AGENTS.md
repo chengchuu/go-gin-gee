@@ -22,7 +22,7 @@ Use this file as a quick orientation guide before making changes.
   - Application bootstrap and HTTP layer.
   - Key subfolders:
     - `controllers/`: request handlers
-    - `middlewares/`: auth, CORS, logging, 404 handling
+    - `middlewares/`: CORS, logging, and 404 handling
     - `router/`: route registration and Gin setup
 
 - `internal/pkg/`
@@ -36,7 +36,6 @@ Use this file as a quick orientation guide before making changes.
 - `pkg/`
   - Reusable shared helpers used across the app.
   - Includes:
-    - `crypto/`: password hashing and JWT helpers
     - `http-err/`: standard JSON error response helper
     - `logger/`: project logger
     - `helpers/`: misc utility helpers
@@ -73,6 +72,25 @@ Use this file as a quick orientation guide before making changes.
 - Process timezone is set to `UTC` in `internal/api/api.go`.
 - If `config.Data.Sites` is populated, a scheduled health check is started before the HTTP server begins serving traffic.
 
+### Access-log lifecycle
+
+`internal/api.Run()` opens `./log/api.log` with create/write/append flags before scheduled health
+checks or router setup. Missing directories use `0755`; new files use `0666` subject to umask.
+Existing entries and permissions are preserved. Directory/open failures stop startup. The API
+passes the writer to `router.Setup`, restores the previous Gin writer and closes the file when
+the lifecycle returns, and returns errors to `cmd/api` for nonzero process exit. No new graceful
+shutdown behavior is provided; process termination releases descriptors through the OS.
+
+The file retains the existing Gin request format. Application stdout/stderr and recovery output
+are unchanged. `log/robot.html` keeps its existing replacement behavior. Webmazey also builds this
+application; its mounts and deployment policy are not changed by the logging fix.
+
+The separate server repository's `websg` Compose configuration mounts `/web/log-webgee:/web/log`
+on `go-gin-gee`, not Nginx `webgee`. Activation requires a verified append-safe API image, writable
+host storage for its runtime identity, approved retention, and separately authorized API-only
+recreation. The pinned production image is not updated automatically. A bind mount does not
+recover old container-local logs, and Docker log limits do not bound `api.log`.
+
 ## Request Flow
 
 For most API endpoints, the flow is:
@@ -87,72 +105,63 @@ Common route registration lives in `internal/api/router/router.go`.
 
 ## Major Functional Areas
 
-### Users and auth
+### Key-Value Store
 
 - Routes:
-  - `/api/login`
-  - `/api/users`
-  - `/api/users/:id`
+  - `POST /api/gee/kv/get`
+  - `POST /api/gee/kv/set`
+  - `POST /api/gee/kv/increment`
 - Main files:
-  - `internal/api/controllers/auth-controller.go`
-  - `internal/api/controllers/users-controller.go`
-  - `internal/api/middlewares/auth.go`
-  - `internal/pkg/persistence/users-repository.go`
-  - `pkg/crypto/`
+  - `internal/api/controllers/kv-controller.go`
+  - `internal/pkg/persistence/kv-repository.go`
+  - `internal/pkg/models/kv/`
 
 Flow:
 
-- Login looks up a user by username, compares bcrypt password hashes, then returns a JWT.
-- Protected endpoints use `AuthRequired()` middleware to validate the token.
-- User create and update operations hash plaintext passwords before persistence.
-
-### Alias-to-data storage
-
-- Routes:
-  - `/api/gee/get-data-by-alias`
-  - `/api/gee/create-alias2data`
-  - `/api/gee/count-alias2data`
-- Main files:
-  - `internal/api/controllers/alias2data-controller.go`
-  - `internal/pkg/persistence/alias2data-repository.go`
-
-Flow:
-
-- `get-data-by-alias` retrieves a stored alias record and only returns it if `Public` is true.
-- `count-alias2data` is stateful: it reads a record, initializes it when missing, increments a count stored in `Data`, and saves it back.
+- Keys are provided in JSON request bodies, never paths or query strings.
+- `set` uses upsert semantics.
+- `increment` uses atomic database arithmetic and a dedicated counter table.
+- The key-value endpoints follow the project API response convention.
 
 ### Short links
 
 - Routes:
   - `/api/gee/generate-short-link`
   - `/api/gee/query-short-link`
-  - `/t/:key`
+  - `/t/:link_key`
 - Main files:
-  - `internal/api/controllers/tiny-controller.go`
-  - `internal/pkg/persistence/tiny-repository.go`
-  - `internal/pkg/models/tiny/tiny.go`
+  - `internal/api/controllers/link-controller.go`
+  - `internal/pkg/persistence/link-repository.go`
+  - `internal/pkg/models/link/link.go`
 
 Flow:
 
 1. Incoming original URL is accepted by the controller.
-2. Repository optionally folds `base_url` into the hash input.
-3. MD5 is used to deduplicate existing links.
-4. A DB row is created to obtain an auto-increment ID.
+2. The controller validates the JSON `common_api_key` field against `Data.CommonAPIKeys` and derives the permanent `DirectRedirect` policy. Missing or invalid keys require a warning.
+3. SHA-256 of a fixed JSON structure deduplicates the exact original URL, effective base URL, one-time setting, and redirect policy. Keep public `base_url` overrides.
+4. A DB row is created to obtain an auto-increment ID inside a transaction.
 5. The numeric ID is converted into a short key.
-6. The short key is persisted.
-7. The final `tiny_link` response value is computed at runtime from the base URL and short key.
-8. `/t/:key` resolves the key and redirects to the original URL.
+6. The short key is persisted before commit; underscore suffixes avoid keys reserved by `SpecialLinks`.
+7. The final `data` response value is computed at runtime from the base URL and short key.
+8. `/t/:link_key` resolves the stored policy and redirects directly or through the Go-configured warning page. Resolution consumes one-time visits before the warning page is shown.
 
 Special behavior:
 
-- Supports configured `SpecialLinks` from config.
+- Configured `SpecialLinks` are manually trusted, always redirect directly, and retain precedence.
 - Supports one-time links by checking and incrementing `VisitCount`.
-- `tiny_link` is an API response value, not persisted model state.
+- Lookup reads only the `link_key` query parameter. Creation binds `link.CreateRequest`, not the persistence entity; clients cannot set policy, keys, or visit counts.
+- `data` contains the generated URL, not persisted model state. `tiny_link` is a deprecated, identical response alias; callers should use `data`. The response preserves `errors` and does not include a `link` field.
+- `LinkRepository` is accessed through `GetLinkRepository()` and logs with `[Link]`.
+- The `link.Link` model uses `gee_link`, with unique indexes `uk_link_dedup_hash` and `uk_link_key`. This is a new-database schema, not a migration from the old MD5 model. Never reset a user's database as validation.
+- `ResolveLink` returns a destination and policy. `Data.LinkRedirectPageURL` is the sole warning URL source; request headers are ignored. Missing/invalid configuration fails closed with 503. Preserve `Cache-Control: no-store` on redirect responses.
+- `EnableCORS` is independent of warning configuration. Webmazey sets it to `off`, with Nginx owning API CORS and Go handling OPTIONS. Standalone Go can enable its own CORS middleware.
+- Common keys authorize creation only. Removing a key does not revoke existing direct links. No key is persisted, logged, returned, or included in a fingerprint or generated URL. Keep secrets out of public frontend bundles and request-body logs.
 
 ### Site health checks
 
 - Route:
   - `/api/gee/check`
+  - `/api/gee/webhook-message`
 - Main files:
   - `internal/api/controllers/schedules-controller.go`
   - `internal/pkg/persistence/robot-repository.go`
@@ -163,6 +172,14 @@ Flow:
 2. Each site is checked via HTTP using `resty`.
 3. An HTML report is written to `log/robot.html`.
 4. A summary message may be sent to a Discord webhook when `WEBHOOK_ID` and `WEBHOOK_TOKEN` are configured.
+5. `/api/gee/webhook-message` reuses the Discord sender and is disabled unless `Data.EnableWebhookAPI` is `on` with a matching `X-Webhook-API-Key`.
+
+### API-key access control
+
+- The private webhook API uses config-file-based keys from `Data.WebhookAPIKeys`.
+- Common feature keys use the separate `Data.CommonAPIKeys` list and the JSON `common_api_key` field. Currently only short-link creation uses them; they do not authorize Webhook or KV operations.
+- `POST /api/gee/webhook-message` validates the `X-Webhook-API-Key` header in `internal/api/controllers/webhook-controller.go`.
+- Other routes are not protected by this API-key check unless their handlers explicitly implement it.
 
 ### Agent/server utilities
 
@@ -178,17 +195,12 @@ Flow:
 - `/server/mock` echoes a provided mock response structure.
 - `/server/agent/record` decodes URL-encoded JSON and writes a pretty-printed file into the configured agent records directory.
 
-### Docker tag lookup
+### Retired APIs
 
-- Route:
-  - `/api/gee/get-tag-name`
-- Main files:
-  - `internal/api/controllers/docker-controller.go`
-  - `internal/pkg/persistence/docker-repository.go`
-
-Flow:
-
-- Calls Docker Hub over HTTP and finds a tag matching a suffix filter.
+- `GET /api/gee/get-tag-name` is retired. It no longer calls Docker Hub or returns `tagName`.
+- `controllers.RetiredAPI` in `internal/api/controllers/retired-controller.go` returns HTTP 410 with `Cache-Control: no-store` and the existing `http_err.APIResponse` envelope: `code: 41001` (`CodeAPIRetired`), `message: "This API has been retired."`, and `data: null`.
+- To retire another endpoint, map its existing method and path directly to `controllers.RetiredAPI` in the router and remove its unused implementation. The shared handler terminates the handler chain and needs no database or outbound HTTP requests.
+- Keep retirement explicit per route; do not replace unknown-route handling with a retirement response.
 
 ## Database Notes
 
@@ -198,10 +210,11 @@ Flow:
   - `postgres`
   - `mysql`
 - Auto-migrations run for:
-  - `users.User`
-  - `users.UserRole`
-  - `alias2data.Alias2data`
-  - `tiny.Tiny`
+  - `kv.Entry`
+  - `kv.Counter`
+  - `link.Link`
+
+Legacy user tables are not dropped automatically. Operators may remove them manually only after backing up the database and verifying a deployment without the users module.
 
 If no database driver is configured, repository helpers will generally fail early through `checkDBDriver()`.
 
@@ -218,12 +231,16 @@ Sources:
 Important config fields:
 
 - `Server.Port`
-- `Server.Secret`
 - `Server.Mode`
 - `Database.*`
 - `Data.EnableCORS`
 - `Data.WebhookID`
 - `Data.WebhookToken`
+- `Data.EnableWebhookAPI`
+- `Data.WebhookAPIKeys`
+- `Data.CommonAPIKeys`
+- `Data.LinkRedirectPageURL`
+- `Data.KVAPIKeys`
 - `Data.BaseURL`
 - `Data.AgentRecordsPath`
 - `Data.Sites`
@@ -239,6 +256,37 @@ When changing behavior, start here:
 - DB wiring: `internal/pkg/db/database.go`
 - shared persistence helpers: `internal/pkg/persistence/common.go`
 
+## API Response Convention
+
+New JSON APIs must return a consistent response envelope:
+
+```json
+{
+  "code": 0,
+  "message": "success",
+  "data": null
+}
+```
+
+Rules:
+
+* The top-level fields are always `code`, `message`, and `data`.
+* Successful responses use application code `0`.
+* Failed responses use a documented non-zero application code.
+* HTTP status codes must continue to represent the actual HTTP result.
+* `data` contains the actual result using its natural JSON type.
+* Object results use `{ ... }`.
+* Collection results use `[ ... ]`; an empty collection uses `[]`.
+* Scalar results use their actual string, number, or boolean type.
+* Responses with no result use `null`.
+* Failed responses normally use `data: null`.
+* Do not use `{}` as a generic placeholder for missing data.
+* Do not duplicate response values in deprecated top-level fields.
+* Do not expose internal errors, SQL, API keys, stack traces, configuration values, or filesystem paths.
+* JSON APIs following this envelope should not use `204 No Content`; use a suitable success status with `data: null` when no result is returned.
+
+This convention applies to the key-value API and future newly added JSON APIs. Existing APIs are not retroactively migrated unless a task explicitly requests it.
+
 ## Working Guidelines
 
 - Treat `cmd/api` as the service entry point.
@@ -253,6 +301,6 @@ If you are changing:
 
 - an endpoint: start in `internal/api/router` and `internal/api/controllers`
 - DB-backed behavior: continue into `internal/pkg/persistence` and `internal/pkg/models`
-- auth behavior: inspect `pkg/crypto` and `internal/api/middlewares/auth.go`
+- API-key access control: inspect `internal/api/controllers/webhook-controller.go` and `internal/pkg/config`
 - startup or environment behavior: inspect `internal/api/api.go` and `internal/pkg/config`
 - a CLI utility: work inside the relevant `scripts/<name>/main.go`

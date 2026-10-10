@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"flag"
 
+	modelsLink "github.com/chengchuu/go-gin-gee/internal/pkg/models/link"
 	modelsS "github.com/chengchuu/go-gin-gee/internal/pkg/models/sites"
-	modelsT "github.com/chengchuu/go-gin-gee/internal/pkg/models/tiny"
 	"github.com/chengchuu/go-gin-gee/pkg/logger"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -20,9 +20,8 @@ type Configuration struct {
 }
 
 type ServerConfiguration struct {
-	Port   string
-	Secret string
-	Mode   string
+	Port string
+	Mode string
 }
 
 type DatabaseConfiguration struct {
@@ -38,13 +37,19 @@ type DatabaseConfiguration struct {
 }
 
 type DataConfiguration struct {
-	EnableCORS       string
-	WebhookID        string `mapstructure:"WEBHOOK_ID"`
-	WebhookToken     string `mapstructure:"WEBHOOK_TOKEN"`
-	BaseURL          string
-	AgentRecordsPath string
-	Sites            []modelsS.WebSite
-	SpecialLinks     []modelsT.SpecialLink
+	EnableCORS string
+	// mapstructure maps config-file keys such as Data.WEBHOOK_ID into these Go fields.
+	WebhookID           string `mapstructure:"WEBHOOK_ID"`
+	WebhookToken        string `mapstructure:"WEBHOOK_TOKEN"`
+	EnableWebhookAPI    string
+	WebhookAPIKeys      []string
+	CommonAPIKeys       []string
+	LinkRedirectPageURL string
+	KVAPIKeys           []string
+	BaseURL             string
+	AgentRecordsPath    string
+	Sites               []modelsS.WebSite
+	SpecialLinks        []modelsLink.SpecialLink
 }
 
 // SetupDB initialize configuration
@@ -114,9 +119,6 @@ func Setup() {
 	if configuration.Server.Port == "" {
 		configuration.Server.Port = "3000"
 	}
-	if configuration.Server.Secret == "" {
-		configuration.Server.Secret = "wednov23rd2022"
-	}
 	if configuration.Server.Mode == "" {
 		configuration.Server.Mode = "release"
 	}
@@ -128,6 +130,7 @@ func Setup() {
 func GetConfig() *Configuration {
 	if Config != nil && Config.Server.Mode == "debug" {
 		logger.Info("Config.Server: %+v", Config.Server)
+		logger.Info("Config.Data.EnableWebhookAPI: %+v", Config.Data.EnableWebhookAPI)
 	}
 	return Config
 }

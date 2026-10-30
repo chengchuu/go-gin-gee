@@ -4,10 +4,11 @@ Bash utilities are in `scripts/bash/`, with their tests in `scripts/bash/test/`.
 PowerShell utilities are in `scripts/powershell/`, with their regression tests in
 `scripts/powershell/test/`. Run the examples below from the repository root.
 
+- [Fetch Complete Remote Branch History](#fetch-complete-remote-branch-history)
+- [Remove Orphan Lyrics](#remove-orphan-lyrics)
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
   - [Other Filename Helpers](#other-filename-helpers)
   - [Pad Numeric Filename Prefixes](#pad-numeric-filename-prefixes)
-- [Remove Orphan Lyrics](#remove-orphan-lyrics)
 - [Extract Missing Files from Nginx Errors](#extract-missing-files-from-nginx-errors)
 - [Hanle Nginx Log](#hanle-nginx-log)
 - [Check Blog](#check-blog)
@@ -18,6 +19,28 @@ PowerShell utilities are in `scripts/powershell/`, with their regression tests i
 - [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
 - [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
 - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+
+## Fetch Complete Remote Branch History
+
+Fetch every branch from a repository's existing `origin`, including historical
+file contents omitted by a partial clone:
+
+```bash
+bash scripts/bash/fetch-complete-branches.sh --path "/Users/Example"
+```
+
+Requires Git 2.36+ and Bash 3.2+. This can download substantial data. The script
+refreshes `origin/*`, expands shallow history when needed, and verifies all locally
+referenced objects before removing origin's partial-clone settings. Future ordinary
+fetches track all origin branches without filtering. Local branches and working
+files are preserved; branches are not checked out or merged. Deleted remote refs
+are not pruned. Tags are not explicitly fetched, and Git LFS payloads and submodule
+repositories are excluded. Run without concurrent Git operations.
+
+If fetching or verification fails, the script exits nonzero and retains the
+partial-clone settings. Downloaded objects and successful ref updates may remain.
+Missing objects reachable only from other remotes or local history also cause
+verification to fail. Invalid command usage returns `2`.
 
 ## Remove Orphan Lyrics
 

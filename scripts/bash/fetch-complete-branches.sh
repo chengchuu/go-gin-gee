@@ -48,7 +48,7 @@ unset_config() {
   fi
 }
 
-fetch_options=(--refetch --no-filter --no-tags --no-recurse-submodules --refmap=)
+fetch_options=(--no-filter --no-tags --no-recurse-submodules --refmap=)
 if [ "$(git -C "$repository" rev-parse --is-shallow-repository)" = true ]; then
   fetch_options+=(--unshallow)
 fi
@@ -60,17 +60,30 @@ if [ "$(git -C "$repository" rev-parse --is-shallow-repository)" = true ]; then
   exit 1
 fi
 
-verification=$(mktemp "${TMPDIR:-/tmp}/fetch-complete-branches.XXXXXX")
-trap 'rm -f -- "$verification"' EXIT
+verification_dir=$(mktemp -d "${TMPDIR:-/tmp}/fetch-complete-branches.XXXXXX")
+trap 'rm -rf -- "$verification_dir"' EXIT
+verification="$verification_dir/objects"
+missing="$verification_dir/missing"
+previous_missing="$verification_dir/previous"
+: >"$previous_missing"
 
 # Check every locally referenced object before disabling the promisor remote.
 # This also protects local-only history and refs belonging to other remotes.
 printf 'Verifying local Git objects without fetching on demand...\n'
-GIT_NO_LAZY_FETCH=1 git -C "$repository" rev-list --objects --all --missing=print >"$verification"
-if LC_ALL=C grep -q '^?' "$verification"; then
-  printf 'Error: objects are still missing; partial-clone settings retained.\n' >&2
-  exit 1
-fi
+while :; do
+  GIT_NO_LAZY_FETCH=1 git -C "$repository" rev-list --objects --all --missing=print >"$verification"
+  LC_ALL=C sed -n 's/^?//p' "$verification" | LC_ALL=C sort >"$missing"
+  [ -s "$missing" ] || break
+  if cmp -s "$missing" "$previous_missing"; then
+    printf 'Error: missing-object download made no progress; partial-clone settings retained.\n' >&2
+    exit 1
+  fi
+  cp "$missing" "$previous_missing"
+  printf 'Downloading %s missing Git objects...\n' "$(wc -l <"$missing" | tr -d ' ')"
+  # Send object IDs over stdin to avoid shell argument limits and per-object fetches.
+  git -C "$repository" fetch --no-filter --no-tags --no-write-fetch-head \
+    --no-recurse-submodules --refmap= origin --stdin <"$missing"
+done
 
 git -C "$repository" config --local --replace-all remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 unset_config remote.origin.partialclonefilter

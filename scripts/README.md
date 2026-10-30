@@ -30,7 +30,8 @@ bash scripts/bash/fetch-complete-branches.sh --path "/Users/Example"
 ```
 
 Requires Git 2.36+ and Bash 3.2+. This can download substantial data. The script
-refreshes `origin/*`, expands shallow history when needed, and verifies all locally
+refreshes `origin/*`, expands shallow history when needed, and downloads missing
+objects in batches rather than repeating a full fetch. It verifies all locally
 referenced objects before removing origin's partial-clone settings. Future ordinary
 fetches track all origin branches without filtering. Local branches and working
 files are preserved; branches are not checked out or merged. Deleted remote refs
@@ -39,8 +40,9 @@ repositories are excluded. Run without concurrent Git operations.
 
 If fetching or verification fails, the script exits nonzero and retains the
 partial-clone settings. Downloaded objects and successful ref updates may remain.
-Missing objects reachable only from other remotes or local history also cause
-verification to fail. Invalid command usage returns `2`.
+Missing objects reachable only from other remotes or local history are requested
+from origin as well; the command fails if origin cannot supply them. Invalid
+command usage returns `2`.
 
 ## Remove Orphan Lyrics
 

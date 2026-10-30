@@ -65,15 +65,31 @@ assert_status 128 bash "$script" --path "$fixture/failure"
 [ "$(git -C "$fixture/failure" config --get remote.origin.promisor)" = true ]
 [ "$(git -C "$fixture/failure" config --get remote.origin.partialclonefilter)" = blob:none ]
 
-# Origin cannot hydrate history that was removed from its advertised branches.
+# Download missing local-only history when origin still has the objects.
 git clone -q --no-checkout --filter=blob:none "file://$fixture/source" "$fixture/incomplete"
 git -C "$fixture/incomplete" branch local-only origin/feature/nested >/dev/null
 git -C "$fixture/incomplete" update-ref -d refs/remotes/origin/feature/nested
 git -C "$fixture/source" branch -D feature/nested >/dev/null
-assert_status 1 bash "$script" --path "$fixture/incomplete"
-[ "$(git -C "$fixture/incomplete" config --get remote.origin.promisor)" = true ]
-[ "$(git -C "$fixture/incomplete" config --get remote.origin.partialclonefilter)" = blob:none ]
-grep -q 'objects are still missing' "$fixture/output"
+assert_status 0 bash "$script" --path "$fixture/incomplete"
+GIT_NO_LAZY_FETCH=1 git -C "$fixture/incomplete" rev-list --objects --all --missing=print >"$fixture/missing"
+if grep -q '^?' "$fixture/missing"; then exit 1; fi
+
+# An unchanged, multi-branch partial clone must hydrate blobs without a full refetch.
+git clone -q --no-checkout --filter=blob:none "file://$fixture/source" "$fixture/unchanged"
+assert_status 0 bash "$script" --path "$fixture/unchanged"
+grep -q 'Downloading .* missing Git objects' "$fixture/output"
+
+# Fail specifically at the batch-download process boundary.
+git clone -q --no-checkout --filter=blob:none "file://$fixture/source" "$fixture/batch-failure"
+mkdir "$fixture/bin"
+printf '%s\n' '#!/usr/bin/env bash' \
+  'for arg in "$@"; do if [ "$arg" = --stdin ]; then exit 42; fi; done' \
+  'exec "$FETCH_TEST_GIT" "$@"' >"$fixture/bin/git"
+chmod +x "$fixture/bin/git"
+assert_status 42 env FETCH_TEST_GIT="$(command -v git)" PATH="$fixture/bin:$PATH" \
+  bash "$script" --path "$fixture/batch-failure"
+[ "$(git -C "$fixture/batch-failure" config --get remote.origin.promisor)" = true ]
+[ "$(git -C "$fixture/batch-failure" config --get remote.origin.partialclonefilter)" = blob:none ]
 
 assert_status 2 bash "$script"
 assert_status 2 bash "$script" --unknown

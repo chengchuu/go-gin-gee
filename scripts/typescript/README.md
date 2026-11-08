@@ -1,5 +1,9 @@
 # TypeScript Tools
 
+To install and use the development tools, use Node.js 22.18.0 or later in the
+22.x series, or Node.js 24.11.0 or later. The Babel ESLint parser requires this
+range. Run the formatting checks with `npm --prefix scripts/typescript run lint`.
+
 - [Fetch Complete Git Branch History](#fetch-complete-git-branch-history)
 - [Calculate Duolingo Mutual Follows](#calculate-duolingo-mutual-follows)
 - [Calculate Annualized Return and Elapsed Days](#calculate-annualized-return-and-elapsed-days)

@@ -1,19 +1,19 @@
-import { readFileSync } from 'node:fs';
-import { parseArgs } from 'node:util';
+import { readFileSync } from "node:fs";
+import { parseArgs } from "node:util";
 
-const usage = 'Usage: calc-mutuals --following PATH --followers PATH';
+const usage = "Usage: calc-mutuals --following PATH --followers PATH";
 
 type User = { userId: number; username: string; displayName: string };
 
 function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null &&
-    'userId' in value && typeof value.userId === 'number' && Number.isSafeInteger(value.userId) &&
-    'username' in value && typeof value.username === 'string' &&
-    'displayName' in value && typeof value.displayName === 'string';
+  return typeof value === "object" && value !== null &&
+    "userId" in value && typeof value.userId === "number" && Number.isSafeInteger(value.userId) &&
+    "username" in value && typeof value.username === "string" &&
+    "displayName" in value && typeof value.displayName === "string";
 }
 
 function readUsers(path: string): User[] {
-  const contents = readFileSync(path, 'utf8');
+  const contents = readFileSync(path, "utf8");
   let data: unknown;
   try {
     data = JSON.parse(contents);
@@ -34,12 +34,12 @@ function main() {
   let followersPath: string;
   try {
     const { values } = parseArgs({ options: {
-      following: { type: 'string' },
-      followers: { type: 'string' },
-      help: { type: 'boolean', short: 'h' },
+      following: { type: "string" },
+      followers: { type: "string" },
+      help: { type: "boolean", short: "h" },
     } });
     if (values.help) { console.log(usage); return; }
-    if (!values.following || !values.followers) throw new Error('--following and --followers are required.');
+    if (!values.following || !values.followers) throw new Error("--following and --followers are required.");
     followingPath = values.following;
     followersPath = values.followers;
   } catch (error) {

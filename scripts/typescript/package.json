@@ -3,15 +3,21 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.18.0"
+    "node": "^22.18.0 || >=24.11.0"
   },
   "scripts": {
+    "lint": "eslint src test eslint.config.mjs",
+    "lint:fix": "eslint src test eslint.config.mjs --fix",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "fetch-complete-branches": "node src/fetch-complete-branches.ts",
     "test": "node --test test/*.test.mjs"
   },
   "devDependencies": {
+    "@babel/core": "^8.1.0",
+    "@babel/eslint-parser": "^8.0.7",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^22.0.0",
+    "eslint": "^10.14.0",
     "typescript": "^7.0.0"
   },
   "dependencies": {

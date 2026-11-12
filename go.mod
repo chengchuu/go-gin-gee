@@ -16,7 +16,6 @@ require (
 	github.com/samber/lo v1.53.0
 	github.com/spf13/viper v1.21.0
 	github.com/swaggo/swag v1.16.6
-	github.com/szyhf/go-excel v1.6.1
 	github.com/takuoki/clmconv v1.2.0
 	github.com/tdewolff/parse/v2 v2.8.16
 	golang.org/x/net v0.58.0
@@ -77,7 +76,6 @@ require (
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/szyhf/go-convert v1.0.0 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect

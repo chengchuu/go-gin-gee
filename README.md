@@ -55,28 +55,6 @@ go run scripts/eslint-files/main.go -files="file1.js,file2.js" -esConf="custom.e
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0) | [简体中文](http://blog.mazey.net/4207.html)
 
-4\. Convert TypeDoc comments to Markdown.
-
-```bash
-go run scripts/convert-typedoc-to-markdown/main.go
-```
-
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.2.0) | [简体中文](http://blog.mazey.net/3494.html#%E6%B3%A8%E9%87%8A%E8%BD%AC_Markdown)
-
-5\. Convert Markdown to TypeDoc comments.
-
-```bash
-go run scripts/convert-markdown-to-typedoc/main.go
-```
-
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.3.0) | [简体中文](http://blog.mazey.net/3494.html#Markdown_%E8%BD%AC%E6%B3%A8%E9%87%8A)
-
-6\. Transfer Apple note table to Markdown table.
-
-```bash
-go run scripts/transfer-notes-to-md-table/main.go
-```
-
 More in folder [`scripts`](./scripts/README.md).
 
 ## API Examples

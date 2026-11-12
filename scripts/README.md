@@ -4,6 +4,7 @@ Bash utilities are in `scripts/bash/`, with their tests in `scripts/bash/test/`.
 PowerShell utilities are in `scripts/powershell/`, with their regression tests in
 `scripts/powershell/test/`. Run the examples below from the repository root.
 
+- [Fetch Complete Remote Branch History](#fetch-complete-remote-branch-history)
 - [Filename Batch Rename Helpers](#filename-batch-rename-helpers)
   - [Other Filename Helpers](#other-filename-helpers)
   - [Pad Numeric Filename Prefixes](#pad-numeric-filename-prefixes)
@@ -14,10 +15,31 @@ PowerShell utilities are in `scripts/powershell/`, with their regression tests i
 - [Change Git Name and Email for Different Projects](#change-git-name-and-email-for-different-projects)
 - [`git pull` All Projects in a Folder](#git-pull-all-projects-in-a-folder)
 - [Consolidate Designated Files/Folders and Execute Customized ESLint Commands](#consolidate-designated-filesfolders-and-execute-customized-eslint-commands)
-- [Convert TypeDoc Comments to Markdown](#convert-typedoc-comments-to-markdown)
-- [Convert Markdown to TypeDoc Comments](#convert-markdown-to-typedoc-comments)
-- [Transfer Apple Note Table to Markdown Table](#transfer-apple-note-table-to-markdown-table)
 - [Calculate Days Between Two Dates (datediff)](#calculate-days-between-two-dates-datediff)
+
+## Fetch Complete Remote Branch History
+
+Fetch every branch from a repository's existing `origin`, including historical
+file contents omitted by a partial clone:
+
+```bash
+bash scripts/bash/fetch-complete-branches.sh --path "/Users/Example"
+```
+
+Requires Git 2.36+ and Bash 3.2+. This can download substantial data. The script
+refreshes `origin/*`, expands shallow history when needed, and downloads missing
+objects in batches rather than repeating a full fetch. It verifies all locally
+referenced objects before removing origin's partial-clone settings. Future ordinary
+fetches track all origin branches without filtering. Local branches and working
+files are preserved; branches are not checked out or merged. Deleted remote refs
+are not pruned. Tags are not explicitly fetched, and Git LFS payloads and submodule
+repositories are excluded. Run without concurrent Git operations.
+
+If fetching or verification fails, the script exits nonzero and retains the
+partial-clone settings. Downloaded objects and successful ref updates may remain.
+Missing objects reachable only from other remotes or local history are requested
+from origin as well; the command fails if origin cannot supply them. Invalid
+command usage returns `2`.
 
 ## Filename Batch Rename Helpers
 
@@ -55,13 +77,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\ba
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathB -Recurse -TargetType $TargetTypeB
 ```
 
-convert-replace-date:
+Normalize immediate child directory names:
 
 ```powershell
 $PathA = "C:\Directory\Path"
 $TargetTypeA = "Directory"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-convert-filename-case.ps1" -Path $PathA -TargetType $TargetTypeA -Mode Upper
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathA -TargetType $TargetTypeA -Replace "_=-" -Replace " =-" -Recurse
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-replace-filename-text.ps1" -Path $PathA -TargetType $TargetTypeA -Replace "_=-" -Replace " =-"
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-format-date-filenames.ps1" -Path $PathA -TargetType $TargetTypeA
 ```
 
@@ -212,48 +234,29 @@ go run scripts/eslint-files/main.go -files="file1.js,file2.js" -esConf="custom.e
 
 Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.4.0) | [简体中文](http://blog.mazey.net/4207.html)
 
-## Convert TypeDoc Comments to Markdown
-
-```bash
-go run scripts/convert-typedoc-to-markdown/main.go
-```
-
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.2.0) | [简体中文](http://blog.mazey.net/3494.html#%E6%B3%A8%E9%87%8A%E8%BD%AC_Markdown)
-
-## Convert Markdown to TypeDoc Comments
-
-```bash
-go run scripts/convert-markdown-to-typedoc/main.go
-```
-
-Usage: [English](https://github.com/chengchuu/go-gin-gee/releases/tag/v1.3.0) | [简体中文](http://blog.mazey.net/3494.html#Markdown_%E8%BD%AC%E6%B3%A8%E9%87%8A)
-
-## Transfer Apple Note Table to Markdown Table
-
-```bash
-go run scripts/transfer-notes-to-md-table/main.go
-```
-
 ## Calculate Days Between Two Dates (datediff)
 
 A small helper to calculate the number of days between two calendar dates. The script expects dates in `YYYY-MM-DD` format and returns the exclusive number of full 24‑hour days between the two midnights (i.e., it does not count both endpoints).
 
 Script location:
-- `scripts/datediff/main.go`
+- [`scripts/typescript/src/calc-datediff.ts`](./typescript/src/calc-datediff.ts)
 
 Usage examples:
 
 - Using flags:
 ```bash
-go run scripts/datediff/main.go -start 2025-10-01 -end 2025-10-31
+node scripts/typescript/src/calc-datediff.ts --start 2025-10-01 --end 2025-10-31
 ```
 
 - Using positional arguments:
 ```bash
-go run scripts/datediff/main.go 2025-10-01 2025-10-31
+node scripts/typescript/src/calc-datediff.ts 2025-10-01 2025-10-31
 ```
 
 Example output:
 ```
 Days between 2025-10-01 and 2025-10-31: 30
 ```
+
+See the [TypeScript calculator setup](./typescript/README.md#calculate-annualized-return-and-elapsed-days)
+for dependency installation and the annualized return calculator.

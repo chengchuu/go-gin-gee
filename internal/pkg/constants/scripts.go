@@ -1,11 +1,6 @@
 package constants
 
 const (
-	StartMsgStr         = "- - begin - - - - - - - - - - - - - - - -"
-	EndMsgStr           = "- - end - - - - - - - - - - - - - - - - -"
-
-	RunningMsg = "running..."
-
 	CoinCode1031 = 1031
 	CoinErrMsg   = "operation error"
 

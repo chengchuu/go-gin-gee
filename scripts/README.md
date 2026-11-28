@@ -151,6 +151,41 @@ are logged. Success (including no orphans) returns `0`; scanning or deletion err
 return `1`. Deletion is not atomic: runtime failures can leave partial progress.
 Do not change the directory contents while cleanup is running.
 
+## Remove Empty Directories
+
+`batch-remove-empty-directories.ps1` lists eligible directories by default. It
+checks immediate child directories and always preserves the directory passed to
+`-Path`.
+
+Replace `<directory>` with the path to scan.
+
+Preview in Windows PowerShell on Windows 10.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\powershell\batch-remove-empty-directories.ps1" -Path "<directory>" -Recurse -IncludeEmptySubtrees -IncludePlaceholderFiles
+```
+
+Preview on macOS or Linux.
+
+```bash
+pwsh -NoProfile -File ./scripts/powershell/batch-remove-empty-directories.ps1 -Path "<directory>" -Recurse -IncludeEmptySubtrees -IncludePlaceholderFiles
+```
+
+- `-Recurse` checks all descendants.
+- `-IncludeEmptySubtrees` requires `-Recurse`. It includes parents that become
+  empty after eligible child directories are removed. The script processes
+  the deepest directories first.
+- `-IncludePlaceholderFiles` treats files named exactly `.gitkeep` or
+  `.DS_Store` as removable when the directory otherwise qualifies. All other
+  files count as contents, including hidden files. Symlinks and junctions count
+  as contents and are skipped during traversal.
+- `-Delete` permanently removes the listed files and directories, bypassing
+  Trash and Recycle Bin. Use `-Delete -WhatIf` to preview that invocation.
+
+The scan finishes before any deletion. The script rechecks each candidate before
+deleting it. A scan or deletion error returns status `1`. Deletions completed
+before an error remain in effect. Keep the directory tree stable during cleanup.
+
 ## Extract Missing Files from Nginx Errors
 
 Extract unique filesystem paths from exact `open() ... failed (2: No such file or directory)` errors:
